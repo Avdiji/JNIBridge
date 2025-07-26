@@ -1,13 +1,19 @@
 package com.jnibridge.nativeaccess;
 
-/**
- * Interface enables native access to objects and variables, and manages object lifetime.
- */
-public interface Pointer extends AutoCloseable {
+public abstract class Pointer implements IPointer {
 
-    /**
-     * @return The pointer of the underlying native object.
-     */
-    long getNativeHandle();
+    private long nativeHandle;
+
+    @Override
+    public long getNativeHandle() { return nativeHandle; }
+
+    @Override
+    public void setNativeHandle(final long handle) {
+        nativeHandle = handle;
+    }
+
+    @Override
+    @SuppressWarnings("removal")
+    protected void finalize() { destruct(); }
 
 }

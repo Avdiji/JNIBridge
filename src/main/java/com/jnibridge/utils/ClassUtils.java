@@ -60,7 +60,7 @@ public class ClassUtils {
 
         List<Class<?>> filtered = allClasses.stream()
                 .filter(c -> !c.isAnonymousClass() && !c.isSynthetic())
-                .filter(c -> c.getPackageName().startsWith(packageName))
+                .filter(c -> c.getPackage().getName().startsWith(packageName))
                 .collect(Collectors.toList());
 
         System.out.println(">> Found in package '" + packageName + "': " + filtered.size());
@@ -81,7 +81,7 @@ public class ClassUtils {
 
 
         for (final String pattern : classPatterns) {
-            if (pattern == null || pattern.isBlank()) { return false; }
+            if (pattern == null || pattern.isEmpty()) { return false; }
         }
 
         return true;
