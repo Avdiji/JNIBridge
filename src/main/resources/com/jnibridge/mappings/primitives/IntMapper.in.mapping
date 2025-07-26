@@ -1,0 +1,1 @@
+int $cVar = static_cast<int>($jniVar);
