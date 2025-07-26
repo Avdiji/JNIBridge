@@ -1,5 +1,8 @@
 package com.jnibridge.utils;
 
+import com.jnibridge.annotations.BridgeClass;
+import com.jnibridge.nativeaccess.IPointer;
+import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
@@ -12,6 +15,33 @@ import java.util.stream.Collectors;
 public class ClassUtils {
 
     private ClassUtils() { }
+
+    /**
+     * @param classPatterns The class-patterns to be mapped.
+     * @return A List of Classes, from which JNI layers shall be created.
+     */
+    public static List<Class<? extends IPointer>> getClassesToMap(@NotNull final String... classPatterns) {
+
+        // validate the class-patterns
+        if (!ClassUtils.validateClassPatterns(classPatterns)) {
+            throw new IllegalArgumentException("The passed class-patterns are invalid.");
+        }
+
+        try {
+            List<Class<?>> loadedClasses = ClassUtils.loadClasses(classPatterns);
+
+            //noinspection unchecked <- stream filters all classes that implement IPointer and are annotated to be mapped.
+            return loadedClasses.stream()
+                    .filter(IPointer.class::isAssignableFrom)
+                    .filter(clazz -> clazz.isAnnotationPresent(BridgeClass.class))
+
+                    .map(clazz -> (Class<? extends IPointer>) clazz)
+                    .collect(Collectors.toList());
+
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException("One of the passed classes have not been found", e);
+        }
+    }
 
     /**
      * Loads all classes matching the given class names or package wildcards.
@@ -58,16 +88,11 @@ public class ClassUtils {
 
         Set<Class<?>> allClasses = reflections.getSubTypesOf(Object.class);
 
-        List<Class<?>> filtered = allClasses.stream()
+        return allClasses.stream()
                 .filter(c -> !c.isAnonymousClass() && !c.isSynthetic())
                 .filter(c -> c.getPackage().getName().startsWith(packageName))
                 .collect(Collectors.toList());
-
-        System.out.println(">> Found in package '" + packageName + "': " + filtered.size());
-
-        return filtered;
     }
-
 
     /**
      * Validate the passed class-patterns.
@@ -75,6 +100,7 @@ public class ClassUtils {
      * @param classPatterns The class-patterns to be validated.
      * @return True if the class-patterns are valid, otherwise false.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean validateClassPatterns(String... classPatterns) {
         if (classPatterns == null) { return false; }
         if (classPatterns.length == 0) { return false; }

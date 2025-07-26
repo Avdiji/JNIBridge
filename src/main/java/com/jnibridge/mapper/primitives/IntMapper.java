@@ -1,11 +1,12 @@
 package com.jnibridge.mapper.primitives;
 
-import com.jnibridge.annotations.Typemapping;
+import com.jnibridge.annotations.TypeMapping;
+import com.jnibridge.mapper.TypeMapper;
 
-@Typemapping(
+@TypeMapping(
         cType = "int",
         jniType = "int",
         inPath = "com/jnibridge/mappings/primitives/IntMapper.in.mapping",
         outPath = "com/jnibridge/mappings/primitives/IntMapper.out.mapping"
 )
-public class IntMapper {}
+public class IntMapper implements TypeMapper {}

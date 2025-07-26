@@ -55,7 +55,7 @@ public class ResourceUtils {
     }
 
     /**
-     * <b>NOTE:</b> This method is <i>for internal use only</i>. Do not use externally.
+     * <b>! INTERNAL USE ONLY !</b>
      *
      * <p>
      * Fetch the content of the resource from the given path.

@@ -1,0 +1,34 @@
+1. Allow customMappings (in and out)
+
+2. Implement the generator models:
+
+public class ClassMappingInfo {
+    private final String className;
+    private final String namespace;
+    private final String alias;
+    private final List<String> includes;
+    private final List<String> baseClasses;
+    private final List<NativeMethodInfo> nativeMethods;
+
+    // constructor, getters, etc.
+}
+
+public class NativeMethodInfo {
+    private final String methodName;
+    private final String mangledName;
+    private final TypeMappingInfo returnTypeMapping;
+    private final List<TypeMappingInfo> paramMappings;
+    private final int modifiers;
+
+    // constructor, getters, etc.
+}
+
+public class TypeMappingInfo {
+    private final Class<?> javaType;
+    private final String cType;
+    private final String jniType;
+    private final String inTemplatePath;
+    private final String outTemplatePath;
+
+    // constructor, getters, etc.
+}

@@ -5,9 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Indicates that JNI-compatible code should be generated for the annotated class, interface or enum.
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JNIMapped {
+public @interface BridgeClass {
 
     /**
      * Native namespace for the mapped class (e.g., "core::math").
@@ -18,11 +21,6 @@ public @interface JNIMapped {
      * Native class or struct name. If empty, uses the Java class name.
      */
     String name() default "";
-
-    /**
-     * Native includes (e.g., headers) to include in generated C++/C files.
-     */
-    String[] includes() default "";
 
     /**
      * Base/native classes this type inherits from.
