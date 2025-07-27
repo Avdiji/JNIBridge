@@ -63,13 +63,13 @@ public @interface TypeMapping {
      *
      * <p>Supported placeholders:
      * <ul>
-     *   <li><code>$jniVar</code> – the name of the JNI variable (input from Java)</li>
-     *   <li><code>$cVar</code> – the name of the C++ variable receiving the cast or transformation</li>
+     *   <li><code>${jniVar}</code> – the name of the JNI variable (input from Java)</li>
+     *   <li><code>${cVar}</code> – the name of the C++ variable receiving the cast or transformation</li>
      * </ul>
      *
      * <p>Example substitution:
      * <pre>{@code
-     * int $cVar = static_cast<int>($jniVar);
+     * int ${cVar} = static_cast<int>(${jniVar});
      * }</pre>
      */
     String inPath();
@@ -82,13 +82,13 @@ public @interface TypeMapping {
      *
      * <p>Supported placeholders:
      * <ul>
-     *   <li><code>$functionCall</code> – the C++ function or expression being evaluated</li>
-     *   <li><code>$jniType</code> – the target JNI-compatible Java type</li>
+     *   <li><code>${functionCall}</code> – the C++ function or expression being evaluated</li>
+     *   <li><code>${jniType}</code> – the target JNI-compatible Java type</li>
      * </ul>
      *
      * <p>Example substitution:
      * <pre>{@code
-     * return static_cast<$jniType>($functionCall);
+     * return static_cast<${jniType}>($functionCall);
      * }</pre>
      */
     String outPath();

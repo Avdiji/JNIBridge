@@ -16,12 +16,12 @@ public class TemplateUtils {
     /**
      * Method for performing simple template substitution using named placeholders.
      * <p>
-     * Template variables use the syntax <code>$varName</code> and are replaced with values
+     * Template variables use the syntax <code>${varName}</code> and are replaced with values
      * provided via varargs in key-value pairs.
      * <p>
      * Example:
      * <pre>{@code
-     * String template = "int $cVar = static_cast<int>($jniVar);";
+     * String template = "int ${cVar} = static_cast<int>(${jniVar});";
      * String result = TemplateUtils.substitute(template, "cVar", "value1", "jniVar", "value2");
      * }</pre>
      * <p>
@@ -40,12 +40,12 @@ public class TemplateUtils {
             throw new IllegalArgumentException("Arguments must be in key-value pairs.");
         }
 
-        Map<String, Object> variables = new LinkedHashMap<>();
+        Map<String, String> variables = new LinkedHashMap<>();
         for (int i = 0; i < args.length; i += 2) {
             variables.put(args[i], args[i + 1]);
         }
 
-        return new StringSubstitutor(variables, "$", null).replace(template);
+        return new StringSubstitutor(variables).replace(template);
     }
 
 }
