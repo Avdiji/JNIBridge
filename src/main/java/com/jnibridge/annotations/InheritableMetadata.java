@@ -4,9 +4,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface BridgeMetaData {
-
-    boolean isStruct() default false;
+public @interface InheritableMetadata {
 
     Class<?>[] inheritFrom() default {};
 

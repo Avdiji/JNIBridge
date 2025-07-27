@@ -1,7 +1,7 @@
 package com.jnibridge.generator.model;
 
 import com.jnibridge.annotations.BridgeClass;
-import com.jnibridge.annotations.BridgeMetaData;
+import com.jnibridge.annotations.InheritableMetadata;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +14,6 @@ public class ClassInfo {
 
     private final BridgeClass annotation;
 
-    private final boolean isStruct;
     private final String namespace;
     private final String name;
 
@@ -27,10 +26,7 @@ public class ClassInfo {
         customJNICodePaths = new HashSet<>();
 
         annotation = clazz.getAnnotation(BridgeClass.class);
-
-        isStruct = annotation.metadata().isStruct();
         namespace = annotation.namespace();
-
         final String annotatedName = getAnnotation().name();
         name = annotatedName.isEmpty() ? clazz.getSimpleName() : annotatedName;
 
@@ -38,7 +34,7 @@ public class ClassInfo {
     }
 
     private void initializeMetadata(@NotNull final Class<?> clazz) {
-        BridgeMetaData metadata = annotation.metadata();
+        InheritableMetadata metadata = annotation.metadata();
 
         includes.addAll(Arrays.asList(metadata.includes()));
         customJNICodePaths.addAll(Arrays.asList(metadata.customJNICodePaths()));
@@ -62,7 +58,7 @@ public class ClassInfo {
         }
 
         // add inherited metadata
-        BridgeMetaData metadata = inheritedAnnotation.metadata();
+        InheritableMetadata metadata = inheritedAnnotation.metadata();
         includes.addAll(Arrays.asList(metadata.includes()));
         customJNICodePaths.addAll(Arrays.asList(metadata.customJNICodePaths()));
 
