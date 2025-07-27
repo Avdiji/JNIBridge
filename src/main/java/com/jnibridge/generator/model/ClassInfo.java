@@ -9,31 +9,56 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Represents a model of a Java class annotated with {@link BridgeClass}, used in JNI-compatible
+ * code generation.
+ */
 @Getter
 public class ClassInfo {
 
-    private final BridgeClass annotation;
-
-    private final String namespace;
-    private final String name;
-
     // metadata
+    private String namespace;
+    private String name;
+
+    // inheritable metadata
     private final Set<String> includes;
     private final Set<String> customJNICodePaths;
 
+    /**
+     * Constructs a {@code ClassInfo} from the given class, extracting all metadata from its {@link BridgeClass}
+     * annotation and recursively resolving inherited metadata.
+     *
+     * @param clazz the class to process, which must be annotated with {@link BridgeClass}
+     * @throws IllegalArgumentException if the class is not properly annotated or inheritance is invalid
+     */
     public ClassInfo(@NotNull final Class<?> clazz) {
         includes = new HashSet<>();
         customJNICodePaths = new HashSet<>();
 
-        annotation = clazz.getAnnotation(BridgeClass.class);
-        namespace = annotation.namespace();
-        final String annotatedName = getAnnotation().name();
-        name = annotatedName.isEmpty() ? clazz.getSimpleName() : annotatedName;
-
-        initializeMetadata(clazz);
+        initMetadata(clazz);
+        initInheritableMetadata(clazz);
     }
 
-    private void initializeMetadata(@NotNull final Class<?> clazz) {
+    /**
+     * Initializes core metadata fields from the given class's {@link BridgeClass} annotation.
+     *
+     * @param clazz the Java class annotated with {@link BridgeClass}
+     */
+    private void initMetadata(@NotNull final Class<?> clazz) {
+        final BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
+
+        namespace = annotation.namespace();
+        name = annotation.name().isEmpty() ? clazz.getSimpleName() : annotation.name();
+    }
+
+    /**
+     * Initializes inheritable metadata from the provided class's metadata,
+     * and recursively resolves inherited metadata from any classes listed in {@link InheritableMetadata#inheritFrom()}.
+     *
+     * @param clazz the class to extract metadata from
+     */
+    private void initInheritableMetadata(@NotNull final Class<?> clazz) {
+        final BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
         InheritableMetadata metadata = annotation.metadata();
 
         includes.addAll(Arrays.asList(metadata.includes()));
@@ -43,11 +68,19 @@ public class ClassInfo {
         visited.add(clazz);
 
         for (Class<?> inheritClass : metadata.inheritFrom()) {
-            initializeMetadataFrom(inheritClass, visited);
+            initInheritableMetadata(inheritClass, visited);
         }
     }
 
-    private void initializeMetadataFrom(@NotNull final Class<?> inheritClass, @NotNull final Set<Class<?>> visited) {
+    /**
+     * Recursively processes inherited metadata from the given class, avoiding cycles and ensuring
+     * all referenced classes are annotated with {@link BridgeClass}.
+     *
+     * @param inheritClass the class to process
+     * @param visited      a set of classes already visited to prevent circular inheritance
+     * @throws IllegalArgumentException if an inherited class is missing the {@link BridgeClass} annotation
+     */
+    private void initInheritableMetadata(@NotNull final Class<?> inheritClass, @NotNull final Set<Class<?>> visited) {
         // prevent recursion on circular inheritance
         if (!visited.add(inheritClass)) { return; }
 
@@ -62,7 +95,7 @@ public class ClassInfo {
         includes.addAll(Arrays.asList(metadata.includes()));
         customJNICodePaths.addAll(Arrays.asList(metadata.customJNICodePaths()));
 
-        for (Class<?> next : metadata.inheritFrom()) { initializeMetadataFrom(next, visited); }
+        for (Class<?> next : metadata.inheritFrom()) { initInheritableMetadata(next, visited); }
     }
 
 }

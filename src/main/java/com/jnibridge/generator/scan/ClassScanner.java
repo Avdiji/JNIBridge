@@ -12,20 +12,33 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Scans provided class names or packages for classes annotated with {@link BridgeClass}.
+ * <p>
+ * Only classes that are either utility classes (all-static methods) or implement {@link IPointer}
+ * are included for mapping.
+ */
 @Getter
 public class ClassScanner {
 
     private final List<Class<?>> classesToMap;
 
+    /**
+     * Constructs a new {@code ClassScanner} and initializes it with the provided class patterns.
+     *
+     * @param classPatterns class names or package patterns ending in {@code .*}
+     * @throws IllegalArgumentException if the input is invalid or a class cannot be found
+     */
     public ClassScanner(@NotNull final String... classPatterns) {
         classesToMap = new ArrayList<>();
         initClassScanner(classPatterns);
     }
 
     /**
-     * Method initializes this ClassScanner.
+     * Initializes the scanner by loading classes based on the input patterns
+     * and filtering them according to the presence of {@link BridgeClass}.
      *
-     * @param classPatterns The class-patterns to be mapped.
+     * @param classPatterns class or package patterns to scan
      */
     private void initClassScanner(@NotNull final String... classPatterns) {
 
@@ -55,10 +68,10 @@ public class ClassScanner {
     }
 
     /**
-     * Validate the passed class-patterns.
+     * Validates that the provided class patterns are not null, empty, or malformed.
      *
-     * @param classPatterns The class-patterns to be validated.
-     * @return True if the class-patterns are valid, otherwise false.
+     * @param classPatterns the class or package patterns to validate
+     * @return true if valid, false otherwise
      */
     private static boolean validateClassPatterns(String... classPatterns) {
         if (classPatterns == null) { return false; }
@@ -73,13 +86,12 @@ public class ClassScanner {
     }
 
     /**
-     * Loads all classes matching the given class names or package wildcards.
+     * Loads classes from the given patterns. Supports exact class names and
+     * package patterns ending in {@code .*}.
      *
-     * @param classPatterns varargs of fully-qualified class names or package patterns ending with {@code .*}
-     * @return a list of {@code Class<?>} objects
-     *
-     * <p>
-     * @throws ClassNotFoundException if any specific class name is not found
+     * @param classPatterns class names or package patterns
+     * @return list of loaded classes
+     * @throws ClassNotFoundException if a class cannot be found
      */
     private static List<Class<?>> loadClasses(String... classPatterns) throws ClassNotFoundException {
         List<Class<?>> loadedClasses = new ArrayList<>();
@@ -98,10 +110,10 @@ public class ClassScanner {
     }
 
     /**
-     * Scans the given package name for all non-anonymous and non-synthetic classes (recursively).
+     * Recursively scans a package and returns all non-anonymous, non-synthetic classes within it.
      *
-     * @param packageName package to scan.
-     * @return list of matching classes.
+     * @param packageName the base package to scan
+     * @return list of matching classes
      */
     private static List<Class<?>> scanPackage(String packageName) {
         try (ScanResult scanResult = new ClassGraph().enableClassInfo().acceptPackages(packageName).scan()) {

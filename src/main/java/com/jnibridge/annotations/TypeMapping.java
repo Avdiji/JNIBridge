@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
  *   <li>A resource path to a C++-to-Java transformation template</li>
  * </ul>
  *
- * <h3>Example usage:</h3>
+ * <strong>Example usage:</strong>
  * <pre>{@code
  * @Typemapping(
  *     cType = "int",
@@ -42,16 +42,22 @@ import java.lang.annotation.Target;
 public @interface TypeMapping {
 
     /**
+     * Getter for the native type of this mapper.
+     *
      * @return The C-Type of the type to be mapped.
      */
     String cType();
 
     /**
+     * Getter for the jni-native type of this mapper.
+     *
      * @return The JNI-Type of the type to be mapped.
      */
     String jniType();
 
     /**
+     * Resource path of the mapping-template for incoming (Java -> C++) mappings.
+     *
      * @return The resource path to the Java-to-C++ mapping template.
      * This template defines how Java variables and method arguments should be translated into C++ code.
      *
@@ -69,6 +75,8 @@ public @interface TypeMapping {
     String inPath();
 
     /**
+     * Resource path of the mapping-template for outgoing (C++ -> Java) mappings.
+     *
      * @return The resource path to the C++-to-Java mapping template.
      * This template defines how native C++ values or return types are converted back into Java.
      *

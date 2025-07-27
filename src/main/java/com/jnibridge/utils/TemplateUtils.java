@@ -5,8 +5,12 @@ import org.apache.commons.text.StringSubstitutor;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Utility class for performing simple string template substitutions using named placeholders.
+ */
 public class TemplateUtils {
 
+    // Private constructor to prevent instantiation
     private TemplateUtils() { }
 
     /**
@@ -25,6 +29,11 @@ public class TemplateUtils {
      * <pre>{@code
      * int value1 = static_cast<int>(value2);
      * }</pre>
+     *
+     * @param template The templated string.
+     * @param args The substitution key-value pairs.
+     *
+     * @return The substituted template.
      */
     public static String substitute(String template, String... args) {
         if (args.length % 2 != 0) {

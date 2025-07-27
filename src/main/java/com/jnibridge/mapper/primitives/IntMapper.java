@@ -3,6 +3,9 @@ package com.jnibridge.mapper.primitives;
 import com.jnibridge.annotations.TypeMapping;
 import com.jnibridge.mapper.TypeMapper;
 
+/**
+ * Mapper for simple integers.
+ */
 @TypeMapping(
         cType = "int",
         jniType = "int",
