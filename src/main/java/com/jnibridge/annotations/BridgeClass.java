@@ -13,6 +13,13 @@ import java.lang.annotation.Target;
 public @interface BridgeClass {
 
     /**
+     * Metadata for the class mapping.
+     *
+     * @return An instance of {@link BridgeMetaData}.
+     */
+    BridgeMetaData metadata();
+
+    /**
      * Native namespace for the mapped class (e.g., "core::math").
      */
     String namespace() default "";

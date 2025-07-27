@@ -6,8 +6,9 @@ TODOS in no particular order (although there should be some order)
 
 4. native java-C++ type registry to support inheritance without complicated casting logic
 5. handle static functions...
+6. ExceptionHandling...
 
-6. Implement the generator models:
+7. Implement the generator models:
 
 public class ClassMappingInfo {
     private final String className;

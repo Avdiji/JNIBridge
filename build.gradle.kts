@@ -16,6 +16,9 @@ dependencies {
     implementation("io.github.classgraph:classgraph:4.8.181")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+
+    implementation("org.projectlombok:lombok:1.18.38")
+    annotationProcessor("org.projectlombok:lombok:1.18.38")
 }
 
 java {

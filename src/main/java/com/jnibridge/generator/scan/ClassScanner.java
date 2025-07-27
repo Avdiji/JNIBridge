@@ -4,6 +4,7 @@ import com.jnibridge.annotations.BridgeClass;
 import com.jnibridge.nativeaccess.IPointer;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Modifier;
@@ -11,22 +12,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Getter
 public class ClassScanner {
 
-    private final List<Class<? extends IPointer>> instanceClasses;
-    private final List<Class<?>> utilityClasses;
+    private final List<Class<?>> classesToMap;
 
     public ClassScanner(@NotNull final String... classPatterns) {
-        instanceClasses = new ArrayList<>();
-        utilityClasses = new ArrayList<>();
-
+        classesToMap = new ArrayList<>();
         initClassScanner(classPatterns);
     }
-
-    public List<Class<? extends IPointer>> getInstanceClasses() { return instanceClasses; }
-
-    public List<Class<?>> getUtilityClasses() { return utilityClasses; }
-
 
     /**
      * Method initializes this ClassScanner.
@@ -44,16 +38,14 @@ public class ClassScanner {
             List<Class<?>> loadedClasses = loadClasses(classPatterns);
 
             for (Class<?> clazz : loadedClasses) {
-                if (clazz.isAnnotationPresent(BridgeClass.class)) { // <- only map if annotated
+                if (clazz.isAnnotationPresent(BridgeClass.class)) {
+
+                    boolean isIPointer = IPointer.class.isAssignableFrom(clazz);
+                    boolean isUtilityClass = Arrays.stream(clazz.getDeclaredMethods()).allMatch(m -> Modifier.isStatic(m.getModifiers()) || m.isSynthetic());
 
                     // implements IPointer = instance class
-                    if (IPointer.class.isAssignableFrom(clazz)) {
-                        //noinspection unchecked
-                        instanceClasses.add((Class<? extends IPointer>) clazz);
-
-                        // only static methods = utilityClass
-                    } else if (Arrays.stream(clazz.getDeclaredMethods()).allMatch(m -> Modifier.isStatic(m.getModifiers()) || m.isSynthetic())) {
-                        utilityClasses.add(clazz);
+                    if (isIPointer || isUtilityClass) {
+                        classesToMap.add(clazz);
                     }
                 }
             }
