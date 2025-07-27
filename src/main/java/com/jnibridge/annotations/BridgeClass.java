@@ -21,15 +21,4 @@ public @interface BridgeClass {
      * Native class or struct name. If empty, uses the Java class name.
      */
     String name() default "";
-
-    /**
-     * Base/native classes this type inherits from.
-     */
-    Class<?>[] baseClasses() default {};
-
-    /**
-     * Native interfaces this class is expected to implement.
-     */
-    Class<?>[] interfaces() default {};
-
 }

@@ -13,8 +13,7 @@ dependencies {
 
     implementation("org.apache.commons:commons-text:1.14.0")
 
-    implementation("org.reflections:reflections:0.9.12")
-    implementation("org.javassist:javassist:3.29.2-GA")
+    implementation("io.github.classgraph:classgraph:4.8.181")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
 }
