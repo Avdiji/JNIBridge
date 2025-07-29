@@ -30,7 +30,7 @@ public class TypeInfoExtractor {
      * @throws IllegalArgumentException if no valid {@link TypeMapper} is registered or annotated for the return type
      */
     protected static TypeInfo extractReturnType(@NotNull final Method method) {
-        return extract(method.getReturnType(), method.getAnnotatedReturnType().getAnnotations());
+        return extract(method.getReturnType(), method.getDeclaredAnnotations());
     }
 
     /**
@@ -63,16 +63,24 @@ public class TypeInfoExtractor {
      * @throws IllegalArgumentException if no valid {@link Mapping} is found for the resolved {@link TypeMapper}
      */
     private static TypeInfo extract(@NotNull final Class<?> type, final Annotation[] annotations) {
-        Mapping mapping = validateTypeMapping(type);
         List<Annotation> annotationList = Arrays.stream(annotations).collect(Collectors.toList());
 
-        return TypeInfo.builder()
+        Mapping typeMapping = annotationList.stream()
+                .filter(annotation -> annotation instanceof Mapping)
+                .map(annotation -> (Mapping) annotation)
+                .findFirst()
+                .orElse(validateTypeMapping(type));
+
+        TypeInfo info = TypeInfo.builder()
                 .type(type)
                 .annotations(annotationList)
-                .cType(mapping.cType())
-                .inMapping(ResourceUtils.load(mapping.inPath()))
-                .outMapping(ResourceUtils.load(mapping.outPath()))
+                .cType(typeMapping.cType())
+                .inMapping(ResourceUtils.load(typeMapping.inPath()))
+                .outMapping(ResourceUtils.load(typeMapping.outPath()))
                 .build();
+
+        System.out.println(info.getCType());
+        return info;
     }
 
     /**

@@ -37,7 +37,7 @@ import java.lang.annotation.Target;
  *
  * @see com.jnibridge.mapper.TypeMapper
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Mapping {
 

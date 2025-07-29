@@ -4,7 +4,7 @@ import com.jnibridge.annotations.BridgeClass;
 import com.jnibridge.annotations.InheritableMetadata;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.MethodInfo;
-import com.jnibridge.generator.scan.MethodScanner;
+import com.jnibridge.generator.scanner.MethodScanner;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
@@ -25,7 +25,7 @@ public class ClassInfoExtractor {
      * @return the extracted {@link ClassInfo} representation
      * @throws IllegalArgumentException if the class is not annotated with {@link BridgeClass}
      */
-    public ClassInfo extract(@NotNull final Class<?> clazz) {
+    public static ClassInfo extract(@NotNull final Class<?> clazz) {
         BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
         if (annotation == null) {
             throw new IllegalArgumentException(String.format("Class '%s' must be annotated properly in order to be mapped.", clazz.getSimpleName()));

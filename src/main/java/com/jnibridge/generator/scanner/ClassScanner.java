@@ -1,4 +1,4 @@
-package com.jnibridge.generator.scan;
+package com.jnibridge.generator.scanner;
 
 import com.jnibridge.annotations.BridgeClass;
 import com.jnibridge.nativeaccess.IPointer;
