@@ -1,1 +1,1 @@
-return static_cast<${jniType}>(${functionCall});
+return static_cast<jint>(${functionCall});

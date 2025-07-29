@@ -1,5 +1,8 @@
 package com.jnibridge.nativeaccess;
 
+import com.jnibridge.annotations.BridgeClass;
+import com.jnibridge.annotations.InheritableMetadata;
+
 /**
  * Abstract base class for native-bound objects that simplifies {@link IPointer} implementation.
  * <p>

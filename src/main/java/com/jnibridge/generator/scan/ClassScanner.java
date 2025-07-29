@@ -21,18 +21,7 @@ import java.util.stream.Stream;
 @Getter
 public class ClassScanner {
 
-    private final List<Class<?>> classesToMap;
-
-    /**
-     * Constructs a new {@code ClassScanner} and initializes it with the provided class patterns.
-     *
-     * @param classPatterns class names or package patterns ending in {@code .*}
-     * @throws IllegalArgumentException if the input is invalid or a class cannot be found
-     */
-    public ClassScanner(@NotNull final String... classPatterns) {
-        classesToMap = new ArrayList<>();
-        initClassScanner(classPatterns);
-    }
+    private ClassScanner() {}
 
     /**
      * Initializes the scanner by loading classes based on the input patterns
@@ -40,19 +29,23 @@ public class ClassScanner {
      *
      * @param classPatterns class or package patterns to scan
      */
-    private void initClassScanner(@NotNull final String... classPatterns) {
+    public static List<Class<?>> getClassesToMap(@NotNull final String... classPatterns) {
 
-        // validate the class-patterns
+        // validate class patterns
         if (!validateClassPatterns(classPatterns)) {
             throw new IllegalArgumentException("The passed class-patterns are invalid.");
         }
 
+        List<Class<?>> classesToMap = new ArrayList<>();
         try {
-            List<Class<?>> loadedClasses = loadClasses(classPatterns);
 
+            List<Class<?>> loadedClasses = loadClasses(classPatterns);
             for (Class<?> clazz : loadedClasses) {
+
+                // only map annotated classes
                 if (clazz.isAnnotationPresent(BridgeClass.class)) {
 
+                    // map only classes that extend IPointer, or classes which contain only static functions
                     boolean isIPointer = IPointer.class.isAssignableFrom(clazz);
                     boolean isUtilityClass = Arrays.stream(clazz.getDeclaredMethods()).allMatch(m -> Modifier.isStatic(m.getModifiers()) || m.isSynthetic());
 
@@ -62,9 +55,12 @@ public class ClassScanner {
                     }
                 }
             }
+
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException("One of the passed classes have not been found", e);
         }
+
+        return classesToMap;
     }
 
     /**

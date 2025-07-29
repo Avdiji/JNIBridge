@@ -1,14 +1,13 @@
 package com.jnibridge.mapper.primitives;
 
-import com.jnibridge.annotations.TypeMapping;
+import com.jnibridge.annotations.Mapping;
 import com.jnibridge.mapper.TypeMapper;
 
 /**
  * Mapper for simple integers.
  */
-@TypeMapping(
+@Mapping(
         cType = "int",
-        jniType = "int",
         inPath = "com/jnibridge/mappings/primitives/IntMapper.in.mapping",
         outPath = "com/jnibridge/mappings/primitives/IntMapper.out.mapping"
 )

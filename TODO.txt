@@ -40,3 +40,6 @@ public class TypeMappingInfo {
 
     // constructor, getters, etc.
 }
+
+8. create annotations @NativeConstruct @NativeDestruct...
+9. consider mapping enums and structs...

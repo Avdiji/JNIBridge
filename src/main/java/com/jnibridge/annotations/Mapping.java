@@ -39,7 +39,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TypeMapping {
+public @interface Mapping {
 
     /**
      * Getter for the native type of this mapper.
@@ -47,13 +47,6 @@ public @interface TypeMapping {
      * @return The C-Type of the type to be mapped.
      */
     String cType();
-
-    /**
-     * Getter for the jni-native type of this mapper.
-     *
-     * @return The JNI-Type of the type to be mapped.
-     */
-    String jniType();
 
     /**
      * Resource path of the mapping-template for incoming (Java -> C++) mappings.
@@ -65,6 +58,7 @@ public @interface TypeMapping {
      * <ul>
      *   <li><code>${jniVar}</code> – the name of the JNI variable (input from Java)</li>
      *   <li><code>${cVar}</code> – the name of the C++ variable receiving the cast or transformation</li>
+     *   <li><code>${id}</code> – a method-wide unique identifier (e.g. to create unique custom variable-names).</li>
      * </ul>
      *
      * <p>Example substitution:
@@ -83,7 +77,6 @@ public @interface TypeMapping {
      * <p>Supported placeholders:
      * <ul>
      *   <li><code>${functionCall}</code> – the C++ function or expression being evaluated</li>
-     *   <li><code>${jniType}</code> – the target JNI-compatible Java type</li>
      * </ul>
      *
      * <p>Example substitution:

@@ -1,6 +1,7 @@
 package com.jnibridge.mapper;
 
 import com.jnibridge.mapper.primitives.IntMapper;
+import com.jnibridge.mapper.primitives.VoidMapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,6 +29,7 @@ public class TypeMappingRegistry {
     private static final Map<Class<?>, Class<? extends TypeMapper>> registry = new HashMap<>();
     static {
         registry.put(int.class, IntMapper.class);
+        registry.put(void.class, VoidMapper.class);
     }
     // @formatter:on
 
