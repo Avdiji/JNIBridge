@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * already has a default mapping.
  *
  * <p>This is useful when the same Java type can be mapped to multiple C++ representations,
- * depending on context (e.g., pointer vs. value, platform-specific encoding, etc).
+ * depending on context (e.g., pointer vs. value, platform-specific encoding, etc...).
  *
  * <p><strong>Example usage:</strong>
  * <pre>{@code
