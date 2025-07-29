@@ -1,11 +1,13 @@
 package com.jnibridge.generator.model.extractor;
 
 import com.jnibridge.annotations.Mapping;
+import com.jnibridge.annotations.UseMapping;
 import com.jnibridge.generator.model.TypeInfo;
 import com.jnibridge.mapper.TypeMapper;
-import com.jnibridge.mapper.TypeMappingRegistry;
+import com.jnibridge.mapper.TypeMapperRegistry;
 import com.jnibridge.utils.ResourceUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -65,46 +67,43 @@ public class TypeInfoExtractor {
     private static TypeInfo extract(@NotNull final Class<?> type, final Annotation[] annotations) {
         List<Annotation> annotationList = Arrays.stream(annotations).collect(Collectors.toList());
 
-        Mapping typeMapping = annotationList.stream()
-                .filter(annotation -> annotation instanceof Mapping)
-                .map(annotation -> (Mapping) annotation)
-                .findFirst()
-                .orElse(validateTypeMapping(type));
+        // check whether the param/returnValue is using a specific mapper
+        Mapping paramSpecificMapping = annotationList.stream()
+                .filter(annotation -> annotation instanceof UseMapping)
+                .map(annotation -> ((UseMapping) annotation).value())
+                .map(mapper -> validateMapper(mapper, type.getSimpleName()))
 
-        TypeInfo info = TypeInfo.builder()
+                .findFirst().orElse(validateMapper(TypeMapperRegistry.getMapperFor(type), type.getSimpleName()));
+
+        // create a new TypeInfo
+        return TypeInfo.builder()
                 .type(type)
                 .annotations(annotationList)
-                .cType(typeMapping.cType())
-                .inMapping(ResourceUtils.load(typeMapping.inPath()))
-                .outMapping(ResourceUtils.load(typeMapping.outPath()))
+                .cType(paramSpecificMapping.cType())
+                .inMapping(ResourceUtils.load(paramSpecificMapping.inPath()))
+                .outMapping(ResourceUtils.load(paramSpecificMapping.outPath()))
                 .build();
-
-        System.out.println(info.getCType());
-        return info;
     }
 
     /**
-     * Resolves the {@link Mapping} annotation from the registered {@link TypeMapper} for the given type.
-     * Ensures that the mapping configuration exists and is valid.
+     * Validates that a given {@link TypeMapper} class is not {@code null} and is properly annotated with {@link Mapping}.
+     * <p>
      *
-     * @param type the Java type to look up in the registry
-     * @return the associated {@link Mapping} annotation
-     * @throws IllegalArgumentException if no {@link TypeMapper} is registered or if the mapper is missing {@link Mapping}
+     * @param mapper the {@link TypeMapper} class to validate; may be {@code null}
+     * @param typename the name of the type to be mapped.
+     * @return the resolved {@link Mapping} annotation from the given class
+     * @throws IllegalArgumentException if the mapper is {@code null} or not annotated with {@link Mapping}
      */
     @NotNull
-    private static Mapping validateTypeMapping(@NotNull final Class<?> type) {
-        Class<? extends TypeMapper> mapper = TypeMappingRegistry.getMapperFor(type);
-
+    private static Mapping validateMapper(@Nullable final Class<? extends TypeMapper> mapper, @NotNull final String typename) {
         if (mapper == null) {
-            throw new IllegalArgumentException(String.format("No mapper for type '%s' has been registered.", type.getSimpleName()));
+            throw new IllegalArgumentException(String.format("Mapper for type '%s' has not been registered!", typename));
         }
 
         Mapping mapping = mapper.getAnnotation(Mapping.class);
         if (mapping == null) {
-            throw new IllegalArgumentException(String.format("Mapper for type '%s' must be annotated properly.", type));
+            throw new IllegalArgumentException(String.format("Mapper '%s' must be annotated properly.", mapper.getSimpleName()));
         }
-
         return mapping;
     }
-
 }

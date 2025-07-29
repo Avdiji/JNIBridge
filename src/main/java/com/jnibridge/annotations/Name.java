@@ -26,5 +26,5 @@ public @interface Name {
      *
      * @return The native method name.
      */
-    String nativeName();
+    String value();
 }

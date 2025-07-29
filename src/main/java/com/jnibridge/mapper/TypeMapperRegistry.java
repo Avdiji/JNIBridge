@@ -20,9 +20,9 @@ import java.util.Map;
  * MappingRegistry.putIntoRegistry(String.class, StringMapper.class);
  * }</pre>
  */
-public class TypeMappingRegistry {
+public class TypeMapperRegistry {
 
-    private TypeMappingRegistry() { }
+    private TypeMapperRegistry() { }
 
     // @formatter:off
     // registry with default mappings...

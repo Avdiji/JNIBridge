@@ -38,7 +38,7 @@ public class ClassInfoExtractor {
                 .jName(clazz.getSimpleName())
 
                 .metadata(extractInheritableMetadataInfo(clazz))
-                .methodsToMap(extractMethodsToMap(clazz))
+                .methodsToMap(extractMethodsToMap(clazz, annotation.namespace()))
                 .build();
     }
 
@@ -50,9 +50,9 @@ public class ClassInfoExtractor {
      * @param clazz the class to scan
      * @return list of {@link MethodInfo} objects representing native methods
      */
-    private static List<MethodInfo> extractMethodsToMap(@NotNull final Class<?> clazz) {
+    private static List<MethodInfo> extractMethodsToMap(@NotNull final Class<?> clazz, @NotNull final String namespace) {
         Set<Method> allJNIBridgedMethods = MethodScanner.getAllJNIBridgedMethods(clazz);
-        return allJNIBridgedMethods.stream().map(MethodInfoExtractor::extract).collect(Collectors.toList());
+        return allJNIBridgedMethods.stream().map(method -> MethodInfoExtractor.extract(method, namespace)).collect(Collectors.toList());
     }
 
     /**

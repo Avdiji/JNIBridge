@@ -28,5 +28,5 @@ public @interface Namespace {
      *
      * @return The native namespace to associate with this method.
      */
-    String nativeNamespace();
+    String value();
 }
