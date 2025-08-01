@@ -50,8 +50,9 @@ public abstract class TypeInfoComposer implements Composer{
         replacements.put(PLACEHOLDER_C_TYPE, cTypeReplacement);
         replacements.put(PLACEHOLDER_JNI_TYPE, typeInfo.getJniType());
 
-        replacements.put(PLACEHOLDER_C_VAR, PLACEHOLDER_C_VAR);
-        replacements.put(PLACEHOLDER_JNI_VAR, PLACEHOLDER_JNI_VAR + Optional.ofNullable(typeInfo.getId()).orElse(""));
+        String id = Optional.ofNullable(typeInfo.getId()).orElse("");
+        replacements.put(PLACEHOLDER_C_VAR, PLACEHOLDER_C_VAR + id);
+        replacements.put(PLACEHOLDER_JNI_VAR, PLACEHOLDER_JNI_VAR + id);
 
         return replacements;
     }

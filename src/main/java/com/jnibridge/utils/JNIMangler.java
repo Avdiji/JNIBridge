@@ -11,7 +11,9 @@ public class JNIMangler {
      * Returns the JNI-mangled method name for a given Java Method.
      */
     public static String getMangledMethodDescriptor(@NotNull final Method method) {
+
         String methodDescriptor = Type.getMethodDescriptor(method);
+        methodDescriptor = methodDescriptor.substring(0, methodDescriptor.indexOf(')') + 1);
 
         methodDescriptor = methodDescriptor
                 // mangling as described in https://docs.oracle.com/en/java/javase/17/docs/specs/jni/design.html?
@@ -19,11 +21,14 @@ public class JNIMangler {
                 .replace("/", "_")      // Package separator
                 .replace(";", "_2")     // End of object type
                 .replace("[", "_3")     // Arrays
+
                 .replace("(", "")       // Remove parentheses
                 .replace(")", "");      // Remove parentheses
 
-        // Return methodName__descriptor
+        // return methodName__descriptor (if descriptor is not empty)
         String mangledMethodName = method.getName().replace("_", "_1");
-        return mangledMethodName + "__" + methodDescriptor;
+        return methodDescriptor.isEmpty() ?
+                mangledMethodName :
+                mangledMethodName + "__" + methodDescriptor;
     }
 }

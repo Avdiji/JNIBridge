@@ -1,3 +1,5 @@
-JNIEXPORT ${jniType} JNICALL ${mangledPackage}_${mangledFuncName}(JNIEnv* env, jclass clazz${jniParams}) {
-    fitor avdiji;
+JNIEXPORT ${jniType} JNICALL ${mangledClasspath}_${mangledFuncName}(JNIEnv* env, jclass clazz${jniParams}) {
+
+    ${paramInMapping}
+    ${resultOutMapping}
 }
