@@ -28,7 +28,11 @@ public class ClassScanner {
      * and filtering them according to the presence of {@link BridgeClass}.
      *
      * @param classPatterns class or package patterns to scan
+     *
+     * @throws IllegalArgumentException if the classPatterns are invalid.
+     * @throws IllegalArgumentException if one of the classes within the pattern can not be found.
      */
+    @NotNull
     public static List<Class<?>> getClassesToMap(@NotNull final String... classPatterns) {
 
         // validate class patterns
@@ -89,6 +93,7 @@ public class ClassScanner {
      * @return list of loaded classes
      * @throws ClassNotFoundException if a class cannot be found
      */
+    @NotNull
     private static List<Class<?>> loadClasses(String... classPatterns) throws ClassNotFoundException {
         List<Class<?>> loadedClasses = new ArrayList<>();
         for (final String pattern : classPatterns) {
@@ -111,6 +116,7 @@ public class ClassScanner {
      * @param packageName the base package to scan
      * @return list of matching classes
      */
+    @NotNull
     private static List<Class<?>> scanPackage(String packageName) {
         try (ScanResult scanResult = new ClassGraph().enableClassInfo().acceptPackages(packageName).scan()) {
 

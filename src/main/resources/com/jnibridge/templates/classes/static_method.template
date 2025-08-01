@@ -1,0 +1,3 @@
+JNIEXPORT ${jniType} JNICALL ${mangledFuncName}(JNIEnv* env, jclass clazz${jniParams}) {
+    fitor avdiji;
+}

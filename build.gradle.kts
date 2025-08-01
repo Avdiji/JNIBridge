@@ -14,8 +14,7 @@ dependencies {
     implementation("org.apache.commons:commons-text:1.14.0")
 
     implementation("io.github.classgraph:classgraph:4.8.181")
-
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    implementation("org.ow2.asm:asm:9.5")
 
     implementation("org.projectlombok:lombok:1.18.38")
     annotationProcessor("org.projectlombok:lombok:1.18.38")

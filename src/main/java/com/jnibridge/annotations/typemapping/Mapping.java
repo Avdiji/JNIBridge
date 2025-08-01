@@ -1,4 +1,4 @@
-package com.jnibridge.annotations;
+package com.jnibridge.annotations.typemapping;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -49,21 +49,33 @@ public @interface Mapping {
     String cType();
 
     /**
+     * Getter for the jni type of this mapper.
+     *
+     * @return The jni of the type to be mapped.
+     */
+    String jniType();
+
+    /**
      * Resource path of the mapping-template for incoming (Java -> C++) mappings.
      *
      * @return The resource path to the Java-to-C++ mapping template.
      * This template defines how Java variables and method arguments should be translated into C++ code.
      *
-     * <p>Supported placeholders:
+     * <br>
+     * <p><strong>Supported placeholders:</strong>
      * <ul>
-     *   <li><code>${jniVar}</code> – the name of the JNI variable (input from Java)</li>
+     *   <li><code>${cType}</code> – the C++ Type to be mapped</li>
+     *   <li><code>${jniType}</code> – the JNI Type to be mapped</li>
+     *
+     *   <li><code>${jniVar}</code> – the name of the JNI variable/parameter</li>
      *   <li><code>${cVar}</code> – the name of the C++ variable receiving the cast or transformation</li>
+     *
      *   <li><code>${id}</code> – a method-wide unique identifier (e.g. to create unique custom variable-names).</li>
      * </ul>
      *
      * <p>Example substitution:
      * <pre>{@code
-     * int ${cVar} = static_cast<int>(${jniVar});
+     * int ${cVar} = static_cast<cType>(${jniVar});
      * }</pre>
      */
     String inPath();
@@ -73,10 +85,13 @@ public @interface Mapping {
      *
      * @return The resource path to the C++-to-Java mapping template.
      * This template defines how native C++ values or return types are converted back into Java.
-     *
-     * <p>Supported placeholders:
+     * <br>
+     * <p><strong>Supported placeholders:</strong>
      * <ul>
-     *   <li><code>${functionCall}</code> – the C++ function or expression being evaluated</li>
+     *   <li><code>${cType}</code> – the C++ Type to be mapped</li>
+     *   <li><code>${jniType}</code> – the JNI Type to be mapped</li>
+     *
+     *  <li><code>${functionCall}</code> – the C++ function or expression being evaluated</li>
      * </ul>
      *
      * <p>Example substitution:

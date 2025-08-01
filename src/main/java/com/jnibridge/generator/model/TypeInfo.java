@@ -1,7 +1,10 @@
 package com.jnibridge.generator.model;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -10,11 +13,27 @@ import java.util.List;
 @Builder
 public class TypeInfo {
 
-    private final Class<?> type;
+    // @formatter:off
+    @NonNull private final Class<?> type;
 
-    private final List<Annotation> annotations;
+    @Getter(AccessLevel.NONE)
+    @NonNull private final List<Annotation> annotations;
 
-    private String cType;
-    private String inMapping;
-    private String outMapping;
+    @Nullable private final String id;
+
+    @NonNull private String cType;
+    @NonNull private String jniType;
+
+    @NonNull private String inMapping;
+    @NonNull private String outMapping;
+
+    // @formatter:on
+
+    /**
+     * @param annotationClass The annotation-class to find.
+     * @return True if this TypeInfo is annotated with the passed annotationClass
+     */
+    public boolean hasAnnotation(Class<?> annotationClass) {
+        return annotations.stream().anyMatch(a -> a.annotationType() == annotationClass);
+    }
 }

@@ -31,6 +31,7 @@ public class MethodScanner {
      * @param clazz The class to scan.
      * @return A set of native {@link Method} objects used in JNI bridging.
      */
+    @NotNull
     public static Set<Method> getAllJNIBridgedMethods(@NotNull final Class<?> clazz) {
         Set<Method> result = new HashSet<>();
         result.addAll(getInheritedNativeMethods(clazz));
@@ -47,6 +48,7 @@ public class MethodScanner {
      * @param clazz The class whose declared methods will be inspected.
      * @return A set of native {@link Method} objects declared in the class.
      */
+    @NotNull
     private static Set<Method> getDeclaredNativeMethods(@NotNull final Class<?> clazz) {
         Method[] declaredMethods = clazz.getDeclaredMethods();
         return Arrays.stream(declaredMethods)
@@ -61,6 +63,7 @@ public class MethodScanner {
      * @param clazz The class whose inherited methods will be inspected.
      * @return A set of inherited native {@link Method} objects superclasses.
      */
+    @NotNull
     private static Set<Method> getInheritedNativeMethods(@NotNull final Class<?> clazz) {
         Method[] allMethods = clazz.getMethods();
 

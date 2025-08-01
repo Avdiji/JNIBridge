@@ -1,10 +1,10 @@
 package com.jnibridge.generator.model.extractor;
 
-import com.jnibridge.annotations.Mapping;
-import com.jnibridge.annotations.UseMapping;
+import com.jnibridge.annotations.typemapping.Mapping;
+import com.jnibridge.annotations.typemapping.UseMapping;
 import com.jnibridge.generator.model.TypeInfo;
 import com.jnibridge.mapper.TypeMapper;
-import com.jnibridge.mapper.TypeMapperRegistry;
+import com.jnibridge.mapper.GlobalMapperRegistry;
 import com.jnibridge.utils.ResourceUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,8 +31,9 @@ public class TypeInfoExtractor {
      * @return a {@link TypeInfo} describing the return type
      * @throws IllegalArgumentException if no valid {@link TypeMapper} is registered or annotated for the return type
      */
+    @NotNull
     protected static TypeInfo extractReturnType(@NotNull final Method method) {
-        return extract(method.getReturnType(), method.getDeclaredAnnotations());
+        return extract(method.getReturnType(), null, method.getDeclaredAnnotations());
     }
 
     /**
@@ -42,6 +43,7 @@ public class TypeInfoExtractor {
      * @return a list of {@link TypeInfo} objects representing each parameter
      * @throws IllegalArgumentException if a parameter's type has no valid {@link TypeMapper} registered or annotated
      */
+    @NotNull
     protected static List<TypeInfo> extractParamTypes(@NotNull final Method method) {
         List<TypeInfo> result = new LinkedList<>();
 
@@ -51,7 +53,7 @@ public class TypeInfoExtractor {
         for (int i = 0; i < method.getParameterCount(); ++i) {
             Class<?> paramType = parameterTypes[i];
             Annotation[] paramAnnotations = parameterAnnotations[i];
-            result.add(extract(paramType, paramAnnotations));
+            result.add(extract(paramType, "" + i, paramAnnotations));
         }
         return result;
     }
@@ -64,7 +66,8 @@ public class TypeInfoExtractor {
      * @return a fully populated {@link TypeInfo} object
      * @throws IllegalArgumentException if no valid {@link Mapping} is found for the resolved {@link TypeMapper}
      */
-    private static TypeInfo extract(@NotNull final Class<?> type, final Annotation[] annotations) {
+    @NotNull
+    private static TypeInfo extract(@NotNull final Class<?> type, @Nullable final String id, final Annotation[] annotations) {
         List<Annotation> annotationList = Arrays.stream(annotations).collect(Collectors.toList());
 
         // check whether the param/returnValue is using a specific mapper
@@ -73,13 +76,15 @@ public class TypeInfoExtractor {
                 .map(annotation -> ((UseMapping) annotation).value())
                 .map(mapper -> validateMapper(mapper, type.getSimpleName()))
 
-                .findFirst().orElse(validateMapper(TypeMapperRegistry.getMapperFor(type), type.getSimpleName()));
+                .findFirst().orElse(validateMapper(GlobalMapperRegistry.getMapperFor(type), type.getSimpleName()));
 
         // create a new TypeInfo
         return TypeInfo.builder()
                 .type(type)
+                .id(id)
                 .annotations(annotationList)
                 .cType(paramSpecificMapping.cType())
+                .jniType(paramSpecificMapping.jniType())
                 .inMapping(ResourceUtils.load(paramSpecificMapping.inPath()))
                 .outMapping(ResourceUtils.load(paramSpecificMapping.outPath()))
                 .build();
@@ -89,7 +94,7 @@ public class TypeInfoExtractor {
      * Validates that a given {@link TypeMapper} class is not {@code null} and is properly annotated with {@link Mapping}.
      * <p>
      *
-     * @param mapper the {@link TypeMapper} class to validate; may be {@code null}
+     * @param mapper   the {@link TypeMapper} class to validate; may be {@code null}
      * @param typename the name of the type to be mapped.
      * @return the resolved {@link Mapping} annotation from the given class
      * @throws IllegalArgumentException if the mapper is {@code null} or not annotated with {@link Mapping}

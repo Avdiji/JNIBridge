@@ -1,6 +1,6 @@
 package com.jnibridge.mapper.primitives;
 
-import com.jnibridge.annotations.Mapping;
+import com.jnibridge.annotations.typemapping.Mapping;
 import com.jnibridge.mapper.TypeMapper;
 
 /**
@@ -8,6 +8,7 @@ import com.jnibridge.mapper.TypeMapper;
  */
 @Mapping(
         cType = "void",
+        jniType = "void",
         inPath = "com/jnibridge/mappings/primitives/VoidMapper.in.mapping",
         outPath = "com/jnibridge/mappings/primitives/VoidMapper.out.mapping"
 )

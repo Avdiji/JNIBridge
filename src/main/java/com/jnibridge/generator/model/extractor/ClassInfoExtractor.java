@@ -25,6 +25,7 @@ public class ClassInfoExtractor {
      * @return the extracted {@link ClassInfo} representation
      * @throws IllegalArgumentException if the class is not annotated with {@link BridgeClass}
      */
+    @NotNull
     public static ClassInfo extract(@NotNull final Class<?> clazz) {
         BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
         if (annotation == null) {
@@ -50,6 +51,7 @@ public class ClassInfoExtractor {
      * @param clazz the class to scan
      * @return list of {@link MethodInfo} objects representing native methods
      */
+    @NotNull
     private static List<MethodInfo> extractMethodsToMap(@NotNull final Class<?> clazz, @NotNull final String namespace) {
         Set<Method> allJNIBridgedMethods = MethodScanner.getAllJNIBridgedMethods(clazz);
         return allJNIBridgedMethods.stream().map(method -> MethodInfoExtractor.extract(method, namespace)).collect(Collectors.toList());
@@ -64,6 +66,7 @@ public class ClassInfoExtractor {
      * @return a flattened metadata info object containing all inherited and declared values
      * @throws IllegalArgumentException if any referenced superclass is missing the {@link BridgeClass} annotation
      */
+    @NotNull
     private static ClassInfo.InheritableMetadataInfo extractInheritableMetadataInfo(@NotNull final Class<?> clazz) {
         final BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
         InheritableMetadata metadata = annotation.metadata();
