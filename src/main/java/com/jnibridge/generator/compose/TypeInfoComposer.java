@@ -22,7 +22,7 @@ import java.util.Optional;
  */
 @Getter
 @RequiredArgsConstructor
-public abstract class TypeInfoComposer {
+public abstract class TypeInfoComposer implements Composer{
 
     // TypeInfo - related Placeholders...
     public static final String PLACEHOLDER_C_TYPE = "cType";
@@ -33,14 +33,6 @@ public abstract class TypeInfoComposer {
 
     @NonNull
     private final TypeInfo typeInfo;
-
-    /**
-     * Composes a string representation of the associated {@link TypeInfo}.
-     *
-     * @return the formatted string representation.
-     */
-    @NotNull
-    public abstract String compose();
 
     /**
      * Returns a map of placeholder-to-value pairs used to replace

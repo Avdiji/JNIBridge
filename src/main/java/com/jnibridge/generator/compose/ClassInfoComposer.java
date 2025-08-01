@@ -1,4 +1,4 @@
 package com.jnibridge.generator.compose;
 
-public class ClassInfoComposer {
+public abstract class ClassInfoComposer implements Composer{
 }
