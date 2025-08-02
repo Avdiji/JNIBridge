@@ -2,7 +2,6 @@ package com.jnibridge.utils;
 
 import org.jetbrains.annotations.NotNull;
 
-import javax.naming.Context;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,6 +1,5 @@
 package com.jnibridge.generator.model;
 
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;

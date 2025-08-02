@@ -1,6 +1,5 @@
 package com.jnibridge.generator.compose;
 
-import com.jnibridge.annotations.modifiers.Const;
 import com.jnibridge.generator.compose.jni.TypeInfoJNIComposer;
 import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.generator.model.TypeInfo;
@@ -17,13 +16,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Base class for composing string representations of a {@link MethodInfo}.
- *
- * <p>
- * Implementations of this class are responsible for transforming
- * the metadata contained in a {@link MethodInfo} instance into a
- * specific output format, such as JNI declarations, JSON metadata, ...
- * </p>
+ * Composes string representations of {@link MethodInfo} objects.
  */
 @Getter
 @RequiredArgsConstructor
@@ -58,7 +51,11 @@ public abstract class MethodInfoComposer implements Composer {
         return replacements;
     }
 
-
+    /**
+     * Generates a comma-separated list of JNI function parameters, each represented as:
+     *
+     * @return a string suitable for use in JNI function signatures, or an empty string if no params exist
+     */
     private String getJNIFunctionParams() {
         List<TypeInfo> params = methodInfo.getParams();
         if (params.isEmpty()) { return ""; }
@@ -73,6 +70,11 @@ public abstract class MethodInfoComposer implements Composer {
         return ", " + result;
     }
 
+    /**
+     * Generates the list of native arguments for the function call, mapping JNI variables to their corresponding C variables
+     *
+     * @return a string containing the argument list for the native function call
+     */
     private String getNativeFunctionCallArgs() {
         List<TypeInfo> params = methodInfo.getParams();
         if (params.isEmpty()) { return ""; }
@@ -86,7 +88,11 @@ public abstract class MethodInfoComposer implements Composer {
 
     }
 
-
+    /**
+     * Composes the code snippets required to map each JNI input parameter into its corresponding native type representation.
+     *
+     * @return concatenated parameter input mapping code snippets, or empty string if no params exist
+     */
     private String getParamInputMappings() {
         List<TypeInfo> params = methodInfo.getParams();
         if (params.isEmpty()) { return ""; }

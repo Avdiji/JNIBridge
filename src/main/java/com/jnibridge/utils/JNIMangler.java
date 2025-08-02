@@ -5,7 +5,12 @@ import org.objectweb.asm.Type;
 
 import java.lang.reflect.Method;
 
+/**
+ * Utility class to support jni-mangling operations.
+ */
 public class JNIMangler {
+
+    private JNIMangler() {}
 
     /**
      * Returns the JNI-mangled method name for a given Java Method.

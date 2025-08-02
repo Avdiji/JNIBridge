@@ -1,6 +1,7 @@
 package com.jnibridge.generator.compose;
 
 import com.jnibridge.annotations.modifiers.Const;
+import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.generator.model.TypeInfo;
 import lombok.Getter;
 import lombok.NonNull;
@@ -12,13 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Base class for composing string representations of a {@link TypeInfo}.
- *
- * <p>
- * Implementations of this class are responsible for transforming
- * the metadata contained in a {@link TypeInfo} instance into a
- * specific output format, such as JNI declarations, JSON metadata, ...
- * </p>
+ * Composes string representations of {@link TypeInfo} objects.
  */
 @Getter
 @RequiredArgsConstructor

@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
  *
  * <strong>Example usage:</strong>
  * <pre>{@code
- * @Typemapping(
+ * @Mapping(
  *     cType = "int",
  *     jniType = "jint",
  *     inPath = "/templates/integer_in.cpp",

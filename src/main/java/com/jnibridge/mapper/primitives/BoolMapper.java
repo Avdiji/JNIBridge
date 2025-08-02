@@ -3,6 +3,9 @@ package com.jnibridge.mapper.primitives;
 import com.jnibridge.annotations.typemapping.Mapping;
 import com.jnibridge.mapper.TypeMapper;
 
+/**
+ * Mapper for simple booleans.
+ */
 @Mapping(
         cType = "bool",
         jniType = "jboolean",

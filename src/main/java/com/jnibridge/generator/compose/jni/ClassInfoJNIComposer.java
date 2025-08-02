@@ -6,8 +6,16 @@ import com.jnibridge.utils.ResourceUtils;
 import com.jnibridge.utils.TemplateUtils;
 import lombok.NonNull;
 
+/**
+ * Composes JNI-specific string representations of {@link ClassInfo} objects.
+ */
 public class ClassInfoJNIComposer extends ClassInfoComposer {
 
+    /**
+     * Creates a new JNI type composer for the given {@link ClassInfo}.
+     *
+     * @param classInfo the method information to compose.
+     */
     public ClassInfoJNIComposer(@NonNull ClassInfo classInfo) {
         super(classInfo);
     }

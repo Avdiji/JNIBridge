@@ -2,21 +2,21 @@ package com.jnibridge.generator.compose;
 
 import com.jnibridge.generator.compose.jni.MethodInfoJNIComposer;
 import com.jnibridge.generator.model.ClassInfo;
-import com.jnibridge.generator.model.MethodInfo;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Composes string representations of {@link ClassInfo} objects.
+ */
 @Getter
 @RequiredArgsConstructor
 public abstract class ClassInfoComposer implements Composer {
-
 
     public static final String PLACEHOLDER_METHODS = "mappedMethods";
     public static final String PLACEHOLDER_MANGLED_CLASSPATH = "mangledClasspath";
