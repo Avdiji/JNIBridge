@@ -1,7 +1,6 @@
 package com.jnibridge.mapper;
 
-import com.jnibridge.mapper.primitives.IntMapper;
-import com.jnibridge.mapper.primitives.VoidMapper;
+import com.jnibridge.mapper.primitives.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,8 +27,16 @@ public class GlobalMapperRegistry {
     // registry with default mappings...
     private static final Map<Class<?>, Class<? extends TypeMapper>> registry = new HashMap<>();
     static {
+
         registry.put(int.class, IntMapper.class);
         registry.put(void.class, VoidMapper.class);
+        registry.put(boolean.class, BoolMapper.class);
+        registry.put(char.class, CharMapper.class);
+        registry.put(double.class, DoubleMapper.class);
+        registry.put(float.class, DoubleMapper.class);
+        registry.put(short.class, ShortMapper.class);
+        registry.put(String.class, StringMapper.class);
+
     }
     // @formatter:on
 

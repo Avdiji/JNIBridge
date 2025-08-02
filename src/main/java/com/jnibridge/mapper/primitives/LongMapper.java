@@ -3,13 +3,11 @@ package com.jnibridge.mapper.primitives;
 import com.jnibridge.annotations.typemapping.Mapping;
 import com.jnibridge.mapper.TypeMapper;
 
-/**
- * Mapper for simple integers.
- */
 @Mapping(
-        cType = "int",
-        jniType = "jint",
+        cType = "long",
+        jniType = "jlong",
         inPath = "com/jnibridge/mappings/primitives/PrimitiveMapper.in.mapping",
         outPath = "com/jnibridge/mappings/primitives/PrimitiveMapper.out.mapping"
 )
-public class IntMapper implements TypeMapper {}
+public class LongMapper implements TypeMapper {
+}

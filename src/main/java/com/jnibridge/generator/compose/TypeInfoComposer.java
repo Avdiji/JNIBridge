@@ -30,16 +30,11 @@ public abstract class TypeInfoComposer implements Composer{
 
     public static final String PLACEHOLDER_JNI_TYPE = "jniType";
     public static final String PLACEHOLDER_JNI_VAR = "jniVar";
+    public static final String PLACEHOLDER_ID = "id";
 
     @NonNull
     private final TypeInfo typeInfo;
 
-    /**
-     * Returns a map of placeholder-to-value pairs used to replace
-     * the placeholders defined in the type-mapping templates.
-     *
-     * @return a map of template placeholders to their resolved replacement values
-     */
     @NotNull
     public Map<String, String> getReplacements() {
         Map<String, String> replacements = new HashMap<>();
@@ -51,6 +46,8 @@ public abstract class TypeInfoComposer implements Composer{
         replacements.put(PLACEHOLDER_JNI_TYPE, typeInfo.getJniType());
 
         String id = Optional.ofNullable(typeInfo.getId()).orElse("");
+        replacements.put(PLACEHOLDER_ID, id);
+
         replacements.put(PLACEHOLDER_C_VAR, PLACEHOLDER_C_VAR + id);
         replacements.put(PLACEHOLDER_JNI_VAR, PLACEHOLDER_JNI_VAR + id);
 

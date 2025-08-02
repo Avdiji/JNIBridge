@@ -26,7 +26,7 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
         boolean isStatic = getMethodInfo().isStatic();
 
         // TODO handle non static methods...
-        String result = isStatic ? ResourceUtils.load("com/jnibridge/templates/classes/static_method.template") : "";
+        String result = isStatic ? ResourceUtils.load("com/jnibridge/templates/methods/static_method.template") : "";
         return TemplateUtils.substitute(result, getReplacements());
     }
 }

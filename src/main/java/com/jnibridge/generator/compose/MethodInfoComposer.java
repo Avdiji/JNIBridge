@@ -38,16 +38,9 @@ public abstract class MethodInfoComposer implements Composer {
     public static final String PLACEHOLDER_PARAMS_IN_MAPPING = "paramInMapping";
     public static final String PLACEHOLDER_RESULT_OUT_MAPPING = "resultOutMapping";
 
-
     @NonNull
     private final MethodInfo methodInfo;
 
-    /**
-     * Returns a map of placeholder-to-value pairs used to replace
-     * the placeholders defined in the type-mapping templates.
-     *
-     * @return a map of template placeholders to their resolved replacement values
-     */
     @NotNull
     public Map<String, String> getReplacements() {
         Map<String, String> replacements = new HashMap<>();
@@ -100,7 +93,7 @@ public abstract class MethodInfoComposer implements Composer {
 
         return params.stream()
                 .map(param -> new TypeInfoJNIComposer(param).compose())
-                .collect(Collectors.joining("\t"));
+                .collect(Collectors.joining());
     }
 
 }

@@ -1,5 +1,0 @@
-JNIEXPORT ${jniType} JNICALL ${mangledClasspath}_${mangledFuncName}(JNIEnv* env, jclass clazz${jniParams}) {
-
-    ${paramInMapping}
-    ${resultOutMapping}
-}
