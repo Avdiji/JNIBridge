@@ -46,7 +46,7 @@ public abstract class MethodInfoComposer implements Composer {
 
         replacements.put(PLACEHOLDER_JNI_PARAMS, getJNIFunctionParams());
 
-        replacements.put(PLACEHOLDER_FUNCTION_CALL, String.format("%s(%s)", methodInfo.getNativeName(), getNativeFunctionCallArgs()));
+        replacements.put(PLACEHOLDER_FUNCTION_CALL, String.format("%s::%s(%s)", methodInfo.getNamespace(), methodInfo.getNativeName(), getNativeFunctionCallArgs()));
 
         return replacements;
     }
