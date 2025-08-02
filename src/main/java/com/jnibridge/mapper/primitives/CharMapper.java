@@ -4,12 +4,13 @@ import com.jnibridge.annotations.typemapping.Mapping;
 import com.jnibridge.mapper.TypeMapper;
 
 /**
- * Mapper for simple integers.
+ * Mapper for simple chars.
  */
 @Mapping(
-        cType = "int",
-        jniType = "jint",
+        cType = "char",
+        jniType = "jchar",
         inPath = "com/jnibridge/mappings/primitives/PrimitiveMapper.in.mapping",
         outPath = "com/jnibridge/mappings/primitives/PrimitiveMapper.out.mapping"
 )
-public class IntMapper implements TypeMapper {}
+public class CharMapper implements TypeMapper {
+}

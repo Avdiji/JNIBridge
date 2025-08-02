@@ -13,10 +13,11 @@ dependencies {
 
     implementation("org.apache.commons:commons-text:1.14.0")
 
-    implementation("org.reflections:reflections:0.9.12")
-    implementation("org.javassist:javassist:3.29.2-GA")
+    implementation("io.github.classgraph:classgraph:4.8.181")
+    implementation("org.ow2.asm:asm:9.5")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    implementation("org.projectlombok:lombok:1.18.38")
+    annotationProcessor("org.projectlombok:lombok:1.18.38")
 }
 
 java {
