@@ -1,0 +1,36 @@
+cmake_minimum_required(VERSION 3.24)
+
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
+project(
+    JNIBridgeExamples
+    VERSION 1.0.0
+    LANGUAGES C CXX
+)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+find_package(JNI REQUIRED)
+
+# NATIVE-SOURCES
+file(
+    GLOB_RECURSE SOURCES
+    LIST_DIRECTORIES FALSE
+    CONFIGURE_DEPENDS ${CMAKE_CURRENT_LIST_DIR}/build/jni/*.jni.cpp
+)
+
+
+# JNI-SOURCES
+#file(
+#    GLOB_RECURSE SOURCES
+#    LIST_DIRECTORIES FALSE
+#    CONFIGURE_DEPENDS ${CMAKE_CURRENT_LIST_DIR}/build/classes/*.jni.cpp
+#)
+
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
+target_link_libraries(
+    ${PROJECT_NAME}
+    JNI::JNI
+)

@@ -54,7 +54,7 @@ public class JNIBridge {
 
         // create jni header files...
         for (Map.Entry<Class<?>, String> classMapping : classMappings.entrySet()) {
-            final String filename = String.format("%s/%s.jni.h", outPath, classMapping.getKey().getSimpleName());
+            final String filename = String.format("%s/%s.jni.cpp", outPath, classMapping.getKey().getSimpleName());
 
             try (FileWriter writer = new FileWriter(filename)) {
                 writer.write(classMapping.getValue());
