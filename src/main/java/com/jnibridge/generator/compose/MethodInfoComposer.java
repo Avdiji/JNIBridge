@@ -27,7 +27,6 @@ public abstract class MethodInfoComposer implements Composer {
     public static final String PLACEHOLDER_JNI_PARAMS = "jniParams";
     public static final String PLACEHOLDER_FUNCTION_CALL = "functionCall";
 
-    public static final String PLACEHOLDER_CALLING_OBJ_IN_MAPPING = "callingObjInMapping";
     public static final String PLACEHOLDER_PARAMS_IN_MAPPING = "paramInMapping";
     public static final String PLACEHOLDER_RESULT_OUT_MAPPING = "resultOutMapping";
 

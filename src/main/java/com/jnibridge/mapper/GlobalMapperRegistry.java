@@ -33,8 +33,9 @@ public class GlobalMapperRegistry {
         registry.put(boolean.class, BoolMapper.class);
         registry.put(char.class, CharMapper.class);
         registry.put(double.class, DoubleMapper.class);
-        registry.put(float.class, DoubleMapper.class);
+        registry.put(float.class, FloatMapper.class);
         registry.put(short.class, ShortMapper.class);
+        registry.put(long.class, LongMapper.class);
         registry.put(String.class, StringMapper.class);
 
     }

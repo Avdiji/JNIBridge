@@ -1,7 +1,6 @@
 package com.jnibridge.generator.compose;
 
 import com.jnibridge.annotations.modifiers.Const;
-import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.generator.model.TypeInfo;
 import lombok.Getter;
 import lombok.NonNull;
