@@ -50,11 +50,14 @@ public class ClassScanner {
                 if (clazz.isAnnotationPresent(BridgeClass.class)) {
 
                     // map only classes that extend IPointer, or classes which contain only static functions
+
                     boolean isIPointer = IPointer.class.isAssignableFrom(clazz);
                     boolean isUtilityClass = Arrays.stream(clazz.getDeclaredMethods()).allMatch(m -> Modifier.isStatic(m.getModifiers()) || m.isSynthetic());
 
+
+
                     // implements IPointer = instance class
-                    if (isIPointer || isUtilityClass) {
+                    if (isIPointer || (isUtilityClass && Arrays.stream(clazz.getDeclaredMethods()).anyMatch(method -> Modifier.isNative(method.getModifiers())))) {
                         classesToMap.add(clazz);
                     }
                 }

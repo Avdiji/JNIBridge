@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class ClassInfoComposer implements Composer {
 
+    public static final String PLACEHOLDER_INCLUDES = "nativeIncludes";
     public static final String PLACEHOLDER_METHODS = "mappedMethods";
     public static final String PLACEHOLDER_MANGLED_CLASSPATH = "mangledClasspath";
 
@@ -27,6 +29,9 @@ public abstract class ClassInfoComposer implements Composer {
     @Override
     public @NotNull Map<String, String> getReplacements() {
         Map<String, String> replacements = new HashMap<>();
+
+
+        replacements.put(PLACEHOLDER_INCLUDES, getNativeIncludes());
 
         replacements.put(PLACEHOLDER_METHODS,
                 classInfo.getMethodsToMap()
@@ -38,5 +43,15 @@ public abstract class ClassInfoComposer implements Composer {
         replacements.put(PLACEHOLDER_MANGLED_CLASSPATH, "Java_" + mangledClassPath);
 
         return replacements;
+    }
+
+    /**
+     * @return Get all the native includes of the classInfo, ready to substitute the corresponding placeholder.
+     */
+    private String getNativeIncludes() {
+        Set<String> includes = classInfo.getMetadata().getIncludes();
+        return includes.stream()
+                .map(include -> "#include " + (!include.startsWith("<") ? "\"" + include + "\"" : include))
+                .collect(Collectors.joining("\n"));
     }
 }

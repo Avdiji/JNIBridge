@@ -2,6 +2,8 @@
 
 #include <jni.h>
 
+${nativeIncludes}
+
 extern "C" {
 
 ${mappedMethods}

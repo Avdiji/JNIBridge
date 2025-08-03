@@ -34,6 +34,7 @@ public class JNIBridge {
      * @param classes fully qualified names of the classes/packages to generate JNI headers for.
      * @throws RuntimeException if a header file cannot be created or written.
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void generateJNIInterface(@NotNull final Path outPath, @NotNull final String... classes) {
 
         // extract all classes to map
@@ -49,7 +50,6 @@ public class JNIBridge {
                         }
                 ));
 
-        //noinspection ResultOfMethodCallIgnored
         outPath.toFile().mkdir();
 
         // create jni header files...
