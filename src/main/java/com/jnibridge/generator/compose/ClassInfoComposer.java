@@ -34,10 +34,8 @@ public abstract class ClassInfoComposer implements Composer {
     public @NotNull Map<String, String> getReplacements() {
         Map<String, String> replacements = new HashMap<>();
 
-
         replacements.put(PLACEHOLDER_CUSTOM_JNI_CODE, getCustomJNICode());
         replacements.put(PLACEHOLDER_INCLUDES, getNativeIncludes());
-
 
         replacements.put(PLACEHOLDER_METHODS,
                 classInfo.getMethodsToMap()

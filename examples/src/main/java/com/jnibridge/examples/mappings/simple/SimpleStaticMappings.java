@@ -37,6 +37,7 @@ public class SimpleStaticMappings {
     @UseMapping(StringViewMapper.class)
     public static native String getStringView(final String value);
 
+    // Inner class to be mapped
     @BridgeClass(namespace = "jnibridge::examples", metadata = @BridgeMetadata(inheritFrom = SimpleStaticMappings.class))
     public static class InnerClass {
 
