@@ -1,6 +1,7 @@
 package com.jnibridge.generator.model;
 
 import com.jnibridge.annotations.BridgeClass;
+import com.jnibridge.annotations.BridgeMetadata;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -36,7 +37,7 @@ public class ClassInfo {
 
 
     /**
-     * Represents a model of the {@link com.jnibridge.annotations.InheritableMetadata} annotation, used in JNI-compatible code generation.
+     * Represents a model of the {@link BridgeMetadata} annotation, used in JNI-compatible code generation.
      */
     @Getter
     @RequiredArgsConstructor

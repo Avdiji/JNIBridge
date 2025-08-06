@@ -1,0 +1,109 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base",
+      "description": "Base settings for all builds",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "build/${presetName}",
+      "installDir": "install/${presetName}",
+      "cacheVariables": {
+        "CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG": "${sourceDir}/build/jni",
+        "CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE": "${sourceDir}/build/jni"
+      }
+    },
+    {
+      "name": "windows-x64",
+      "description": "Windows x64 build configuration",
+      "hidden": true,
+      "displayName": "windows-x64",
+      "inherits": "base",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64"
+    },
+    {
+      "name": "linux",
+      "description": "Linux build configuration",
+      "hidden": true,
+      "displayName": "linux",
+      "inherits": "base",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "generator": "Ninja"
+    },
+    {
+      "name": "release",
+      "description": "Release build configuration",
+      "hidden": true,
+      "displayName": "Release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "debug",
+      "description": "Debug build configuration",
+      "hidden": true,
+      "displayName": "Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "windows-x64-debug",
+      "description": "Windows Debug configuration",
+      "displayName": "Windows-Debug",
+      "inherits": [
+        "windows-x64",
+        "debug"
+      ],
+      "environment": {
+        "ENVIRONMENT": "Windows Debug"
+      }
+    },
+    {
+      "name": "windows-x64-release",
+      "description": "Windows Release configuration",
+      "displayName": "Windows-Release",
+      "inherits": [
+        "windows-x64",
+        "release"
+      ],
+      "environment": {
+        "ENVIRONMENT": "Windows Release"
+      }
+    },
+    {
+      "name": "linux-debug",
+      "description": "Linux Debug configuration",
+      "displayName": "Linux-Debug",
+      "inherits": [
+        "linux",
+        "debug"
+      ]
+    },
+    {
+      "name": "linux-release",
+      "description": "Linux Release configuration",
+      "displayName": "Linux-Release",
+      "inherits": [
+        "linux",
+        "release"
+      ]
+    }
+  ]
+}

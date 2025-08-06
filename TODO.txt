@@ -1,45 +1,7 @@
 TODOS in no particular order (although there should be some order)
 
-1. Allow customMappings (in and out)
 2. Allow CustomMappingRegistries
-3. Allow Param/Function level customMappings
-
 4. native java-C++ type registry to support inheritance without complicated casting logic
-5. handle static functions...
 6. ExceptionHandling...
-
-7. Implement the generator models:
-
-public class ClassMappingInfo {
-    private final String className;
-    private final String namespace;
-    private final String alias;
-    private final List<String> includes;
-    private final List<String> baseClasses;
-    private final List<NativeMethodInfo> nativeMethods;
-
-    // constructor, getters, etc.
-}
-
-public class NativeMethodInfo {
-    private final String methodName;
-    private final String mangledName;
-    private final TypeMappingInfo returnTypeMapping;
-    private final List<TypeMappingInfo> paramMappings;
-    private final int modifiers;
-
-    // constructor, getters, etc.
-}
-
-public class TypeMappingInfo {
-    private final Class<?> javaType;
-    private final String cType;
-    private final String jniType;
-    private final String inTemplatePath;
-    private final String outTemplatePath;
-
-    // constructor, getters, etc.
-}
-
 8. create annotations @NativeConstruct @NativeDestruct...
 9. consider mapping enums and structs...

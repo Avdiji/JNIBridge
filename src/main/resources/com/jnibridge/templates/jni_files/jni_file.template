@@ -2,8 +2,9 @@
 
 #include <jni.h>
 
+${nativeIncludes}
+
 extern "C" {
-
+${customJNICode}
 ${mappedMethods}
-
 }

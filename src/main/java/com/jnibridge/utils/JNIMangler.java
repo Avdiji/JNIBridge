@@ -10,10 +10,11 @@ import java.lang.reflect.Method;
  */
 public class JNIMangler {
 
-    private JNIMangler() {}
+    private JNIMangler() { }
 
     /**
-     * Returns the JNI-mangled method name for a given Java Method.
+     * @param method The method to get the mangled version of.
+     * @return The JNI-mangled method name for a given Java Method.
      */
     public static String getMangledMethodDescriptor(@NotNull final Method method) {
 
@@ -35,5 +36,20 @@ public class JNIMangler {
         return methodDescriptor.isEmpty() ?
                 mangledMethodName :
                 mangledMethodName + "__" + methodDescriptor;
+    }
+
+    /**
+     * @param clazz The class to get the mangled version of.
+     * @return A mangled String representation of the path of the class.
+     */
+    public static String getMangledClassDescriptor(@NotNull final Class<?> clazz) {
+        String classDescriptor = "Java_" + clazz.getName();
+
+        classDescriptor = classDescriptor
+                // mangling as described in https://docs.oracle.com/en/java/javase/17/docs/specs/jni/design.html?
+                .replace(".", "_")
+                .replace("$", "_00024");
+
+        return classDescriptor;
     }
 }

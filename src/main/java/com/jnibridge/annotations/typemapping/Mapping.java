@@ -26,8 +26,8 @@ import java.lang.annotation.Target;
  * @Mapping(
  *     cType = "int",
  *     jniType = "jint",
- *     inPath = "/templates/integer_in.cpp",
- *     outPath = "/templates/integer_out.cpp"
+ *     inPath = "/templates/integer_in.mapping",
+ *     outPath = "/templates/integer_out.mapping"
  * )
  * public class IntMapper implements TypeMapper { }
  * }</pre>

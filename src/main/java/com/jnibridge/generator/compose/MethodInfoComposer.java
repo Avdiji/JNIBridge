@@ -27,7 +27,6 @@ public abstract class MethodInfoComposer implements Composer {
     public static final String PLACEHOLDER_JNI_PARAMS = "jniParams";
     public static final String PLACEHOLDER_FUNCTION_CALL = "functionCall";
 
-    public static final String PLACEHOLDER_CALLING_OBJ_IN_MAPPING = "callingObjInMapping";
     public static final String PLACEHOLDER_PARAMS_IN_MAPPING = "paramInMapping";
     public static final String PLACEHOLDER_RESULT_OUT_MAPPING = "resultOutMapping";
 
@@ -46,7 +45,7 @@ public abstract class MethodInfoComposer implements Composer {
 
         replacements.put(PLACEHOLDER_JNI_PARAMS, getJNIFunctionParams());
 
-        replacements.put(PLACEHOLDER_FUNCTION_CALL, String.format("%s::%s(%s)", methodInfo.getNamespace(), methodInfo.getNativeName(), getNativeFunctionCallArgs()));
+        replacements.put(PLACEHOLDER_FUNCTION_CALL, getNativeFunctionCall());
 
         return replacements;
     }
@@ -71,21 +70,24 @@ public abstract class MethodInfoComposer implements Composer {
     }
 
     /**
-     * Generates the list of native arguments for the function call, mapping JNI variables to their corresponding C variables
+     * Generates the native function-call.
      *
-     * @return a string containing the argument list for the native function call
+     * @return a string which represents the native function call.
      */
-    private String getNativeFunctionCallArgs() {
-        List<TypeInfo> params = methodInfo.getParams();
-        if (params.isEmpty()) { return ""; }
+    private String getNativeFunctionCall() {
+        final String prefix = methodInfo.getNamespace().isEmpty() ? "" : methodInfo.getNamespace() + "::";
 
-        return params.stream().map(typeInfo -> {
+        List<TypeInfo> params = methodInfo.getParams();
+
+        final String functionParams = params.stream().map(typeInfo -> {
 
             String id = Objects.requireNonNull(typeInfo.getId(), "TypeInfo's that act as parameter types must have a id!");
             return String.format("%s%s", TypeInfoComposer.PLACEHOLDER_C_VAR, id);
 
         }).collect(Collectors.joining(", "));
 
+
+        return String.format("%s%s(%s)", prefix, methodInfo.getNativeName(), functionParams);
     }
 
     /**

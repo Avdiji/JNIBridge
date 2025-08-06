@@ -17,9 +17,9 @@ public @interface BridgeClass {
     /**
      * Metadata for the class mapping.
      *
-     * @return An instance of {@link InheritableMetadata} containing metadata for the class.
+     * @return An instance of {@link BridgeMetadata} containing metadata for the class.
      */
-    InheritableMetadata metadata();
+    BridgeMetadata metadata();
 
     /**
      * Native namespace for the mapped class (e.g., "core::math").
