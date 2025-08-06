@@ -7,10 +7,7 @@ import com.jnibridge.annotations.typemapping.UseMapping;
 import com.jnibridge.examples.mappings.ConfigMetadata;
 import com.jnibridge.mapper.standard.StringViewMapper;
 
-@BridgeClass(
-        namespace = "jnibridge::examples",
-        metadata = @BridgeMetadata(inheritFrom = ConfigMetadata.class)
-)
+@BridgeClass(namespace = "jnibridge::examples", metadata = @BridgeMetadata(inheritFrom = ConfigMetadata.class))
 public class SimpleStaticMappings {
 
     @Name("voidFunction")
@@ -40,4 +37,9 @@ public class SimpleStaticMappings {
     @UseMapping(StringViewMapper.class)
     public static native String getStringView(final String value);
 
+    @BridgeClass(namespace = "jnibridge::examples", metadata = @BridgeMetadata(inheritFrom = SimpleStaticMappings.class))
+    public static class InnerClass {
+
+        public static native String getFunnyString(final String value);
+    }
 }

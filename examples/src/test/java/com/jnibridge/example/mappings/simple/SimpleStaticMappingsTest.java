@@ -51,4 +51,11 @@ public class SimpleStaticMappingsTest {
         assertEquals(testString, SimpleStaticMappings.getStringView(testString));
     }
 
+    @Test
+    public void testInnerClassStringFunction() {
+        final String testString = "Message";
+        String funnyString = SimpleStaticMappings.InnerClass.getFunnyString(testString);
+        assertEquals("Funny " + testString, funnyString);
+    }
+
 }

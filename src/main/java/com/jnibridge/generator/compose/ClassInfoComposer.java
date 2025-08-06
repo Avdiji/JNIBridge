@@ -2,6 +2,7 @@ package com.jnibridge.generator.compose;
 
 import com.jnibridge.generator.compose.jni.MethodInfoJNIComposer;
 import com.jnibridge.generator.model.ClassInfo;
+import com.jnibridge.utils.JNIMangler;
 import com.jnibridge.utils.ResourceUtils;
 import lombok.Getter;
 import lombok.NonNull;
@@ -44,8 +45,8 @@ public abstract class ClassInfoComposer implements Composer {
                         .map(methodInfo -> new MethodInfoJNIComposer(methodInfo).compose())
                         .collect(Collectors.joining("\n")));
 
-        final String mangledClassPath = classInfo.getClazz().getName().replace(".", "_");
-        replacements.put(PLACEHOLDER_MANGLED_CLASSPATH, "Java_" + mangledClassPath);
+        final String mangledClassPath = JNIMangler.getMangledClassDescriptor(classInfo.getClazz());
+        replacements.put(PLACEHOLDER_MANGLED_CLASSPATH, mangledClassPath);
 
         return replacements;
     }
