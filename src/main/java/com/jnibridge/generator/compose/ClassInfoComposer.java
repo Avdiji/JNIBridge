@@ -37,16 +37,21 @@ public abstract class ClassInfoComposer implements Composer {
         replacements.put(PLACEHOLDER_CUSTOM_JNI_CODE, getCustomJNICode());
         replacements.put(PLACEHOLDER_INCLUDES, getNativeIncludes());
 
-        replacements.put(PLACEHOLDER_METHODS,
-                classInfo.getMethodsToMap()
-                        .stream()
-                        .map(methodInfo -> new MethodInfoJNIComposer(methodInfo).compose())
-                        .collect(Collectors.joining("\n")));
+        replacements.put(PLACEHOLDER_METHODS, getMappedMethods());
 
-        final String mangledClassPath = JNIMangler.getMangledClassDescriptor(classInfo.getClazz());
-        replacements.put(PLACEHOLDER_MANGLED_CLASSPATH, mangledClassPath);
+        replacements.put(PLACEHOLDER_MANGLED_CLASSPATH, JNIMangler.getMangledClassDescriptor(classInfo.getClazz()));
 
         return replacements;
+    }
+
+    /**
+     * @return A String concatenation of all the methods to be mapped as JNI-code.
+     */
+    private String getMappedMethods() {
+        return classInfo.getMethodsToMap()
+                .stream()
+                .map(methodInfo -> new MethodInfoJNIComposer(methodInfo).compose())
+                .collect(Collectors.joining("\n"));
     }
 
     /**

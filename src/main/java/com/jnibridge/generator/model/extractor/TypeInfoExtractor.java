@@ -75,8 +75,8 @@ public class TypeInfoExtractor {
                 .filter(annotation -> annotation instanceof UseMapping)
                 .map(annotation -> ((UseMapping) annotation).value())
                 .map(mapper -> validateMapper(mapper, type.getSimpleName()))
-
-                .findFirst().orElse(validateMapper(GlobalMapperRegistry.getMapperFor(type), type.getSimpleName()));
+                .findFirst()
+                .orElse(validateMapper(GlobalMapperRegistry.getMapperFor(type), type.getSimpleName()));
 
         // create a new TypeInfo
         return TypeInfo.builder()
@@ -102,7 +102,7 @@ public class TypeInfoExtractor {
     @NotNull
     private static Mapping validateMapper(@Nullable final Class<? extends TypeMapper> mapper, @NotNull final String typename) {
         if (mapper == null) {
-            throw new IllegalArgumentException(String.format("Mapper for type '%s' has not been registered!", typename));
+            throw new IllegalArgumentException(String.format("Mapper for type '%s' has not been registered properly.", typename));
         }
 
         Mapping mapping = mapper.getAnnotation(Mapping.class);
