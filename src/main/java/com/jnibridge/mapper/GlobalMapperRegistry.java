@@ -1,6 +1,7 @@
 package com.jnibridge.mapper;
 
 import com.jnibridge.mapper.primitives.*;
+import com.jnibridge.mapper.standard.StringMapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

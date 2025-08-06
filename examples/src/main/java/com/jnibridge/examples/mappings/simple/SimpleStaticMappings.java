@@ -3,7 +3,9 @@ package com.jnibridge.examples.mappings.simple;
 import com.jnibridge.annotations.BridgeClass;
 import com.jnibridge.annotations.BridgeMetadata;
 import com.jnibridge.annotations.Name;
+import com.jnibridge.annotations.typemapping.UseMapping;
 import com.jnibridge.examples.mappings.ConfigMetadata;
+import com.jnibridge.mapper.standard.StringViewMapper;
 
 @BridgeClass(
         namespace = "jnibridge::examples",
@@ -34,5 +36,8 @@ public class SimpleStaticMappings {
     public static native char getNextChar(final char value);
 
     public static native String getFunnyString(final String value);
+
+    @UseMapping(StringViewMapper.class)
+    public static native String getStringView(final String value);
 
 }

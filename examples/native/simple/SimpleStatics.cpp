@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <string_view>
 
 namespace jnibridge::examples {
 
@@ -19,4 +20,8 @@ namespace jnibridge::examples {
     char getNextChar(const char& value) { return value + 1; }
 
     std::string getFunnyString(const std::string& value) { return "Funny " + value; }
+
+    std::string_view getStringView(const std::string_view value) {
+        return value;
+    }
 }

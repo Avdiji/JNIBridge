@@ -13,7 +13,6 @@ public class SimpleStaticMappingsTest {
         System.load(dllPath);
     }
 
-
     @Test
     public void testNativeVoidFunction() {
         assertDoesNotThrow(SimpleStaticMappings::nativeVoidFunction);
@@ -44,6 +43,12 @@ public class SimpleStaticMappingsTest {
     public void testNativeStringFunction() {
         final String testString = "Message";
         assertEquals("Funny " + testString, SimpleStaticMappings.getFunnyString(testString));
+    }
+
+    @Test
+    public void testNativeStringViewFunction() {
+        final String testString = "Message";
+        assertEquals(testString, SimpleStaticMappings.getStringView(testString));
     }
 
 }
