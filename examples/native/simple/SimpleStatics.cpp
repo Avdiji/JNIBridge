@@ -9,8 +9,9 @@ namespace jnibridge::examples {
 
     int incrementInt(const int& value) { return value + 1; }
     short incrementShort(const short& value) { return value + 1; }
-    float incrementFloat(const float& value) { return value + 1.0f; }
     long incrementLong(const long& value) { return value + 1; }
+
+    float incrementFloat(const float& value) { return value + 1.0f; }
     double incrementDouble(const double& value) { return value + 1.0; }
 
     bool isTrue(bool value) { return value; }

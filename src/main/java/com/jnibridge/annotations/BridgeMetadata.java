@@ -10,7 +10,7 @@ import java.lang.annotation.RetentionPolicy;
  * It allows specification of native includes, JNI source paths, and metadata inheritance.
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface InheritableMetadata {
+public @interface BridgeMetadata {
 
     /**
      * Other classes from which to inherit metadata.

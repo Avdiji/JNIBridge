@@ -21,14 +21,6 @@ file(
     CONFIGURE_DEPENDS ${CMAKE_CURRENT_LIST_DIR}/build/jni/*.jni.cpp
 )
 
-
-# JNI-SOURCES
-#file(
-#    GLOB_RECURSE SOURCES
-#    LIST_DIRECTORIES FALSE
-#    CONFIGURE_DEPENDS ${CMAKE_CURRENT_LIST_DIR}/build/classes/*.jni.cpp
-#)
-
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 target_link_libraries(
     ${PROJECT_NAME}

@@ -5,7 +5,6 @@
 ${nativeIncludes}
 
 extern "C" {
-
+${customJNICode}
 ${mappedMethods}
-
 }

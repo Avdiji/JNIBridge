@@ -1,7 +1,7 @@
 package com.jnibridge.generator.model.extractor;
 
 import com.jnibridge.annotations.BridgeClass;
-import com.jnibridge.annotations.InheritableMetadata;
+import com.jnibridge.annotations.BridgeMetadata;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.generator.scanner.MethodScanner;
@@ -69,7 +69,7 @@ public class ClassInfoExtractor {
     @NotNull
     private static ClassInfo.InheritableMetadataInfo extractInheritableMetadataInfo(@NotNull final Class<?> clazz) {
         final BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
-        InheritableMetadata metadata = annotation.metadata();
+        BridgeMetadata metadata = annotation.metadata();
 
         Set<String> includes = Arrays.stream(metadata.includes()).collect(Collectors.toSet());
         Set<String> customJNICodePaths = Arrays.stream(metadata.customJNICodePaths()).collect(Collectors.toSet());
@@ -88,7 +88,7 @@ public class ClassInfoExtractor {
 
     /**
      * Recursively accumulates metadata from a class annotated with {@link BridgeClass} and any of its ancestors
-     * declared via {@link InheritableMetadata#inheritFrom()}. Cycles in the inheritance tree are safely ignored.
+     * declared via {@link BridgeMetadata#inheritFrom()}. Cycles in the inheritance tree are safely ignored.
      *
      * @param inheritClass the class whose metadata should be processed
      * @param metadataInfo the mutable container to accumulate resolved metadata into
@@ -106,7 +106,7 @@ public class ClassInfoExtractor {
         }
 
         // add inherited metadata
-        InheritableMetadata metadata = inheritedAnnotation.metadata();
+        BridgeMetadata metadata = inheritedAnnotation.metadata();
         metadataInfo.getIncludes().addAll(Arrays.asList(metadata.includes()));
         metadataInfo.getCustomJNICodePaths().addAll(Arrays.asList(metadata.customJNICodePaths()));
 

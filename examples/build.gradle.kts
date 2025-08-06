@@ -1,3 +1,5 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
 plugins { java }
 repositories { mavenCentral() }
 
@@ -18,6 +20,8 @@ tasks.test {
 fun registerCMakeBuildTask(presetName: String) {
     tasks.register<Exec>("build-${presetName}") {
         group = "jniCMake"
+
+        dependsOn("generateJNICode")
 
         val buildDir = project.layout.buildDirectory.dir(presetName).get().asFile.absolutePath
 
@@ -42,13 +46,11 @@ presets.forEach { preset ->
 
 tasks.register<JavaExec>("generateJNICode") {
     group = "jni_generation"
-    description = "Generates JNI code"
 
     mainClass.set("com.jnibridge.examples.mappings.MapJNI")
 
     classpath = sourceSets.main.get().runtimeClasspath
     workingDir = project.file("${project.projectDir}")
 }
-
 
 

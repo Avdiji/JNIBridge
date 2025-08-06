@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -50,11 +51,27 @@ public class JNIBridge {
                         }
                 ));
 
-        outPath.toFile().mkdir();
+        createJNIFiles(outPath, classMappings);
 
-        // create jni header files...
+    }
+
+    /**
+     * Method creates actual .jni.cpp files for the corresponding java classes.
+     *
+     * @param outPath       The output path of the generated JNI-Files.
+     * @param classMappings The generated JNI-Content.
+     */
+    private static void createJNIFiles(@NotNull final Path outPath, @NotNull final Map<Class<?>, String> classMappings) {
         for (Map.Entry<Class<?>, String> classMapping : classMappings.entrySet()) {
-            final String filename = String.format("%s/%s.jni.cpp", outPath, classMapping.getKey().getSimpleName());
+
+            Class<?> clazz = classMapping.getKey();
+            Path classPackageAsPath = Paths.get(clazz.getPackage().getName().replace(".", "/"));
+            Path actualPath = outPath.resolve(classPackageAsPath);
+
+            //noinspection ResultOfMethodCallIgnored
+            actualPath.toFile().mkdirs();
+
+            final String filename = String.format("%s/%s.jni.cpp", actualPath, clazz.getSimpleName());
 
             try (FileWriter writer = new FileWriter(filename)) {
                 writer.write(classMapping.getValue());
@@ -62,6 +79,5 @@ public class JNIBridge {
                 throw new RuntimeException(String.format("Unable to create file: %s", filename), e);
             }
         }
-
     }
 }

@@ -1,14 +1,13 @@
 package com.jnibridge.examples.mappings.simple;
 
 import com.jnibridge.annotations.BridgeClass;
-import com.jnibridge.annotations.InheritableMetadata;
+import com.jnibridge.annotations.BridgeMetadata;
 import com.jnibridge.annotations.Name;
+import com.jnibridge.examples.mappings.ConfigMetadata;
 
 @BridgeClass(
         namespace = "jnibridge::examples",
-        metadata = @InheritableMetadata(
-                includes = "../../native/simple/SimpleStatics.cpp"
-        )
+        metadata = @BridgeMetadata(inheritFrom = ConfigMetadata.class)
 )
 public class SimpleStaticMappings {
 
@@ -29,6 +28,8 @@ public class SimpleStaticMappings {
 
     @Name("incrementDouble")
     public static native int nativeIncrementDouble(final double value);
+
+    public static native boolean isTrue(final boolean value);
 
     public static native char getNextChar(final char value);
 
