@@ -5,12 +5,14 @@ import com.jnibridge.annotations.typemapping.UseMapping;
 import com.jnibridge.generator.model.TypeInfo;
 import com.jnibridge.mapper.TypeMapper;
 import com.jnibridge.mapper.GlobalMapperRegistry;
+import com.jnibridge.nativeaccess.IPointer;
 import com.jnibridge.utils.ResourceUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,6 +61,24 @@ public class TypeInfoExtractor {
     }
 
     /**
+     * @param clazz The class to be mapped.
+     * @param cType The CType of the class to be mapped.
+     * @return The TypeInfo, which maps the calling type to C++.
+     */
+    protected static TypeInfo extractSelfType(@NotNull final Class<?> clazz, @NotNull final String cType) {
+        return TypeInfo.builder()
+                .type(clazz)
+                .id(null)
+                .annotations(new ArrayList<>())
+                .cType(cType)
+                .jniType("jobject")
+                .inMapping(ResourceUtils.load("com/jnibridge/mappings/bridged_classes/jnibridge.byPtr.in.mapping"))
+                .outMapping("")
+                .isSelf(true)
+                .build();
+    }
+
+    /**
      * Internal helper that builds a {@link TypeInfo} object from a given type and its annotations.
      *
      * @param type        the Java class to resolve
@@ -76,7 +96,16 @@ public class TypeInfoExtractor {
                 .map(annotation -> ((UseMapping) annotation).value())
                 .map(mapper -> validateMapper(mapper, type.getSimpleName()))
                 .findFirst()
-                .orElse(validateMapper(GlobalMapperRegistry.getMapperFor(type), type.getSimpleName()));
+                .orElse(null);
+
+        // extract the IPointer-Type
+        if (IPointer.class.isAssignableFrom(type)) {
+            return extractIPointerType(type, id, annotationList);
+
+            // use the mapping from the global registry
+        } else if (paramSpecificMapping == null) {
+            paramSpecificMapping = validateMapper(GlobalMapperRegistry.getMapperFor(type), type.getSimpleName());
+        }
 
         // create a new TypeInfo
         return TypeInfo.builder()
@@ -87,6 +116,30 @@ public class TypeInfoExtractor {
                 .jniType(paramSpecificMapping.jniType())
                 .inMapping(ResourceUtils.load(paramSpecificMapping.inPath()))
                 .outMapping(ResourceUtils.load(paramSpecificMapping.outPath()))
+                .isSelf(false)
+                .build();
+    }
+
+
+    private static TypeInfo extractIPointerType(@NotNull final Class<?> type, @Nullable final String id, final List<Annotation> annotations) {
+
+        //noinspection unchecked
+        final String cType = ClassInfoExtractor.extractClassCType((Class<? extends IPointer>) type);
+        final String jniType = "jobject";
+
+        // TODO might have to differentiate between ref/ptr/val
+        final String inMappingTemplate = ResourceUtils.load("com/jnibridge/mappings/bridged_classes/jnibridge.byPtr.in.mapping");
+        final String outMappingTemplate = ResourceUtils.load("com/jnibridge/mappings/bridged_classes/jnibridge.byPtr.out.mapping");
+
+        return TypeInfo.builder()
+                .type(type)
+                .id(id)
+                .annotations(annotations)
+                .cType(cType)
+                .jniType(jniType)
+                .inMapping(inMappingTemplate)
+                .outMapping(outMappingTemplate)
+                .isSelf(false)
                 .build();
     }
 

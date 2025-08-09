@@ -3,6 +3,7 @@ package com.jnibridge.generator.model;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -24,6 +25,7 @@ public class MethodInfo {
     private final String jName;
 
     // types used
+    @Nullable private final TypeInfo selfType;
     @NonNull private final TypeInfo returnType;
     @NonNull private final List<TypeInfo> params;
 

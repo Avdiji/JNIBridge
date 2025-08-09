@@ -23,9 +23,12 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
     @Override
     public @NotNull String compose() {
 
-        boolean isStatic = getMethodInfo().isStatic();
+        if (getMethodInfo().isStatic()) {
+            String staticMethodTemplate = ResourceUtils.load("com/jnibridge/templates/methods/static_method.template");
+            return TemplateUtils.substitute(staticMethodTemplate, getReplacements());
+        }
 
-        String result = isStatic ? ResourceUtils.load("com/jnibridge/templates/methods/static_method.template") : "";
-        return TemplateUtils.substitute(result, getReplacements());
+        String instanceMethodTemplate = ResourceUtils.load("com/jnibridge/templates/methods/instance_method.template");
+        return TemplateUtils.substitute(instanceMethodTemplate, getReplacements());
     }
 }

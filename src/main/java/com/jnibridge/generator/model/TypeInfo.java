@@ -21,11 +21,13 @@ public class TypeInfo {
 
     @Nullable private final String id;
 
-    @NonNull private String cType;
-    @NonNull private String jniType;
+    private final boolean isSelf;
 
-    @NonNull private String inMapping;
-    @NonNull private String outMapping;
+    @NonNull private final String cType;
+    @NonNull private final String jniType;
+
+    @NonNull private final String inMapping;
+    @NonNull private final String outMapping;
 
     // @formatter:on
 

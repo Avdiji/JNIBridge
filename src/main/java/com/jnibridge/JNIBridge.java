@@ -1,9 +1,11 @@
 package com.jnibridge;
 
+import com.jnibridge.generator.compose.ClassInfoComposer;
 import com.jnibridge.generator.compose.jni.ClassInfoJNIComposer;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.extractor.ClassInfoExtractor;
 import com.jnibridge.generator.scanner.ClassScanner;
+import com.jnibridge.utils.ResourceUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileWriter;
@@ -35,7 +37,6 @@ public class JNIBridge {
      * @param classes fully qualified names of the classes/packages to generate JNI headers for.
      * @throws RuntimeException if a header file cannot be created or written.
      */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void generateJNIInterface(@NotNull final Path outPath, @NotNull final String... classes) {
 
         // extract all classes to map
@@ -51,8 +52,8 @@ public class JNIBridge {
                         }
                 ));
 
+        createInternalFiles(outPath);
         createJNIFiles(outPath, classMappings);
-
     }
 
     /**
@@ -78,6 +79,23 @@ public class JNIBridge {
             } catch (IOException e) {
                 throw new RuntimeException(String.format("Unable to create file: %s", filename), e);
             }
+        }
+    }
+
+    /**
+     * Create the files, which the JNIBridge uses internally, to handle mapping logic.
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private static void createInternalFiles(@NotNull final Path outPath) {
+        outPath.toFile().mkdirs();
+
+        final String ptrWrapperFilename = String.format("%s/%s", outPath, ClassInfoComposer.WRAPPER_NAME);
+        String ptrWrapperContent = ResourceUtils.load("com/jnibridge/internals/JniBridgePtrWrapper.jni.cpp");
+
+        try(FileWriter ptrWrapperWriter = new FileWriter(ptrWrapperFilename)) {
+            ptrWrapperWriter.write(ptrWrapperContent);
+        } catch (IOException e) {
+            throw new RuntimeException(String.format("Unable to create file: %s", ptrWrapperFilename), e);
         }
     }
 }

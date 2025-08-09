@@ -21,6 +21,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class ClassInfoComposer implements Composer {
 
+    public static final String WRAPPER_NAME = "JniBridgePtrWrapper.jni.cpp";
+
+    public static final String PLACEHOLDER_INTERNAL_INCLUDE = "internal_include";
     public static final String PLACEHOLDER_INCLUDES = "nativeIncludes";
     public static final String PLACEHOLDER_CUSTOM_JNI_CODE = "customJNICode";
 
@@ -34,6 +37,7 @@ public abstract class ClassInfoComposer implements Composer {
     public @NotNull Map<String, String> getReplacements() {
         Map<String, String> replacements = new HashMap<>();
 
+        replacements.put(PLACEHOLDER_INTERNAL_INCLUDE, computeInternalInclude());
         replacements.put(PLACEHOLDER_CUSTOM_JNI_CODE, getCustomJNICode());
         replacements.put(PLACEHOLDER_INCLUDES, getNativeIncludes());
 
@@ -73,5 +77,22 @@ public abstract class ClassInfoComposer implements Composer {
         return customJNICodePaths.stream()
                 .map(ResourceUtils::load)
                 .collect(Collectors.joining("\n"));
+    }
+
+    /**
+     * @return the relative include path to the JNIBridge-Helper file.
+     */
+    private String computeInternalInclude() {
+        String packagePath = classInfo.getClazz().getPackage().getName();
+        long slashes = packagePath.chars().filter(ch -> ch == '.').count();
+
+        String result = "";
+
+        for(int i = 0; i < slashes + 1; ++i) {
+            result += "../";
+        }
+
+        result += WRAPPER_NAME;
+        return result;
     }
 }

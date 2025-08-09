@@ -22,15 +22,6 @@ public interface IPointer {
     long getNativeHandle();
 
     /**
-     * Sets the native memory address (handle) for this object.
-     * <p>
-     * This is called during native construction or when binding to an existing native instance.
-     *
-     * @param handle the new native pointer value to associate with this object
-     */
-    void setNativeHandle(final long handle);
-
-    /**
      * Invokes the native destructor for the mapped object.
      * <p>
      * This should release any native memory or resources held by the object.

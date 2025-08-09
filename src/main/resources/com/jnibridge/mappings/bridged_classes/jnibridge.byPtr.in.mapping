@@ -1,0 +1,1 @@
+        jnibridge::internal::JniBridgePtrWrapper<${cType}> *${cVar} = (jnibridge::internal::jobjectToWrapper<${cType}>(env, ${jniVar}));

@@ -1,0 +1,1 @@
+        ${cType} ${cVar} = *(jnibridge::internal::jobjectToWrapper<${cType}>(env, ${jniVar})->get());

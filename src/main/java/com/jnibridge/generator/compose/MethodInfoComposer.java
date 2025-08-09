@@ -9,10 +9,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -27,8 +24,10 @@ public abstract class MethodInfoComposer implements Composer {
     public static final String PLACEHOLDER_JNI_PARAMS = "jniParams";
     public static final String PLACEHOLDER_FUNCTION_CALL = "functionCall";
 
+    public static final String PLACEHOLDER_SELF_IN_MAPPING = "jselfInMapping";
     public static final String PLACEHOLDER_PARAMS_IN_MAPPING = "paramInMapping";
     public static final String PLACEHOLDER_RESULT_OUT_MAPPING = "resultOutMapping";
+
 
     @NonNull
     private final MethodInfo methodInfo;
@@ -36,6 +35,10 @@ public abstract class MethodInfoComposer implements Composer {
     @NotNull
     public Map<String, String> getReplacements() {
         Map<String, String> replacements = new HashMap<>();
+
+        Optional.ofNullable(methodInfo.getSelfType()).ifPresent(
+                selfType -> replacements.put(PLACEHOLDER_SELF_IN_MAPPING, new TypeInfoJNIComposer(selfType).compose())
+        );
 
         replacements.put(PLACEHOLDER_PARAMS_IN_MAPPING, getParamInputMappings());
         replacements.put(PLACEHOLDER_RESULT_OUT_MAPPING, new TypeInfoJNIComposer(methodInfo.getReturnType()).compose());
@@ -70,24 +73,32 @@ public abstract class MethodInfoComposer implements Composer {
     }
 
     /**
-     * Generates the native function-call.
-     *
-     * @return a string which represents the native function call.
+     * Builds the native function call expression.
+     * Example (instance):  cSelf->Namespace::foo(a, b)
+     * Example (static):    Namespace::foo(a, b)
      */
     private String getNativeFunctionCall() {
-        final String prefix = methodInfo.getNamespace().isEmpty() ? "" : methodInfo.getNamespace() + "::";
+        final boolean isStatic = methodInfo.isStatic();
+        final String ns = methodInfo.getNamespace();
+        final String qualifier = (isStatic && !ns.isEmpty()) ? (ns + "::") : "";
+        final String receiver  = isStatic ? "" : ("cself" + "->");
+        final String params    = getNativeFunctionParams();
 
+        return receiver + qualifier + methodInfo.getNativeName() + "(" + params + ")";
+    }
+
+    /**
+     * Builds the comma-prefixed JNI parameters (e.g., ", jint jniVar0, jstring jniVar1"),
+     * or an empty string if there are no parameters.
+     */
+    private String getNativeFunctionParams() {
         List<TypeInfo> params = methodInfo.getParams();
-
-        final String functionParams = params.stream().map(typeInfo -> {
+        return params.stream().map(typeInfo -> {
 
             String id = Objects.requireNonNull(typeInfo.getId(), "TypeInfo's that act as parameter types must have a id!");
             return String.format("%s%s", TypeInfoComposer.PLACEHOLDER_C_VAR, id);
 
         }).collect(Collectors.joining(", "));
-
-
-        return String.format("%s%s(%s)", prefix, methodInfo.getNativeName(), functionParams);
     }
 
     /**

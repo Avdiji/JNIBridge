@@ -5,6 +5,7 @@ import com.jnibridge.annotations.BridgeMetadata;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.generator.scanner.MethodScanner;
+import com.jnibridge.nativeaccess.IPointer;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
@@ -54,7 +55,7 @@ public class ClassInfoExtractor {
     @NotNull
     private static List<MethodInfo> extractMethodsToMap(@NotNull final Class<?> clazz, @NotNull final String namespace) {
         Set<Method> allJNIBridgedMethods = MethodScanner.getAllJNIBridgedMethods(clazz);
-        return allJNIBridgedMethods.stream().map(method -> MethodInfoExtractor.extract(method, namespace)).collect(Collectors.toList());
+        return allJNIBridgedMethods.stream().map(method -> MethodInfoExtractor.extract(method, namespace, clazz)).collect(Collectors.toList());
     }
 
     /**
@@ -111,5 +112,26 @@ public class ClassInfoExtractor {
         metadataInfo.getCustomJNICodePaths().addAll(Arrays.asList(metadata.customJNICodePaths()));
 
         for (Class<?> next : metadata.inheritFrom()) { extractInheritableMetadataInfo(next, metadataInfo, visited); }
+    }
+
+    /**
+     * Method extract the full C++ type from the given class.
+     *
+     * @param clazz The class to extract the full C++ type from.
+     * @return The full C++ type of the passed class as a string.
+     * @throws RuntimeException If the class has not been annotated properly.
+     */
+    public static String extractClassCType(@NotNull final Class<? extends IPointer> clazz) {
+        BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
+        if (annotation == null) {
+            throw new RuntimeException(String.format("Class '%s' must be annotated properly, for it to be mapped properly", clazz.getSimpleName()));
+        }
+
+        String namespace = annotation.namespace();
+        String name = annotation.name();
+
+        String result = namespace.isEmpty() ? "" : namespace + "::";
+        result += name.isEmpty() ? clazz.getSimpleName() : name;
+        return result;
     }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <jni.h>
+#include "${internal_include}"
 
 ${nativeIncludes}
 
