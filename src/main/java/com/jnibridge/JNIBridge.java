@@ -90,7 +90,7 @@ public class JNIBridge {
         outPath.toFile().mkdirs();
 
         final String ptrWrapperFilename = String.format("%s/%s", outPath, ClassInfoComposer.WRAPPER_NAME);
-        String ptrWrapperContent = ResourceUtils.load("com/jnibridge/internals/JniBridgePtrWrapper.jni.cpp");
+        String ptrWrapperContent = ResourceUtils.load("com/jnibridge/internals/JniBridgePtrWrapper.jni.hpp");
 
         try(FileWriter ptrWrapperWriter = new FileWriter(ptrWrapperFilename)) {
             ptrWrapperWriter.write(ptrWrapperContent);

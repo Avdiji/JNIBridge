@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class ClassInfoComposer implements Composer {
 
-    public static final String WRAPPER_NAME = "JniBridgePtrWrapper.jni.cpp";
+    public static final String WRAPPER_NAME = "JniBridgePtrWrapper.jni.hpp";
 
     public static final String PLACEHOLDER_INTERNAL_INCLUDE = "internal_include";
     public static final String PLACEHOLDER_INCLUDES = "nativeIncludes";
@@ -29,6 +29,7 @@ public abstract class ClassInfoComposer implements Composer {
 
     public static final String PLACEHOLDER_METHODS = "mappedMethods";
     public static final String PLACEHOLDER_MANGLED_CLASSPATH = "mangledClasspath";
+    public static final String PLACEHOLDER_FULL_J_PATH = "fullJPath";
 
     @NonNull
     private final ClassInfo classInfo;
@@ -44,6 +45,7 @@ public abstract class ClassInfoComposer implements Composer {
         replacements.put(PLACEHOLDER_METHODS, getMappedMethods());
 
         replacements.put(PLACEHOLDER_MANGLED_CLASSPATH, JNIMangler.getMangledClassDescriptor(classInfo.getClazz()));
+        replacements.put(PLACEHOLDER_FULL_J_PATH, classInfo.getClazz().getName().replace(".", "/"));
 
         return replacements;
     }

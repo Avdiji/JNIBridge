@@ -24,6 +24,11 @@ namespace jnibridge::internal {
 	class JniBridgePtrWrapper
 	{
 		public:
+		    JniBridgePtrWrapper(const JniBridgePtrWrapper&) = delete;
+            JniBridgePtrWrapper& operator=(const JniBridgePtrWrapper&) = delete;
+            JniBridgePtrWrapper(JniBridgePtrWrapper&&) = default;
+            JniBridgePtrWrapper& operator=(JniBridgePtrWrapper&&) = default;
+
 			explicit JniBridgePtrWrapper(T* instance, bool owns = false) { _raw = instance; _owns = owns;}
 			explicit JniBridgePtrWrapper(std::shared_ptr<T> instance, bool owns = false) { _shared = std::move(instance); _owns = owns; }
 			explicit JniBridgePtrWrapper(std::unique_ptr<T> instance, bool owns = false) { _unique = std::move(instance); _owns = owns; }
@@ -97,6 +102,8 @@ namespace jnibridge::internal {
 				if(_unique) return _unique.get();
 				throw std::runtime_error("No Instance is being persisted in this wrapper");
 			}
+
+            const T* get() const { return const_cast<JniBridgePtrWrapper*>(this)->get(); }
 
 		private:
 			bool _owns;

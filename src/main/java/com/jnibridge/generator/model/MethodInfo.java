@@ -19,10 +19,12 @@ public class MethodInfo {
 
     // metadata
     private final boolean isStatic;
+    private final boolean isDealloc;
 
     @NonNull private final String namespace;
     @NonNull private final String nativeName;
     private final String jName;
+
 
     // types used
     @Nullable private final TypeInfo selfType;

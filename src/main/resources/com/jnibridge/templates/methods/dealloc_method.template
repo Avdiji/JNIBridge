@@ -1,0 +1,9 @@
+    JNIEXPORT void JNICALL ${mangledClasspath}_${mangledFuncName}(JNIEnv* env, jobject jself)
+    {
+        auto cself = (jnibridge::internal::jobjectToWrapper<${cType}>(env, jself));
+        delete cself;
+
+        jclass cls = env->GetObjectClass(jself);
+        jfieldID fid = env->GetFieldID(cls, "nativeHandle", "J");
+        env->SetLongField(jself, fid, 0);
+    }

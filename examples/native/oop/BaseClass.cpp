@@ -9,6 +9,9 @@ namespace jnibridge::examples {
         public:
             explicit BaseClass() = default;
 
+            void printSomething() { std::cout << "Something" << std::endl; }
+
+            BaseClass* asPtr(BaseClass* newPtr) { return newPtr; }
     };
 
 }

@@ -12,4 +12,8 @@ import com.jnibridge.nativeaccess.Pointer;
 )
 public class BaseClass extends Pointer {
 
+        public native void printSomething();
+
+        public native BaseClass asPtr(BaseClass other);
+
 }

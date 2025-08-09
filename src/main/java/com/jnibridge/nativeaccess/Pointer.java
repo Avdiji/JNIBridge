@@ -2,6 +2,7 @@ package com.jnibridge.nativeaccess;
 
 import com.jnibridge.annotations.BridgeClass;
 import com.jnibridge.annotations.BridgeMetadata;
+import com.jnibridge.annotations.lifecycle.Deallocate;
 
 /**
  * Abstract base class for native-bound objects that simplifies {@link IPointer} implementation.
@@ -32,5 +33,6 @@ public abstract class Pointer implements IPointer {
     protected void finalize() { destruct(); }
 
     @Override
+    @Deallocate
     public native void destruct();
 }

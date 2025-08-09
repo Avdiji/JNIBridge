@@ -2,12 +2,14 @@ package com.jnibridge.generator.model.extractor;
 
 import com.jnibridge.annotations.Name;
 import com.jnibridge.annotations.Namespace;
+import com.jnibridge.annotations.lifecycle.Deallocate;
 import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.nativeaccess.IPointer;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static com.jnibridge.generator.model.extractor.ClassInfoExtractor.extractClassCType;
@@ -37,6 +39,7 @@ public class MethodInfoExtractor {
                 .method(method)
 
                 .isStatic(isStatic)
+                .isDealloc(Arrays.stream(method.getDeclaredAnnotations()).anyMatch(annotation -> annotation instanceof Deallocate))
 
                 .namespace(namespaceOpt.isPresent() ? namespaceOpt.get().value() : classNamespace)
                 .nativeName(nameOpt.isPresent() ? nameOpt.get().value() : method.getName())
