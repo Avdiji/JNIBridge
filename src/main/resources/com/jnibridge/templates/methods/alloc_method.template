@@ -1,0 +1,10 @@
+    JNIEXPORT void JNICALL ${mangledClasspath}_${mangledFuncName}(JNIEnv* env, jobject jself${jniParams})
+    {
+        // input mappings...
+${paramInMapping}
+
+        ${cType}* newNativeObject = new ${cType}(${functionCallParams});
+        auto newWrappedNativeObject = new jnibridge::internal::JniBridgePtrWrapper<${cType}>(newNativeObject, true);
+
+        jnibridge::internal::setNativeHandle<${cType}>(env, jself, newWrappedNativeObject);
+    }

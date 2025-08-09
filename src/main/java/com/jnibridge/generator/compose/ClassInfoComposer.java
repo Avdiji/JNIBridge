@@ -28,7 +28,6 @@ public abstract class ClassInfoComposer implements Composer {
     public static final String PLACEHOLDER_CUSTOM_JNI_CODE = "customJNICode";
 
     public static final String PLACEHOLDER_METHODS = "mappedMethods";
-    public static final String PLACEHOLDER_MANGLED_CLASSPATH = "mangledClasspath";
     public static final String PLACEHOLDER_FULL_J_PATH = "fullJPath";
 
     @NonNull
@@ -41,10 +40,7 @@ public abstract class ClassInfoComposer implements Composer {
         replacements.put(PLACEHOLDER_INTERNAL_INCLUDE, computeInternalInclude());
         replacements.put(PLACEHOLDER_CUSTOM_JNI_CODE, getCustomJNICode());
         replacements.put(PLACEHOLDER_INCLUDES, getNativeIncludes());
-
         replacements.put(PLACEHOLDER_METHODS, getMappedMethods());
-
-        replacements.put(PLACEHOLDER_MANGLED_CLASSPATH, JNIMangler.getMangledClassDescriptor(classInfo.getClazz()));
         replacements.put(PLACEHOLDER_FULL_J_PATH, classInfo.getClazz().getName().replace(".", "/"));
 
         return replacements;

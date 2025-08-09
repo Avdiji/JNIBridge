@@ -19,6 +19,7 @@ public class MethodInfo {
 
     // metadata
     private final boolean isStatic;
+    private final boolean isAlloc;
     private final boolean isDealloc;
 
     @NonNull private final String namespace;

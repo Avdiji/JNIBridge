@@ -8,18 +8,18 @@ import com.jnibridge.nativeaccess.Pointer;
 
 @BridgeClass(
         metadata = @BridgeMetadata(
-                includes = "../../../../../../../native/oop/BaseClass.cpp"
+                includes = "../../../../../../../native/oop/AnotherClass.cpp"
         ),
         namespace = "jnibridge::examples"
 )
-public class BaseClass extends Pointer {
+public class AnotherClass extends Pointer {
 
-        public BaseClass() { allocBase(); }
+    public AnotherClass() { allocBase(); }
 
-        @Allocate
-        private native void allocBase();
+    @Allocate
+    private native void allocBase();
 
-        @Override
-        @Deallocate
-        public native void destruct();
+    @Override
+    @Deallocate
+    public native void destruct();
 }

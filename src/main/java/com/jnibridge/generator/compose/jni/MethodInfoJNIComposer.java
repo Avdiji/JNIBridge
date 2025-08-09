@@ -29,6 +29,17 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
     @Override
     public @NotNull String compose() {
 
+        if(getMethodInfo().isAlloc()) {
+            TypeInfo selfType = Optional.ofNullable(getMethodInfo().getSelfType()).orElseThrow(() -> new IllegalArgumentException("Self type must be set for the allocator"));
+
+            Map<String, String> allocReplacements = new HashMap<>();
+            allocReplacements.put(TypeInfoComposer.PLACEHOLDER_C_TYPE, selfType.getCType());
+
+            String allocMethodTemplate = ResourceUtils.load("com/jnibridge/templates/methods/alloc_method.template");
+            allocMethodTemplate = TemplateUtils.substitute(allocMethodTemplate, allocReplacements);
+            return TemplateUtils.substitute(allocMethodTemplate, getReplacements());
+        }
+
         if(getMethodInfo().isDealloc()) {
             TypeInfo selfType = Optional.ofNullable(getMethodInfo().getSelfType()).orElseThrow(() -> new IllegalArgumentException("Self type must be set for the deallocator"));
 
@@ -39,6 +50,7 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
             deallocMethodTemplate = TemplateUtils.substitute(deallocMethodTemplate, deallocReplacements);
             return TemplateUtils.substitute(deallocMethodTemplate, getReplacements());
         }
+
 
         if (getMethodInfo().isStatic()) {
             String staticMethodTemplate = ResourceUtils.load("com/jnibridge/templates/methods/static_method.template");

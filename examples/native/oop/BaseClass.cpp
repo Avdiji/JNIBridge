@@ -7,11 +7,10 @@ namespace jnibridge::examples {
     class BaseClass {
 
         public:
-            explicit BaseClass() = default;
+            explicit BaseClass(){ std::cout << "ALLOC: BaseClass" << std::endl; }
+            ~BaseClass() { std::cout << "Dealloc: BaseClass" << std::endl; }
 
-            void printSomething() { std::cout << "Something" << std::endl; }
 
-            BaseClass* asPtr(BaseClass* newPtr) { return newPtr; }
     };
 
 }

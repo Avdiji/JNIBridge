@@ -31,8 +31,4 @@ public abstract class Pointer implements IPointer {
     @Override
     @SuppressWarnings("removal")
     protected void finalize() { destruct(); }
-
-    @Override
-    @Deallocate
-    public native void destruct();
 }

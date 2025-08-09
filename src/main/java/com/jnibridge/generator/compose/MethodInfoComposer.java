@@ -21,8 +21,11 @@ public abstract class MethodInfoComposer implements Composer {
 
     // MethodInfo - related Placeholders...
     public static final String PLACEHOLDER_MANGLED_FUNCTION_NAME = "mangledFuncName";
+    public static final String PLACEHOLDER_MANGLED_CLASSPATH = "mangledClasspath";
+
     public static final String PLACEHOLDER_JNI_PARAMS = "jniParams";
     public static final String PLACEHOLDER_FUNCTION_CALL = "functionCall";
+    public static final String PLACEHOLDER_FUNCTION_CALL_PARAMS = "functionCallParams";
 
     public static final String PLACEHOLDER_SELF_IN_MAPPING = "jselfInMapping";
     public static final String PLACEHOLDER_PARAMS_IN_MAPPING = "paramInMapping";
@@ -36,12 +39,12 @@ public abstract class MethodInfoComposer implements Composer {
     public Map<String, String> getReplacements() {
         Map<String, String> replacements = new HashMap<>();
 
-        Optional.ofNullable(methodInfo.getSelfType()).ifPresent(
-                selfType -> replacements.put(PLACEHOLDER_SELF_IN_MAPPING, new TypeInfoJNIComposer(selfType).compose())
-        );
+        Optional.ofNullable(methodInfo.getSelfType()).ifPresent(selfType -> replacements.put(PLACEHOLDER_SELF_IN_MAPPING, new TypeInfoJNIComposer(selfType).compose()));
 
         replacements.put(PLACEHOLDER_PARAMS_IN_MAPPING, getParamInputMappings());
         replacements.put(PLACEHOLDER_RESULT_OUT_MAPPING, new TypeInfoJNIComposer(methodInfo.getReturnType()).compose());
+
+        replacements.put(PLACEHOLDER_MANGLED_CLASSPATH, JNIMangler.getMangledClassDescriptor(methodInfo.getMethod().getDeclaringClass()));
 
         replacements.put(TypeInfoComposer.PLACEHOLDER_JNI_TYPE, methodInfo.getReturnType().getJniType());
         replacements.put(PLACEHOLDER_MANGLED_FUNCTION_NAME, JNIMangler.getMangledMethodDescriptor(methodInfo.getMethod()));
@@ -49,6 +52,7 @@ public abstract class MethodInfoComposer implements Composer {
         replacements.put(PLACEHOLDER_JNI_PARAMS, getJNIFunctionParams());
 
         replacements.put(PLACEHOLDER_FUNCTION_CALL, getNativeFunctionCall());
+        replacements.put(PLACEHOLDER_FUNCTION_CALL_PARAMS, getNativeFunctionCallParams());
 
         return replacements;
     }
@@ -81,8 +85,8 @@ public abstract class MethodInfoComposer implements Composer {
         final boolean isStatic = methodInfo.isStatic();
         final String ns = methodInfo.getNamespace();
         final String qualifier = (isStatic && !ns.isEmpty()) ? (ns + "::") : "";
-        final String receiver  = isStatic ? "" : ("cself" + "->");
-        final String params    = getNativeFunctionParams();
+        final String receiver = isStatic ? "" : ("cself" + "->");
+        final String params = getNativeFunctionCallParams();
 
         return receiver + qualifier + methodInfo.getNativeName() + "(" + params + ")";
     }
@@ -91,7 +95,7 @@ public abstract class MethodInfoComposer implements Composer {
      * Builds the comma-prefixed JNI parameters (e.g., ", jint jniVar0, jstring jniVar1"),
      * or an empty string if there are no parameters.
      */
-    private String getNativeFunctionParams() {
+    private String getNativeFunctionCallParams() {
         List<TypeInfo> params = methodInfo.getParams();
         return params.stream().map(typeInfo -> {
 
