@@ -28,6 +28,8 @@ namespace jnibridge::examples {
         ~B() { std::cout << "DEALLOC: B" << std::endl; }
 
         std::string getString() override { return "B-String"; }
+
+        B* getThisInstance() { return this; }
     };
 
 }

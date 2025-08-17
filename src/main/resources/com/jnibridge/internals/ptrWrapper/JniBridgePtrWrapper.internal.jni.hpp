@@ -195,4 +195,12 @@ namespace jnibridge::internal {
         env->DeleteLocalRef(cls);
     }
 
+    inline jlong getHandle(JNIEnv* env, jobject obj) {
+        jclass cls = env->GetObjectClass(obj);
+        jmethodID mid = env->GetMethodID(cls, "getNativeHandle", "()J");
+        jlong h = env->CallLongMethod(obj, mid);
+        env->DeleteLocalRef(cls);
+        return h;
+    }
+
 }  // namespace jnibridge::internal

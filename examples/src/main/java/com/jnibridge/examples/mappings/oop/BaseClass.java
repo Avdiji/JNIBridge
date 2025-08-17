@@ -8,7 +8,7 @@ import com.jnibridge.nativeaccess.Pointer;
 @BridgeClass(namespace = "jnibridge::examples")
 public class BaseClass extends Pointer {
 
-    public BaseClass() { allocBase(); }
+    public BaseClass() {  allocBase(); }
 
     @Allocate
     private native void allocBase();
