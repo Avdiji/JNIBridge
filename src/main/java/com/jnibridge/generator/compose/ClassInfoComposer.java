@@ -1,5 +1,6 @@
 package com.jnibridge.generator.compose;
 
+import com.jnibridge.generator.compose.jni.PolymorphicJNIHandler;
 import com.jnibridge.generator.compose.jni.PtrWrapperJNIComposer;
 import com.jnibridge.generator.compose.jni.MethodInfoJNIComposer;
 import com.jnibridge.generator.model.ClassInfo;
@@ -63,7 +64,7 @@ public abstract class ClassInfoComposer implements Composer {
             result += "../";
         }
 
-        result += PtrWrapperJNIComposer.INTERNAL_FILENAME;
+        result += PolymorphicJNIHandler.INTERNAL_FILENAME;
         return result;
     }
 }

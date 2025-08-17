@@ -12,7 +12,10 @@ public class MapJNI {
 
         // This is the class or package pattern, do not use in Path
         String[] packagePattern = {"com.jnibridge.examples.mappings.*"};
-        String[] includes = {"../../../../../../../native/oop/BaseClass.cpp", "../../../../../../../native/simple/SimpleStatics.cpp"};
+        String[] includes = {
+                "../../../../../../../native/oop/PolymorphicStructure.cpp",
+                "../../../../../../../native/simple/SimpleStatics.cpp"
+        };
 
         // Pass both correctly:
         JNIBridge.generateJNIInterface(outputDir, packagePattern, includes);

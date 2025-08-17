@@ -63,7 +63,9 @@ public class ClassInfoExtractor {
     @NotNull
     private static List<MethodInfo> extractMethodsToMap(@NotNull final Class<?> clazz, @NotNull final String namespace) {
         Set<Method> allJNIBridgedMethods = MethodScanner.getAllJNIBridgedMethods(clazz);
-        return allJNIBridgedMethods.stream().map(method -> MethodInfoExtractor.extract(method, namespace, clazz)).collect(Collectors.toList());
+        return allJNIBridgedMethods.stream()
+                .filter(method -> method.getDeclaringClass().equals(clazz))
+                .map(method -> MethodInfoExtractor.extract(method, namespace, clazz)).collect(Collectors.toList());
     }
 
 
@@ -74,7 +76,11 @@ public class ClassInfoExtractor {
      * @return The full C++ type of the passed class as a string.
      * @throws RuntimeException If the class has not been annotated properly.
      */
-    public static String extractClassCType(@NotNull final Class<? extends IPointer> clazz) {
+    public static String extractClassCType(@NotNull final Class<?> clazz) {
+        if(!IPointer.class.isAssignableFrom(clazz)) {
+            throw new IllegalArgumentException(String.format("Class '%s' must implement IPointer.", clazz.getSimpleName()));
+        }
+
         BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
         if (annotation == null) {
             throw new RuntimeException(String.format("Class '%s' must be annotated properly, for it to be mapped properly", clazz.getSimpleName()));

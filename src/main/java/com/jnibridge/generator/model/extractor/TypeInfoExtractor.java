@@ -122,9 +122,7 @@ public class TypeInfoExtractor {
 
 
     private static TypeInfo extractIPointerType(@NotNull final Class<?> type, @Nullable final String id, final List<Annotation> annotations) {
-
-        //noinspection unchecked
-        final String cType = ClassInfoExtractor.extractClassCType((Class<? extends IPointer>) type);
+        final String cType = ClassInfoExtractor.extractClassCType(type);
         final String jniType = "jobject";
 
         // TODO might have to differentiate between ref/ptr/val

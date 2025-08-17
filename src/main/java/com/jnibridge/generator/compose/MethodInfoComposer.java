@@ -21,7 +21,6 @@ public abstract class MethodInfoComposer implements Composer {
 
     // MethodInfo - related Placeholders...
     public static final String PLACEHOLDER_MANGLED_FUNCTION_NAME = "mangledFuncName";
-    public static final String PLACEHOLDER_MANGLED_CLASSPATH = "mangledClasspath";
 
     public static final String PLACEHOLDER_JNI_PARAMS = "jniParams";
     public static final String PLACEHOLDER_FUNCTION_CALL = "functionCall";
@@ -43,8 +42,6 @@ public abstract class MethodInfoComposer implements Composer {
 
         replacements.put(PLACEHOLDER_PARAMS_IN_MAPPING, getParamInputMappings());
         replacements.put(PLACEHOLDER_RESULT_OUT_MAPPING, new TypeInfoJNIComposer(methodInfo.getReturnType()).compose());
-
-        replacements.put(PLACEHOLDER_MANGLED_CLASSPATH, JNIMangler.getMangledClassDescriptor(methodInfo.getMethod().getDeclaringClass()));
 
         replacements.put(TypeInfoComposer.PLACEHOLDER_JNI_TYPE, methodInfo.getReturnType().getJniType());
         replacements.put(PLACEHOLDER_MANGLED_FUNCTION_NAME, JNIMangler.getMangledMethodDescriptor(methodInfo.getMethod()));

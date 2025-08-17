@@ -24,7 +24,7 @@ public class PtrWrapperJNIComposer implements Composer {
 
     @Override
     public String compose() {
-        String internals = ResourceUtils.load("com/jnibridge/internals/" + INTERNAL_FILENAME);
+        String internals = ResourceUtils.load("com/jnibridge/internals/ptrWrapper/" + INTERNAL_FILENAME);
         return TemplateUtils.substitute(internals, getReplacements());
     }
 

@@ -1,4 +1,4 @@
-    JNIEXPORT void JNICALL ${mangledClasspath}_${mangledFuncName}(JNIEnv* env, jobject jself)
+    JNIEXPORT void JNICALL ${mangledFuncName}(JNIEnv* env, jobject jself)
     {
         auto cself = (jnibridge::internal::jobjectToWrapper<${cType}>(env, jself));
         delete cself;

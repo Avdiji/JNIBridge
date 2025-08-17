@@ -52,12 +52,10 @@ public class MethodInfoExtractor {
 
         // in case the method is a instance method
         if (!isStatic && IPointer.class.isAssignableFrom(classToBeMapped)) {
-            //noinspection unchecked
-            methodBuilder.selfType(TypeInfoExtractor.extractSelfType(classToBeMapped, extractClassCType((Class<? extends IPointer>) classToBeMapped)));
+            methodBuilder.selfType(TypeInfoExtractor.extractSelfType(classToBeMapped, extractClassCType(classToBeMapped)));
         }
 
         return methodBuilder.build();
-
     }
 
 }

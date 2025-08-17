@@ -1,6 +1,7 @@
 package com.jnibridge;
 
 import com.jnibridge.generator.compose.jni.ClassInfoJNIComposer;
+import com.jnibridge.generator.compose.jni.PolymorphicJNIHandler;
 import com.jnibridge.generator.compose.jni.PtrWrapperJNIComposer;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.extractor.ClassInfoExtractor;
@@ -47,7 +48,7 @@ public class JNIBridge {
                         clazz -> ClassInfoExtractor.extract(clazz, classesToMap)
                 ));
 
-        createInternalFiles(outPath, Arrays.stream(nativeIncludes).collect(Collectors.toList()));
+        createInternalFiles(outPath, classMappings.values(), Arrays.stream(nativeIncludes).collect(Collectors.toList()));
         createJNIFiles(outPath, classMappings);
     }
 
@@ -81,13 +82,21 @@ public class JNIBridge {
      * Create the file, which the JNIBridge uses internally, to handle mapping logic.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void createInternalFiles(@NotNull final Path outPath, Collection<String> allNativeIncludes) {
+    private static void createInternalFiles(@NotNull final Path outPath, Collection<ClassInfo> classesToMap, Collection<String> allNativeIncludes) {
         outPath.toFile().mkdirs();
 
+        // generate filenames of the internals
         final String ptrWrapperFilename = String.format("%s/%s", outPath, PtrWrapperJNIComposer.INTERNAL_FILENAME);
+        final String polymorphicHandlerFilename = String.format("%s/%s", outPath, PolymorphicJNIHandler.INTERNAL_FILENAME);
 
-        try (FileWriter ptrWrapperWriter = new FileWriter(ptrWrapperFilename)) {
+        // create the corresponding internal files...
+        try (FileWriter ptrWrapperWriter = new FileWriter(ptrWrapperFilename);
+            FileWriter polymorphicHandlerWriter = new FileWriter(polymorphicHandlerFilename)
+        ) {
+
             ptrWrapperWriter.write(new PtrWrapperJNIComposer(allNativeIncludes).compose());
+            polymorphicHandlerWriter.write(new PolymorphicJNIHandler(classesToMap).compose());
+
         } catch (IOException e) {
             throw new RuntimeException(String.format("Unable to create file: %s", ptrWrapperFilename), e);
         }

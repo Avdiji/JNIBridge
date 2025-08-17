@@ -10,6 +10,11 @@ ${allIncludes}
 
 namespace jnibridge::internal {
 
+    class JniBridgePtrWrapperBase {
+        public:
+            virtual ~JniBridgePtrWrapperBase() = default;
+    };
+
     /**
      * A pointer wrapper for C++ objects managed across the JNI boundary.
      *
@@ -23,7 +28,7 @@ namespace jnibridge::internal {
      * @tparam T The type of the C++ object being wrapped.
      */
 	template<class T>
-	class JniBridgePtrWrapper
+	class JniBridgePtrWrapper : public JniBridgePtrWrapperBase
 	{
 		public:
 		    JniBridgePtrWrapper(const JniBridgePtrWrapper&) = delete;
@@ -35,11 +40,31 @@ namespace jnibridge::internal {
 			explicit JniBridgePtrWrapper(std::shared_ptr<T> instance, bool owns = false) { _shared = std::move(instance); _owns = owns; }
 			explicit JniBridgePtrWrapper(std::unique_ptr<T> instance, bool owns = false) { _unique = std::move(instance); _owns = owns; }
 
+            template<class U, class = std::enable_if_t<std::is_convertible_v<T*, U*>>>
+            JniBridgePtrWrapper<U>* toWrapper() {
+                if (_shared) {
+                    std::shared_ptr<U> sp = std::static_pointer_cast<U>(_shared);
+                    return new JniBridgePtrWrapper<U>(std::move(sp), true);
+                }
+
+                if (_unique) {
+                    std::unique_ptr<U> up(static_cast<U*>(_unique.release()));
+                    return new JniBridgePtrWrapper<U>(std::move(up), false);
+                }
+
+                if (_raw) {
+                    return new JniBridgePtrWrapper<U>(static_cast<U*>(_raw), false);
+                }
+
+                return nullptr;
+            }
+
+
             /**
              * Destructor.
              * Deletes the raw pointer if it exists and ownership is held.
             */
-			~JniBridgePtrWrapper() { if(_raw && _owns) delete _raw; }
+			~JniBridgePtrWrapper() override { if(_raw && _owns) delete _raw; }
 
             /**
              * Implicit conversion to a reference to a std::shared_ptr<T>.
@@ -96,6 +121,8 @@ namespace jnibridge::internal {
 			}
 
             const T* get() const { return const_cast<JniBridgePtrWrapper*>(this)->get(); }
+
+            void disableOwnership() { _owns = false; }
 
 		private:
 			bool _owns;

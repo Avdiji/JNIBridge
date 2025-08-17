@@ -1,4 +1,4 @@
-    JNIEXPORT ${jniType} JNICALL ${mangledClasspath}_${mangledFuncName}(JNIEnv* env, jclass clazz${jniParams})
+    JNIEXPORT ${jniType} JNICALL ${mangledFuncName}(JNIEnv* env, jclass clazz${jniParams})
     {
         // input mappings...
 ${paramInMapping}
