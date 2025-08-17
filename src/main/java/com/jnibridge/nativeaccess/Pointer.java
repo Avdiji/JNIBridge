@@ -1,8 +1,6 @@
 package com.jnibridge.nativeaccess;
 
 import com.jnibridge.annotations.BridgeClass;
-import com.jnibridge.annotations.BridgeMetadata;
-import com.jnibridge.annotations.lifecycle.Deallocate;
 
 /**
  * Abstract base class for native-bound objects that simplifies {@link IPointer} implementation.
@@ -20,13 +18,18 @@ import com.jnibridge.annotations.lifecycle.Deallocate;
  * <strong>It is encouraged to implement your own {@code Pointer} subclass or utility that integrates
  * {@code Cleaner} for reliable and modern resource cleanup.</strong>
  */
-@BridgeClass(metadata = @BridgeMetadata)
+@BridgeClass
 public abstract class Pointer implements IPointer {
 
     private long nativeHandle;
 
     @Override
     public long getNativeHandle() { return nativeHandle; }
+
+    @Override
+    public void setNativeHandle(long nativeHandle) {
+        this.nativeHandle = nativeHandle;
+    }
 
     @Override
     @SuppressWarnings("removal")

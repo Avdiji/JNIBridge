@@ -1,7 +1,7 @@
 TODOS in no particular order (although there should be some order)
 
 2. Allow CustomMappingRegistries
-4. native java-C++ type registry to support inheritance without complicated casting logic
+4. support inheritance without complicated custom casting logic
 6. ExceptionHandling...
-8. create annotations @NativeConstruct @NativeDestruct...
 9. consider mapping enums and structs...
+10. Templated mapping (for std::vector, std::map, std::optional...)

@@ -22,6 +22,12 @@ public interface IPointer {
     long getNativeHandle();
 
     /**
+     * Set the native handle of the corresponding object.
+     * @param nativeHandle The new native handle.
+     */
+    void setNativeHandle(final long nativeHandle);
+
+    /**
      * Invokes the native destructor for the mapped object.
      * <p>
      * This should release any native memory or resources held by the object.

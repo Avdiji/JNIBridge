@@ -1,8 +1,10 @@
 package com.jnibridge.example.mappings.oop;
 
-import com.jnibridge.examples.mappings.oop.AnotherClass;
 import com.jnibridge.examples.mappings.oop.BaseClass;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BaseClassTest {
 
@@ -17,9 +19,10 @@ public class BaseClassTest {
         baseClass.destruct();
     }
 
-    @Test void testAnotherAllocation() {
-        AnotherClass anotherClass = new AnotherClass();
-        anotherClass.destruct();
+    @Test
+    public void testGetString() {
+        BaseClass baseClass = new BaseClass();
+        assertEquals("BaseClass-String", baseClass.getString());
     }
 
 }

@@ -6,6 +6,8 @@
 #include <string>
 #include <type_traits>
 
+${allIncludes}
+
 namespace jnibridge::internal {
 
     /**
@@ -47,7 +49,7 @@ namespace jnibridge::internal {
              *
              * @throws std::runtime_error if conversion is not possible.
              */
-			operator std::shared_ptr<T>&() {
+			operator std::shared_ptr<T>() {
 				if(_shared) { return _shared; }
 				if(_raw && _owns) {
 					_shared = std::shared_ptr<T>(_raw);
@@ -62,6 +64,14 @@ namespace jnibridge::internal {
 				throw std::runtime_error("Object is in a illegal state, unable to transfer ownership to shared_ptr");
 			}
 
+            /**
+             * Implicit conversion to a reference to a std::unique_ptr<T>.
+             *
+             * If the object is managed by a raw pointer and ownership is held,
+             * it will be promoted to a unique_ptr.
+             *
+             * @throws std::runtime_error if conversion is not possible.
+             */
 			operator std::unique_ptr<T>() {
 				if(_unique) { return std::move(_unique); }
 				if(_raw && _owns) {
@@ -71,24 +81,6 @@ namespace jnibridge::internal {
 				}
 				throw std::runtime_error("Object is in a illegal state, unable to transfer ownership to unique_ptr");
 			}
-
-            /**
-             * Implicit conversion to a reference to a std::unique_ptr<T>.
-             *
-             * If the object is managed by a raw pointer and ownership is held,
-             * it will be promoted to a unique_ptr.
-             *
-             * @throws std::runtime_error if conversion is not possible.
-             */
-            operator std::unique_ptr<T>&() {
-                if(_unique) { return _unique; }
-                if(_raw && _owns) {
-                    _unique = std::unique_ptr<T>(_raw);
-                    _raw = nullptr;
-                    return _unique;
-                }
-                throw std::runtime_error("Object is in a illegal state, unable to transfer ownership to unique_ptr");
-            }
 
             /**
              * Retrieve the raw pointer without altering ownership.
@@ -129,6 +121,8 @@ namespace jnibridge::internal {
     inline JniBridgePtrWrapper<T>* jobjectToWrapper(JNIEnv* env, jobject obj) {
         jclass cls = env->GetObjectClass(obj);
         jmethodID mid = env->GetMethodID(cls, "getNativeHandle", "()J");
+
+        env->DeleteLocalRef(cls);
         return reinterpret_cast<JniBridgePtrWrapper<T>*>(env->CallLongMethod(obj, mid));
     }
 
@@ -142,21 +136,36 @@ namespace jnibridge::internal {
      * @return The same Java object for convenience.
      */
     template <typename T>
-    inline jobject wrapperToJobject(JNIEnv* env, const std::string& jClassName, JniBridgePtrWrapper<T>* ptr) {
+    inline jobject wrapperToNewJobject(JNIEnv* env, const std::string& jClassName, JniBridgePtrWrapper<T>* ptr) {
         jclass cls = env->FindClass(jClassName.c_str());
         jobject result = env->AllocObject(cls);
 
-        jfieldID nativeHandle = env->GetFieldID(cls, "nativeHandle", "J");
+        setNativeHandle(env, result, ptr);
 
-        env->SetLongField(result, nativeHandle, reinterpret_cast<jlong>(ptr));
+        env->DeleteLocalRef(cls);
         return result;
     }
 
+    /**
+     * Sets the native handle pointer on a Java object via its `setNativeHandle(long)` method.
+     *
+     * This utility is used to associate a native C++ wrapper instance (JniBridgePtrWrapper<T>)
+     * with a corresponding Java object that exposes a `setNativeHandle(long)` setter.
+     * The pointer is cast to a `jlong` and passed to the Java side for storage.
+     *
+     * @tparam T  Type parameter for the native wrapper.
+     * @param env JNI environment pointer, must be valid for the current thread.
+     * @param object Java object that declares a `void setNativeHandle(long)` instance method.
+     * @param ptr Pointer to the native wrapper that should be stored on the Java side.
+     */
     template<typename T>
     inline void setNativeHandle(JNIEnv* env, jobject object, JniBridgePtrWrapper<T>* ptr) {
         jclass cls = env->GetObjectClass(object);
-        jfieldID nativeHandle = env->GetFieldID(cls, "nativeHandle", "J");
-        env->SetLongField(object, nativeHandle, reinterpret_cast<jlong>(ptr));
+
+        jmethodID setHandle = env->GetMethodID(cls, "setNativeHandle", "(J)V");
+        env->CallVoidMethod(object, setHandle, reinterpret_cast<jlong>(ptr));
+
+        env->DeleteLocalRef(cls);
     }
 
 }  // namespace jnibridge::internal

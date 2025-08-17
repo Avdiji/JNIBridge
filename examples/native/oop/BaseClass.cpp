@@ -10,7 +10,7 @@ namespace jnibridge::examples {
             explicit BaseClass(){ std::cout << "ALLOC: BaseClass" << std::endl; }
             ~BaseClass() { std::cout << "Dealloc: BaseClass" << std::endl; }
 
-
+            std::string getString() { return "BaseClass-String"; }
     };
 
 }
