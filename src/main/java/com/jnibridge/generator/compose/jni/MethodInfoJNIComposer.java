@@ -38,19 +38,19 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
             Map<String, String> deallocReplacements = new HashMap<>();
             deallocReplacements.put(TypeInfoComposer.PLACEHOLDER_C_TYPE, selfType.getCType());
 
-            String deallocMethodTemplate = ResourceUtils.load("com/jnibridge/templates/methods/dealloc_method.template");
+            String deallocMethodTemplate = ResourceUtils.load("com/jnibridge/other/methods/dealloc_method.template");
             deallocMethodTemplate = TemplateUtils.substitute(deallocMethodTemplate, deallocReplacements);
             return TemplateUtils.substitute(deallocMethodTemplate, getReplacements());
         }
 
 
         if (getMethodInfo().isStatic()) {
-            String staticMethodTemplate = ResourceUtils.load("com/jnibridge/templates/methods/static_method.template");
+            String staticMethodTemplate = ResourceUtils.load("com/jnibridge/other/methods/static_method.template");
             return TemplateUtils.substitute(staticMethodTemplate, getReplacements());
         }
 
 
-        String instanceMethodTemplate = ResourceUtils.load("com/jnibridge/templates/methods/instance_method.template");
+        String instanceMethodTemplate = ResourceUtils.load("com/jnibridge/other/methods/instance_method.template");
         return TemplateUtils.substitute(instanceMethodTemplate, getReplacements());
     }
 

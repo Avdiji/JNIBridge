@@ -1,3 +1,0 @@
-     ${cType} result = ${functionCall};
-     jnibridge::internal::JniBridgePtrWrapper<${cType}> *resultWrapper = new jnibridge::internal::JniBridgePtrWrapper<${cType}>(result);
-     return jnibridge::internal::wrapperToNewJobject(env, "${fullJPath}", resultWrapper);
