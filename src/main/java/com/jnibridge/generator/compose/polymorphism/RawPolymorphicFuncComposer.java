@@ -18,7 +18,7 @@ public class RawPolymorphicFuncComposer extends PolymorphicHelperComposer.Polymo
 
     @Override
     public String compose() {
-        String template = ResourceUtils.load("com/jnibridge/internals/polymorphism/PolymorphicHandlerFunc.raw.internal.jni.hpp");
+        String template = ResourceUtils.load("com/jnibridge/internals/polymorphism/PolymorphicHandlerFunc.raw.template");
         return TemplateUtils.substitute(template, getReplacements());
     }
 

@@ -18,7 +18,7 @@ public class SharedPolymorphicFuncComposer extends PolymorphicHelperComposer.Pol
 
     @Override
     public String compose() {
-        String template = ResourceUtils.load("com/jnibridge/internals/polymorphism/PolymorphicHandlerFunc.shared.internal.jni.hpp");
+        String template = ResourceUtils.load("com/jnibridge/internals/polymorphism/PolymorphicHandlerFunc.shared.template");
         return TemplateUtils.substitute(template, getReplacements());
     }
 

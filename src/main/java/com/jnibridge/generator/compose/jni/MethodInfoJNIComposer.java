@@ -1,6 +1,7 @@
 package com.jnibridge.generator.compose.jni;
 
 
+import com.jnibridge.annotations.lifecycle.Shared;
 import com.jnibridge.generator.compose.MethodInfoComposer;
 import com.jnibridge.generator.compose.TypeInfoComposer;
 import com.jnibridge.generator.model.MethodInfo;
@@ -29,18 +30,9 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
     @Override
     public @NotNull String compose() {
 
-        if(getMethodInfo().isAlloc()) {
-            TypeInfo selfType = Optional.ofNullable(getMethodInfo().getSelfType()).orElseThrow(() -> new IllegalArgumentException("Self type must be set for the allocator"));
+        if (getMethodInfo().isAlloc()) { return composeAllocFunction(); }
 
-            Map<String, String> allocReplacements = new HashMap<>();
-            allocReplacements.put(TypeInfoComposer.PLACEHOLDER_C_TYPE, selfType.getCType());
-
-            String allocMethodTemplate = ResourceUtils.load("com/jnibridge/templates/methods/alloc_method.template");
-            allocMethodTemplate = TemplateUtils.substitute(allocMethodTemplate, allocReplacements);
-            return TemplateUtils.substitute(allocMethodTemplate, getReplacements());
-        }
-
-        if(getMethodInfo().isDealloc()) {
+        if (getMethodInfo().isDealloc()) {
             TypeInfo selfType = Optional.ofNullable(getMethodInfo().getSelfType()).orElseThrow(() -> new IllegalArgumentException("Self type must be set for the deallocator"));
 
             Map<String, String> deallocReplacements = new HashMap<>();
@@ -60,5 +52,23 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
 
         String instanceMethodTemplate = ResourceUtils.load("com/jnibridge/templates/methods/instance_method.template");
         return TemplateUtils.substitute(instanceMethodTemplate, getReplacements());
+    }
+
+
+    private String composeAllocFunction() {
+        TypeInfo selfType = Optional.ofNullable(getMethodInfo().getSelfType()).orElseThrow(() -> new IllegalArgumentException("Self type must be set for the allocator"));
+
+        Map<String, String> allocReplacements = new HashMap<>();
+        allocReplacements.put(TypeInfoComposer.PLACEHOLDER_C_TYPE, selfType.getCType());
+
+        String allocMethodTemplate = null;
+        if(getMethodInfo().getReturnType().hasAnnotation(Shared.class)) {
+            allocMethodTemplate = ResourceUtils.load("com/jnibridge/internals/alloc/alloc.shared.template");
+        } else {
+            allocMethodTemplate = ResourceUtils.load("com/jnibridge/internals/alloc/alloc.raw.template");
+        }
+
+        allocMethodTemplate = TemplateUtils.substitute(allocMethodTemplate, allocReplacements);
+        return TemplateUtils.substitute(allocMethodTemplate, getReplacements());
     }
 }

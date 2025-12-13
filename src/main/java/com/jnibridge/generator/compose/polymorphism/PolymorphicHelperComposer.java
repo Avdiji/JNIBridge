@@ -27,7 +27,7 @@ public class PolymorphicHelperComposer implements Composer {
 
     @Override
     public String compose() {
-        String template = ResourceUtils.load("com/jnibridge/internals/polymorphism/PolymorphicHandler.internal.jni.hpp");
+        String template = ResourceUtils.load("com/jnibridge/internals/polymorphism/PolymorphicHandler.template");
         return TemplateUtils.substitute(template, getReplacements());
     }
 
