@@ -1,9 +1,12 @@
     JNIEXPORT void JNICALL ${mangledFuncName}(JNIEnv* env, jobject jself)
     {
-        auto cself = (jnibridge::internal::jobjectToWrapper<${cType}>(env, jself));
-        delete cself;
+        jlong selfHandlePtr = jnibridge::internal::getHandle(env, jself);
+        auto selfHandle = reinterpret_cast<jnibridge::internal::BaseHandle*>(selfHandlePtr);
+
+        delete selfHandle;
 
         jclass cls = env->GetObjectClass(jself);
-        jfieldID fid = env->GetFieldID(cls, "nativeHandle", "J");
-        env->SetLongField(jself, fid, 0);
+        jmethodID setHandle = env->GetMethodID(cls, "setNativeHandle", "(J)V");
+        env->CallVoidMethod(jself, setHandle, (jlong) 0);
+        env->DeleteLocalRef(cls);
     }

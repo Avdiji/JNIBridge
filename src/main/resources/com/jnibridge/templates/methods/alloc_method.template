@@ -12,7 +12,8 @@ ${paramInMapping}
 
         // output mappings...
         ${cType}* newNativeObject = new ${cType}(${functionCallParams});
-        auto newWrappedNativeObject = new jnibridge::internal::JniBridgePtrWrapper<${cType}>(newNativeObject, true);
+        auto newHandle = new jnibridge::internal::Handle<${cType}>(newNativeObject, true);
+        auto newBaseHandle = static_cast<jnibridge::internal::BaseHandle*>(newHandle);
 
-        jnibridge::internal::setNativeHandle<${cType}>(env, jself, newWrappedNativeObject);
+        jnibridge::internal::setNativeHandle(env, jself, newBaseHandle);
     }

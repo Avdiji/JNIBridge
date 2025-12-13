@@ -18,7 +18,7 @@ public class PolymorphicJNIHandler implements Composer {
 
     public static final String INTERNAL_FILENAME = "JniPolymorphicHandler.internal.jni.hpp";
 
-    private static final String PLACEHOLDER_INTERNAL_WRAPPER_INCLUDE = "internalPtrWrapperPath";
+    private static final String PLACEHOLDER_INTERNAL_HANDLE_INCLUDE = "internalHandlePath";
     private static final String PLACEHOLDER_HELPER_FUNCTIONS = "helperFunctions";
 
 
@@ -36,7 +36,7 @@ public class PolymorphicJNIHandler implements Composer {
     public @NotNull Map<String, String> getReplacements() {
         Map<String, String> replacements = new HashMap<>();
 
-        replacements.put(PLACEHOLDER_INTERNAL_WRAPPER_INCLUDE, PtrWrapperJNIComposer.INTERNAL_FILENAME);
+        replacements.put(PLACEHOLDER_INTERNAL_HANDLE_INCLUDE, PtrWrapperJNIComposer.INTERNAL_FILENAME);
         replacements.put(PLACEHOLDER_HELPER_FUNCTIONS, getHelperFunctions());
 
         return replacements;
@@ -82,7 +82,7 @@ public class PolymorphicJNIHandler implements Composer {
 
         private String generateLongToWrapperBody() {
             final String cType = ClassInfoExtractor.extractClassCType(classInfo.getClazz());
-            StringBuilder result = new StringBuilder("\t\tauto *base = reinterpret_cast<jnibridge::internal::JniBridgePtrWrapperBase*>(nativeHandle);");
+            StringBuilder result = new StringBuilder("\t\tauto *base = reinterpret_cast<jnibridge::internal::BaseHandle*>(nativeHandle);");
             boolean firstIteration = true;
 
             for (final ClassInfo subclass : classInfo.getSubclasses()) {
@@ -93,8 +93,8 @@ public class PolymorphicJNIHandler implements Composer {
                 result.append(firstIteration ? "if " : "else if ");
                 firstIteration = false;
 
-                result.append(String.format("(auto* actualType = dynamic_cast<jnibridge::internal::JniBridgePtrWrapper<%s>*>(base)) {", subclassCType));
-                result.append(String.format("\n\t\t\treturn actualType->toWrapper<%s>();", cType));
+                result.append(String.format("(auto* actualType = dynamic_cast<jnibridge::internal::Handle<%s>*>(base)) {", subclassCType));
+                result.append("\n\t\t\treturn nullptr; // TODO only for now...");
                 result.append("\n\t\t}");
             }
 

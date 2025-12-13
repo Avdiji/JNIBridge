@@ -1,5 +1,6 @@
         ${cType} *nativeResult = ${functionCall};
-        jnibridge::internal::JniBridgePtrWrapper<${cType}> *nativeResultWrapper = new jnibridge::internal::JniBridgePtrWrapper<${cType}>(nativeResult);
+        auto resultHandle = new jnibridge::internal::Handle<${cType}*>(nativeResult, false);
+        auto resultBaseHandle = static_cast<jnibridge::internal::BaseHandle*>(resultHandle);
 
-        jobject jResult = jnibridge::internal::wrapperToNewJobject(env, "${fullJPath}", nativeResultWrapper);
+        jobject jResult = jnibridge::internal::jobjectFromBaseHandle(env, "${fullJPath}", resultBaseHandle);
         return jResult;

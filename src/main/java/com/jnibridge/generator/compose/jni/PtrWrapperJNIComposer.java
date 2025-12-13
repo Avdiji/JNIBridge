@@ -1,7 +1,6 @@
 package com.jnibridge.generator.compose.jni;
 
 import com.jnibridge.generator.compose.Composer;
-import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.utils.ResourceUtils;
 import com.jnibridge.utils.TemplateUtils;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class PtrWrapperJNIComposer implements Composer {
 
-    public static final String INTERNAL_FILENAME = "JniBridgePtrWrapper.internal.jni.hpp";
+    public static final String INTERNAL_FILENAME = "JniBridgeHandle.internal.hpp";
 
     private final Collection<String> includes;
 
@@ -24,7 +23,7 @@ public class PtrWrapperJNIComposer implements Composer {
 
     @Override
     public String compose() {
-        String internals = ResourceUtils.load("com/jnibridge/internals/ptrWrapper/" + INTERNAL_FILENAME);
+        String internals = ResourceUtils.load("com/jnibridge/internals/handle/" + INTERNAL_FILENAME);
         return TemplateUtils.substitute(internals, getReplacements());
     }
 

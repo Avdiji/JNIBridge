@@ -1,1 +1,2 @@
-        ${cType} *${cVar} = (jnibridge::internal::jobjectToWrapper<${cType}>(env, ${jniVar})->get());
+        jlong ${cVar}HandlePtr = jnibridge::internal::getHandle(env, ${jniVar});
+        auto *${cVar}Handle = reinterpret_cast<jnibridge::internal::BaseHandle*>(${cVar}HandlePtr);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "${internalPtrWrapperPath}"
+#include "${internalHandlePath}"
 
 namespace jnibridge::internal {
 
