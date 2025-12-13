@@ -1,10 +1,8 @@
 package com.jnibridge.generator.compose;
 
-import com.jnibridge.generator.compose.jni.PolymorphicJNIHandler;
-import com.jnibridge.generator.compose.jni.PtrWrapperJNIComposer;
 import com.jnibridge.generator.compose.jni.MethodInfoJNIComposer;
+import com.jnibridge.generator.compose.polymorphism.PolymorphicHelperComposer;
 import com.jnibridge.generator.model.ClassInfo;
-import com.jnibridge.utils.ResourceUtils;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -58,13 +55,13 @@ public abstract class ClassInfoComposer implements Composer {
         String packagePath = classInfo.getClazz().getPackage().getName();
         long slashes = packagePath.chars().filter(ch -> ch == '.').count();
 
-        String result = "";
+        StringBuilder result = new StringBuilder();
 
         for(int i = 0; i < slashes + 1; ++i) {
-            result += "../";
+            result.append("../");
         }
 
-        result += PolymorphicJNIHandler.INTERNAL_FILENAME;
-        return result;
+        result.append(String.format("internal/%s",PolymorphicHelperComposer.POLYMORPHIC_CONVENIENCE_HEADER_FILENAME));
+        return result.toString();
     }
 }

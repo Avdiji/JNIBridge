@@ -39,16 +39,17 @@ public class ClassInfoExtractor {
                 .map(other -> extract(other, otherClassesToMap))
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        return ClassInfo.builder()
+        ClassInfo result = ClassInfo.builder()
                 .clazz(clazz)
                 .nativeNamespace(annotation.namespace())
                 .nativeName(annotation.name().isEmpty() ? clazz.getSimpleName() : annotation.name())
                 .jName(clazz.getSimpleName())
-
                 .subclasses(subclasses)
-
                 .methodsToMap(extractMethodsToMap(clazz, annotation.namespace()))
                 .build();
+
+        if (IPointer.class.isAssignableFrom(clazz)) { result.getSubclasses().add(result); }
+        return result;
     }
 
 
@@ -77,7 +78,7 @@ public class ClassInfoExtractor {
      * @throws RuntimeException If the class has not been annotated properly.
      */
     public static String extractClassCType(@NotNull final Class<?> clazz) {
-        if(!IPointer.class.isAssignableFrom(clazz)) {
+        if (!IPointer.class.isAssignableFrom(clazz)) {
             throw new IllegalArgumentException(String.format("Class '%s' must implement IPointer.", clazz.getSimpleName()));
         }
 

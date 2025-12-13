@@ -1,11 +1,12 @@
 package com.jnibridge;
 
 import com.jnibridge.generator.compose.jni.ClassInfoJNIComposer;
-import com.jnibridge.generator.compose.jni.PolymorphicJNIHandler;
 import com.jnibridge.generator.compose.jni.PtrWrapperJNIComposer;
+import com.jnibridge.generator.compose.polymorphism.PolymorphicHelperComposer;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.extractor.ClassInfoExtractor;
 import com.jnibridge.generator.scanner.ClassScanner;
+import com.jnibridge.nativeaccess.IPointer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileWriter;
@@ -49,6 +50,11 @@ public class JNIBridge {
                 ));
 
         createInternalFiles(outPath, classMappings.values(), Arrays.stream(nativeIncludes).collect(Collectors.toList()));
+
+        createPolymorphicHelpers(outPath, classMappings.values().stream()
+                .filter(classInfo -> IPointer.class.isAssignableFrom(classInfo.getClazz()))
+                .collect(Collectors.toList()));
+
         createJNIFiles(outPath, classMappings);
     }
 
@@ -83,22 +89,58 @@ public class JNIBridge {
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static void createInternalFiles(@NotNull final Path outPath, Collection<ClassInfo> classesToMap, Collection<String> allNativeIncludes) {
-        outPath.toFile().mkdirs();
+        final Path internalPath = Paths.get(outPath.toString(), "internal");
+        internalPath.toFile().mkdirs();
 
         // generate filenames of the internals
-        final String ptrWrapperFilename = String.format("%s/%s", outPath, PtrWrapperJNIComposer.INTERNAL_FILENAME);
-        final String polymorphicHandlerFilename = String.format("%s/%s", outPath, PolymorphicJNIHandler.INTERNAL_FILENAME);
+        final String ptrWrapperFilename = String.format("%s/%s", internalPath, PtrWrapperJNIComposer.INTERNAL_FILENAME);
 
         // create the corresponding internal files...
         try (FileWriter ptrWrapperWriter = new FileWriter(ptrWrapperFilename);
-            FileWriter polymorphicHandlerWriter = new FileWriter(polymorphicHandlerFilename)
         ) {
-
             ptrWrapperWriter.write(new PtrWrapperJNIComposer(allNativeIncludes).compose());
-            polymorphicHandlerWriter.write(new PolymorphicJNIHandler(classesToMap).compose());
-
         } catch (IOException e) {
             throw new RuntimeException(String.format("Unable to create file: %s", ptrWrapperFilename), e);
         }
+    }
+
+    private static void createPolymorphicHelpers(@NotNull final Path outPath, Collection<ClassInfo> instanceClasses) {
+        final Path internalPath = Paths.get(outPath.toString(), "internal/polymorphism");
+        internalPath.toFile().mkdirs();
+
+        List<String> convenienceHeaderIncludes = new ArrayList<>();
+        for (ClassInfo classInfo : instanceClasses) {
+            final String filename = String.format("%s/%s", internalPath, PolymorphicHelperComposer.getHelperFilename(classInfo));
+
+            try (FileWriter rawPolymorphicHelperWriter = new FileWriter(filename)) {
+                rawPolymorphicHelperWriter.write(new PolymorphicHelperComposer(classInfo).compose());
+
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to create polymorphic helper", e);
+            } finally {
+                convenienceHeaderIncludes.add(String.format("#include \"polymorphism/%s\"", PolymorphicHelperComposer.getHelperFilename(classInfo)));
+            }
+        }
+
+        createPolymorphicHelperConvenienceHeader(outPath, convenienceHeaderIncludes);
+    }
+
+    private static void createPolymorphicHelperConvenienceHeader(@NotNull final Path outPath, @NotNull final Collection<String> includes) {
+        final Path internalPath = Paths.get(outPath.toString(), "internal");
+        internalPath.toFile().mkdirs();
+
+        final String filename = String.format("%s/%s", internalPath, PolymorphicHelperComposer.POLYMORPHIC_CONVENIENCE_HEADER_FILENAME);
+        try(FileWriter headerWriter = new FileWriter(filename)) {
+
+            final StringBuilder result = new StringBuilder();
+            result.append("#pragma once\n");
+            includes.forEach(include -> result.append("\n").append(include));
+
+            headerWriter.write(result.toString());
+
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to create convenience header for polymorphic helpers", e);
+        }
+
     }
 }

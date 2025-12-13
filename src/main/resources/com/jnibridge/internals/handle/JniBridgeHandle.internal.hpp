@@ -20,7 +20,6 @@ namespace jnibridge::internal {
     class BaseHandle {
         public:
             virtual ~BaseHandle() = default;
-            virtual StorageStrategy strategy() const noexcept;
     };
 
     template<class T>
@@ -32,10 +31,6 @@ namespace jnibridge::internal {
                 if(_strategy == StorageStrategy::RawOwned) {
                     delete std::get<T*>(_store);
                 }
-            }
-
-            StorageStrategy strategy() const noexcept override {
-                return _strategy;
             }
 
             explicit Handle(T* instance, bool owns) : _store(instance), _strategy(owns ? StorageStrategy::RawOwned : StorageStrategy::RawBorrowed){}
