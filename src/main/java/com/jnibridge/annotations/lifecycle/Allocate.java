@@ -20,4 +20,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Allocate {
+
+    String allocTemplate() default "com/jnibridge/internals/alloc/alloc.raw.template";
+
 }

@@ -7,10 +7,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Shared {
+public @interface Unique {
 
-    String allocTemplate() default "com/jnibridge/internals/alloc/alloc.shared.template";
-
-
-
+    String allocTemplate() default "com/jnibridge/internals/alloc/alloc.unique.template";
 }

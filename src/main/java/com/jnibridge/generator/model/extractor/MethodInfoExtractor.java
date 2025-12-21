@@ -40,8 +40,6 @@ public class MethodInfoExtractor {
                 .method(method)
 
                 .isStatic(isStatic)
-                .isDealloc(Arrays.stream(method.getDeclaredAnnotations()).anyMatch(annotation -> annotation instanceof Deallocate))
-                .isAlloc(Arrays.stream(method.getDeclaredAnnotations()).anyMatch(annotation -> annotation instanceof Allocate))
 
                 .namespace(namespaceOpt.isPresent() ? namespaceOpt.get().value() : classNamespace)
                 .nativeName(nameOpt.isPresent() ? nameOpt.get().value() : method.getName())
