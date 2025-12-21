@@ -8,13 +8,17 @@ import java.nio.file.Paths;
 public class MapJNI {
     public static void main(String[] args) {
 
-        Path outputDir = Paths.get("build/jni"); // <-- real path
+        Path outputDir = Paths.get("build/jni");
 
         // This is the class or package pattern, do not use in Path
-        String packagePattern = "com.jnibridge.examples.mappings.simple.*";
+        String[] packagePattern = {"com.jnibridge.examples.mappings.*"};
+        String[] includes = {
+                "../../../../../../../native/oop/PolymorphicStructure.cpp",
+                "../../../../../../../native/simple/SimpleStatics.cpp"
+        };
 
         // Pass both correctly:
-        JNIBridge.generateJNIInterface(outputDir, packagePattern);
+        JNIBridge.generateJNIInterface(outputDir, packagePattern, includes);
 
     }
 }

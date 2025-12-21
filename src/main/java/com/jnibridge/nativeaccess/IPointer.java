@@ -9,7 +9,10 @@ package com.jnibridge.nativeaccess;
  * <p>
  * The {@code IPointer} interface is used by the JNI bridge to track object identity and ensure correct
  * construction, destruction, and pointer management on both the Java and native sides.
+ *
+ * @see Pointer
  */
+@SuppressWarnings("unused") // methods are mostly being used on a JNI-level
 public interface IPointer {
 
     /**
@@ -22,19 +25,22 @@ public interface IPointer {
     long getNativeHandle();
 
     /**
-     * Sets the native memory address (handle) for this object.
-     * <p>
-     * This is called during native construction or when binding to an existing native instance.
-     *
-     * @param handle the new native pointer value to associate with this object
+     * Set the native handle of the corresponding object.
+     * @param nativeHandle The new native handle.
      */
-    void setNativeHandle(final long handle);
+    void setNativeHandle(final long nativeHandle);
 
     /**
      * Invokes the native destructor for the mapped object.
      * <p>
      * This should release any native memory or resources held by the object.
      * After calling this method, the native handle is invalidated.
+     * </p>
+     *
+     * <p>
+     * <strong>!IMPORTANT!</strong><br>
+     * Make sure that the implementing function is annotated with {@link com.jnibridge.annotations.lifecycle.Deallocate}
+     * </p>
      */
     void destruct();
 }

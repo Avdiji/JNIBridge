@@ -1,10 +1,10 @@
 package com.jnibridge.generator.model.extractor;
 
 import com.jnibridge.annotations.BridgeClass;
-import com.jnibridge.annotations.BridgeMetadata;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.generator.scanner.MethodScanner;
+import com.jnibridge.nativeaccess.IPointer;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
  */
 public class ClassInfoExtractor {
 
+    /**
+     * Constructor.
+     */
     private ClassInfoExtractor() { }
 
     /**
@@ -26,90 +29,83 @@ public class ClassInfoExtractor {
      * @throws IllegalArgumentException if the class is not annotated with {@link BridgeClass}
      */
     @NotNull
-    public static ClassInfo extract(@NotNull final Class<?> clazz) {
+    public static ClassInfo extract(@NotNull final Class<?> clazz, @NotNull final List<Class<?>> otherClassesToMap) {
         BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
         if (annotation == null) {
             throw new IllegalArgumentException(String.format("Class '%s' must be annotated properly in order to be mapped.", clazz.getSimpleName()));
         }
 
-        return ClassInfo.builder()
+        // sorted set of all the subclasses to be mapped...
+        SortedSet<ClassInfo> subclasses = otherClassesToMap.stream()
+                .filter(otherClazz -> !otherClazz.equals(clazz))
+                .filter(clazz::isAssignableFrom)
+                .map(other -> extract(other, otherClassesToMap))
+                .collect(Collectors.toCollection(TreeSet::new));
+
+        final String nativeClassName = annotation.name().isEmpty() ? clazz.getSimpleName() : annotation.name();
+        final ClassInfo result = ClassInfo.builder()
                 .clazz(clazz)
                 .nativeNamespace(annotation.namespace())
-                .nativeName(annotation.name().isEmpty() ? clazz.getSimpleName() : annotation.name())
+                .nativeName(nativeClassName)
                 .jName(clazz.getSimpleName())
-
-                .metadata(extractInheritableMetadataInfo(clazz))
-                .methodsToMap(extractMethodsToMap(clazz, annotation.namespace()))
+                .subclasses(subclasses)
+                .methodsToMap(extractMethodsToMap(clazz, annotation.namespace(), nativeClassName))
                 .build();
+
+
+        if (IPointer.class.isAssignableFrom(clazz)) { result.getSubclasses().add(result); }
+        return result;
     }
+
 
     /**
      * Extracts all native methods from the given class that are relevant to JNI bridging.
      * Delegates to {@link MethodScanner#getAllJNIBridgedMethods(Class)} and transforms
      * each method into a {@link MethodInfo}.
      *
-     * @param clazz the class to scan
+     * @param clazz the class to scan.
+     * @param namespace The namespace of the corresponding function.
+     * @param nativeClassName The name of the implementing function (to complete the namespace in case of a static function inside a class).
      * @return list of {@link MethodInfo} objects representing native methods
      */
     @NotNull
-    private static List<MethodInfo> extractMethodsToMap(@NotNull final Class<?> clazz, @NotNull final String namespace) {
+    private static List<MethodInfo> extractMethodsToMap(@NotNull final Class<?> clazz, @NotNull final String namespace, @NotNull final String nativeClassName) {
         Set<Method> allJNIBridgedMethods = MethodScanner.getAllJNIBridgedMethods(clazz);
-        return allJNIBridgedMethods.stream().map(method -> MethodInfoExtractor.extract(method, namespace)).collect(Collectors.toList());
-    }
 
-    /**
-     * Resolves and flattens all inheritable metadata from the given class and its declared inheritance chain.
-     * <p>
-     * All metadata is accumulated into a {@link ClassInfo.InheritableMetadataInfo} instance.
-     *
-     * @param clazz the class to resolve metadata for; must be annotated with {@link BridgeClass}
-     * @return a flattened metadata info object containing all inherited and declared values
-     * @throws IllegalArgumentException if any referenced superclass is missing the {@link BridgeClass} annotation
-     */
-    @NotNull
-    private static ClassInfo.InheritableMetadataInfo extractInheritableMetadataInfo(@NotNull final Class<?> clazz) {
-        final BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
-        BridgeMetadata metadata = annotation.metadata();
-
-        Set<String> includes = Arrays.stream(metadata.includes()).collect(Collectors.toSet());
-        Set<String> customJNICodePaths = Arrays.stream(metadata.customJNICodePaths()).collect(Collectors.toSet());
-
-        ClassInfo.InheritableMetadataInfo metadataInfo = new ClassInfo.InheritableMetadataInfo(includes, customJNICodePaths);
-
-        Set<Class<?>> visited = new HashSet<>();
-        visited.add(clazz);
-
-        for (Class<?> inheritClass : metadata.inheritFrom()) {
-            extractInheritableMetadataInfo(inheritClass, metadataInfo, visited);
+        // adjust namespace depending on whether the corresponding class is a utils or not
+        final StringBuilder actualNamespace = new StringBuilder(namespace);
+        if (IPointer.class.isAssignableFrom(clazz)) {
+            actualNamespace.append("::").append(nativeClassName);
         }
 
-        return metadataInfo;
+        return allJNIBridgedMethods.stream()
+                .filter(method -> method.getDeclaringClass().equals(clazz))
+                .map(method -> MethodInfoExtractor.extract(method, actualNamespace.toString(), clazz)).collect(Collectors.toList());
     }
 
-    /**
-     * Recursively accumulates metadata from a class annotated with {@link BridgeClass} and any of its ancestors
-     * declared via {@link BridgeMetadata#inheritFrom()}. Cycles in the inheritance tree are safely ignored.
-     *
-     * @param inheritClass the class whose metadata should be processed
-     * @param metadataInfo the mutable container to accumulate resolved metadata into
-     * @param visited      a set of already-visited classes used to prevent infinite recursion on circular inheritance
-     * @throws IllegalArgumentException if {@code inheritClass} is not annotated with {@link BridgeClass}
-     */
-    private static void extractInheritableMetadataInfo(@NotNull final Class<?> inheritClass, @NotNull final ClassInfo.InheritableMetadataInfo metadataInfo, @NotNull final Set<Class<?>> visited) {
-        // prevent recursion on circular inheritance
-        if (!visited.add(inheritClass)) { return; }
 
-        // must be annotated
-        BridgeClass inheritedAnnotation = inheritClass.getAnnotation(BridgeClass.class);
-        if (inheritedAnnotation == null) {
-            throw new IllegalArgumentException(String.format("Cannot inherit metadata from class '%s': @BridgeClass annotation missing.", inheritClass.getName()));
+    /**
+     * Method extract the full C++ type from the given class.
+     *
+     * @param clazz The class to extract the full C++ type from.
+     * @return The full C++ type of the passed class as a string.
+     * @throws RuntimeException If the class has not been annotated properly.
+     */
+    public static String extractClassCType(@NotNull final Class<?> clazz) {
+        if (!IPointer.class.isAssignableFrom(clazz)) {
+            throw new IllegalArgumentException(String.format("Class '%s' must implement IPointer.", clazz.getSimpleName()));
         }
 
-        // add inherited metadata
-        BridgeMetadata metadata = inheritedAnnotation.metadata();
-        metadataInfo.getIncludes().addAll(Arrays.asList(metadata.includes()));
-        metadataInfo.getCustomJNICodePaths().addAll(Arrays.asList(metadata.customJNICodePaths()));
+        BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
+        if (annotation == null) {
+            throw new RuntimeException(String.format("Class '%s' must be annotated properly, for it to be mapped properly", clazz.getSimpleName()));
+        }
 
-        for (Class<?> next : metadata.inheritFrom()) { extractInheritableMetadataInfo(next, metadataInfo, visited); }
+        String namespace = annotation.namespace();
+        String name = annotation.name();
+
+        String result = namespace.isEmpty() ? "" : namespace + "::";
+        result += name.isEmpty() ? clazz.getSimpleName() : name;
+        return result;
     }
 }

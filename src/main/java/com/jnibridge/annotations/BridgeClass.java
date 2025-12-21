@@ -15,13 +15,6 @@ import java.lang.annotation.Target;
 public @interface BridgeClass {
 
     /**
-     * Metadata for the class mapping.
-     *
-     * @return An instance of {@link BridgeMetadata} containing metadata for the class.
-     */
-    BridgeMetadata metadata();
-
-    /**
      * Native namespace for the mapped class (e.g., "core::math").
      *
      * @return The C++/native namespace in which the generated type should reside.

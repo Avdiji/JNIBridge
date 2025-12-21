@@ -8,6 +8,7 @@ import java.util.Map;
  * A component responsible for generating or "composing" a string representation
  * of some code, signature, or descriptor.
  */
+@SuppressWarnings("unused") // IDE does not seem to recognize that these functions are being used...
 public interface Composer {
 
     /**

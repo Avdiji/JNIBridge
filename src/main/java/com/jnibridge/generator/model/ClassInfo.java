@@ -1,11 +1,10 @@
 package com.jnibridge.generator.model;
 
 import com.jnibridge.annotations.BridgeClass;
-import com.jnibridge.annotations.BridgeMetadata;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -15,7 +14,7 @@ import java.util.*;
  */
 @Getter
 @Builder
-public class ClassInfo {
+public class ClassInfo implements Comparable<ClassInfo> {
 
     // @formatter:off
 
@@ -27,25 +26,22 @@ public class ClassInfo {
     @NonNull private final String nativeName;
     @NonNull private final String jName;
 
-    // inheritable metadata
-    @NonNull private final InheritableMetadataInfo metadata;
-
-    // all the native methods (also the inherited ones).
+    // all the native methods (excluding the inherited ones...).
     @NonNull private final List<MethodInfo> methodsToMap;
 
+    // all the subclasses
+    @NonNull private final SortedSet<ClassInfo> subclasses;
     // @formatter:on
 
 
-    /**
-     * Represents a model of the {@link BridgeMetadata} annotation, used in JNI-compatible code generation.
-     */
-    @Getter
-    @RequiredArgsConstructor
-    public static class InheritableMetadataInfo {
+    @Override
+    public int compareTo(@NotNull ClassInfo other) {
+        // Sort in a way where superclasses are in the end of the list...
+        // used to properly implement the polymorphic helpers...
+        if (this.clazz.equals(other.clazz)) { return 0; }
+        if(this.clazz.isAssignableFrom(other.clazz)) { return 1; }
+        if(other.clazz.isAssignableFrom(this.clazz)) { return -1; }
 
-        // @formatter:off
-        @NonNull  private final Set<String> includes;
-        @NonNull private final Set<String> customJNICodePaths;
-        // @formatter:on
+        return this.clazz.getName().compareTo(other.clazz.getName());
     }
 }

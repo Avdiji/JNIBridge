@@ -22,7 +22,7 @@ public class ClassInfoJNIComposer extends ClassInfoComposer {
 
     @Override
     public String compose() {
-        String result = ResourceUtils.load("com/jnibridge/templates/jni_files/jni_file.template");
+        String result = ResourceUtils.load("com/jnibridge/other/jni_files/jni_file.template");
         return TemplateUtils.substitute(result, getReplacements());
     }
 }

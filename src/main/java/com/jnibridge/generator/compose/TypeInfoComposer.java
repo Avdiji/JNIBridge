@@ -20,6 +20,7 @@ public abstract class TypeInfoComposer implements Composer{
 
     // TypeInfo - related Placeholders...
     public static final String PLACEHOLDER_C_TYPE = "cType";
+    public static final String PLACEHOLDER_C_TYPE_UNDERSCORE = "cTypeUnderscore";
     public static final String PLACEHOLDER_C_VAR = "cVar";
 
     public static final String PLACEHOLDER_JNI_TYPE = "jniType";
@@ -29,6 +30,7 @@ public abstract class TypeInfoComposer implements Composer{
     @NonNull
     private final TypeInfo typeInfo;
 
+    @Override
     @NotNull
     public Map<String, String> getReplacements() {
         Map<String, String> replacements = new HashMap<>();
@@ -37,6 +39,8 @@ public abstract class TypeInfoComposer implements Composer{
         final String cTypeReplacement = String.format("%s%s", isConst ? "const " : "", typeInfo.getCType());
 
         replacements.put(PLACEHOLDER_C_TYPE, cTypeReplacement);
+        replacements.put(PLACEHOLDER_C_TYPE_UNDERSCORE, cTypeReplacement.replace("::", "_"));
+
         replacements.put(PLACEHOLDER_JNI_TYPE, typeInfo.getJniType());
 
         String id = Optional.ofNullable(typeInfo.getId()).orElse("");

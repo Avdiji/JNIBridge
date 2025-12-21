@@ -1,19 +1,21 @@
 package com.jnibridge.generator.model.extractor;
 
+import com.jnibridge.annotations.lifecycle.Ptr;
+import com.jnibridge.annotations.lifecycle.Ref;
+import com.jnibridge.annotations.lifecycle.Shared;
 import com.jnibridge.annotations.typemapping.Mapping;
 import com.jnibridge.annotations.typemapping.UseMapping;
 import com.jnibridge.generator.model.TypeInfo;
 import com.jnibridge.mapper.TypeMapper;
 import com.jnibridge.mapper.GlobalMapperRegistry;
+import com.jnibridge.nativeaccess.IPointer;
 import com.jnibridge.utils.ResourceUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -22,6 +24,9 @@ import java.util.stream.Collectors;
  */
 public class TypeInfoExtractor {
 
+    /**
+     * Constructor.
+     */
     private TypeInfoExtractor() { }
 
     /**
@@ -59,6 +64,24 @@ public class TypeInfoExtractor {
     }
 
     /**
+     * @param clazz The class to be mapped.
+     * @param cType The CType of the class to be mapped.
+     * @return The TypeInfo, which maps the calling type to C++.
+     */
+    protected static TypeInfo extractSelfType(@NotNull final Class<?> clazz, @NotNull final String cType) {
+        return TypeInfo.builder()
+                .type(clazz)
+                .id(null)
+                .annotations(new ArrayList<>())
+                .cType(cType)
+                .jniType("jobject")
+                .inMapping(ResourceUtils.load("com/jnibridge/mappings/bridged_classes/raw/jnibridge.ptr.in.mapping"))
+                .outMapping("")
+                .isSelf(true)
+                .build();
+    }
+
+    /**
      * Internal helper that builds a {@link TypeInfo} object from a given type and its annotations.
      *
      * @param type        the Java class to resolve
@@ -70,12 +93,18 @@ public class TypeInfoExtractor {
     private static TypeInfo extract(@NotNull final Class<?> type, @Nullable final String id, final Annotation[] annotations) {
         List<Annotation> annotationList = Arrays.stream(annotations).collect(Collectors.toList());
 
-        // check whether the param/returnValue is using a specific mapper
+        // Extract the TypeInfo from an IPointer type... (UseMapping should not work for these types)
+        if (IPointer.class.isAssignableFrom(type)) {
+            return extractIPointerType(type, id, annotationList);
+        }
+
+        // check whether the param/returnValue is using a specific mapper.
         Mapping paramSpecificMapping = annotationList.stream()
                 .filter(annotation -> annotation instanceof UseMapping)
                 .map(annotation -> ((UseMapping) annotation).value())
                 .map(mapper -> validateMapper(mapper, type.getSimpleName()))
                 .findFirst()
+                // make use of the Mapper registry, if no specific mapper is being used.
                 .orElse(validateMapper(GlobalMapperRegistry.getMapperFor(type), type.getSimpleName()));
 
         // create a new TypeInfo
@@ -87,7 +116,67 @@ public class TypeInfoExtractor {
                 .jniType(paramSpecificMapping.jniType())
                 .inMapping(ResourceUtils.load(paramSpecificMapping.inPath()))
                 .outMapping(ResourceUtils.load(paramSpecificMapping.outPath()))
+                .isSelf(false)
                 .build();
+    }
+
+    /**
+     * Extract the TypeInfo from a class, implementing the {@link IPointer} interface.
+     *
+     * @param type        The class-type of the type to extract the <code>InfoType</code> from.
+     * @param id          A unique identifier (used for the JNI-Mapping process).
+     * @param annotations All the annotations of the corresponding type.
+     * @return An instance of {@link TypeInfo} from the passed parameter.
+     */
+    private static TypeInfo extractIPointerType(@NotNull final Class<?> type, @Nullable final String id, final List<Annotation> annotations) {
+        final String cType = ClassInfoExtractor.extractClassCType(type);
+        final String jniType = "jobject";
+
+        final TypeInfo result = TypeInfo.builder()
+                .type(type)
+                .id(id)
+                .annotations(annotations)
+                .cType(cType)
+                .jniType(jniType)
+                .isSelf(false)
+                .build();
+
+        // Default mappings (if nothing has been specified -> map by value)
+        final StringBuilder inMappingTemplatePath = new StringBuilder("com/jnibridge/mappings/bridged_classes/raw/jnibridge.val.in.mapping");
+        final StringBuilder outMappingTemplatePath = new StringBuilder("com/jnibridge/mappings/bridged_classes/raw/jnibridge.val.out.mapping");
+
+        // Mapping for ptr
+        Optional<Ptr> ptrOpt = result.getAnnotation(Ptr.class);
+        ptrOpt.ifPresent(ptr -> {
+            inMappingTemplatePath.setLength(0);
+            outMappingTemplatePath.setLength(0);
+            inMappingTemplatePath.append(ptr.inMapping());
+            outMappingTemplatePath.append(ptr.outMapping());
+        });
+
+        // Mapping for refs
+        Optional<Ref> refOpt = result.getAnnotation(Ref.class);
+        refOpt.ifPresent(ref -> {
+            inMappingTemplatePath.setLength(0);
+            outMappingTemplatePath.setLength(0);
+            inMappingTemplatePath.append(ref.inMapping());
+            outMappingTemplatePath.append(ref.outMapping());
+        });
+
+        // Mapping for sharedPtr...
+        Optional<Shared> sharedOpt = result.getAnnotation(Shared.class);
+        sharedOpt.ifPresent(shared -> {
+            inMappingTemplatePath.setLength(0);
+            outMappingTemplatePath.setLength(0);
+            inMappingTemplatePath.append(shared.inMapping());
+            outMappingTemplatePath.append(shared.outMapping());
+        });
+
+        // TODO support unique mapping...
+
+        result.setInMapping(ResourceUtils.load(inMappingTemplatePath.toString()));
+        result.setOutMapping(ResourceUtils.load(outMappingTemplatePath.toString()));
+        return result;
     }
 
     /**

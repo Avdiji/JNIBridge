@@ -4,7 +4,7 @@ import com.jnibridge.annotations.typemapping.Mapping;
 import com.jnibridge.mapper.TypeMapper;
 
 /**
- * Mapper for std::string_view.
+ * Mapper for <code>std::string_view</code>
  */
 @Mapping(
         cType = "std::string",

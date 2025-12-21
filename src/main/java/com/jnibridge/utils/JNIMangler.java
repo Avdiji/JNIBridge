@@ -32,10 +32,14 @@ public class JNIMangler {
                 .replace(")", "");      // Remove parentheses
 
         // return methodName__descriptor (if descriptor is not empty)
-        String mangledMethodName = method.getName().replace("_", "_1");
-        return methodDescriptor.isEmpty() ?
+        final String mangledMethodName = method.getName().replace("_", "_1");
+
+        final String prefix = getMangledClassDescriptor(method.getDeclaringClass());
+        final String postfix = methodDescriptor.isEmpty() ?
                 mangledMethodName :
                 mangledMethodName + "__" + methodDescriptor;
+
+        return String.format("%s_%s", prefix, postfix);
     }
 
     /**
