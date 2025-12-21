@@ -1,7 +1,6 @@
 package com.jnibridge.generator.model.extractor;
 
 import com.jnibridge.annotations.BridgeClass;
-import com.jnibridge.annotations.Name;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.generator.scanner.MethodScanner;
@@ -17,6 +16,9 @@ import java.util.stream.Collectors;
  */
 public class ClassInfoExtractor {
 
+    /**
+     * Constructor.
+     */
     private ClassInfoExtractor() { }
 
     /**
@@ -41,7 +43,7 @@ public class ClassInfoExtractor {
                 .collect(Collectors.toCollection(TreeSet::new));
 
         final String nativeClassName = annotation.name().isEmpty() ? clazz.getSimpleName() : annotation.name();
-        ClassInfo result = ClassInfo.builder()
+        final ClassInfo result = ClassInfo.builder()
                 .clazz(clazz)
                 .nativeNamespace(annotation.namespace())
                 .nativeName(nativeClassName)
@@ -61,7 +63,9 @@ public class ClassInfoExtractor {
      * Delegates to {@link MethodScanner#getAllJNIBridgedMethods(Class)} and transforms
      * each method into a {@link MethodInfo}.
      *
-     * @param clazz the class to scan
+     * @param clazz the class to scan.
+     * @param namespace The namespace of the corresponding function.
+     * @param nativeClassName The name of the implementing function (to complete the namespace in case of a static function inside a class).
      * @return list of {@link MethodInfo} objects representing native methods
      */
     @NotNull

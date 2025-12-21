@@ -8,10 +8,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.SortedSet;
 
+/**
+ * Compose Polymorphic helper functions for Raw-types.
+ */
 public class RawPolymorphicFuncComposer extends PolymorphicHelperComposer.PolymorphicFuncComposer {
 
     private static final String FUNC_NAME_PREFIX = "baseHandle_to_";
 
+    /**
+     * Constructor.
+     * @param polymorphicClass The class to generate the helper function for.
+     */
     public RawPolymorphicFuncComposer(@NotNull final ClassInfo polymorphicClass) {
         super(polymorphicClass, FUNC_NAME_PREFIX);
     }

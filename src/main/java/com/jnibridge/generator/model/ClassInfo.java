@@ -35,13 +35,13 @@ public class ClassInfo implements Comparable<ClassInfo> {
 
 
     @Override
-    public int compareTo(@NotNull ClassInfo o) {
+    public int compareTo(@NotNull ClassInfo other) {
         // Sort in a way where superclasses are in the end of the list...
+        // used to properly implement the polymorphic helpers...
+        if (this.clazz.equals(other.clazz)) { return 0; }
+        if(this.clazz.isAssignableFrom(other.clazz)) { return 1; }
+        if(other.clazz.isAssignableFrom(this.clazz)) { return -1; }
 
-        if (this.clazz.equals(o.clazz)) { return 0; }
-        if(this.clazz.isAssignableFrom(o.clazz)) { return 1; }
-        if(o.clazz.isAssignableFrom(this.clazz)) { return -1; }
-
-        return this.clazz.getName().compareTo(o.clazz.getName());
+        return this.clazz.getName().compareTo(other.clazz.getName());
     }
 }

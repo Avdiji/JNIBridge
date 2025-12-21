@@ -8,6 +8,10 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Method;
 import java.util.List;
 
+/**
+ * Represents a model of a Java Method annotated, used in JNI-compatible
+ * code generation.
+ */
 @Getter
 @Builder
 public class MethodInfo {

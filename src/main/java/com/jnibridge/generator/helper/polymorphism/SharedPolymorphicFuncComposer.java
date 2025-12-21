@@ -8,10 +8,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.SortedSet;
 
+/**
+ * Compose Polymorphic helper functions for types, wrapped in <code>std::shared_ptr</code>.
+ */
 public class SharedPolymorphicFuncComposer extends PolymorphicHelperComposer.PolymorphicFuncComposer {
 
     private static final String FUNC_NAME_PREFIX = "baseHandle_to_shared_";
 
+    /**
+     * Constructor.
+     * @param polymorphicClass The class to generate the helper function for.
+     */
     public SharedPolymorphicFuncComposer(@NotNull final ClassInfo polymorphicClass) {
         super(polymorphicClass, FUNC_NAME_PREFIX);
     }

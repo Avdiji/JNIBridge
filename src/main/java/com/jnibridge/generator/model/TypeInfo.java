@@ -1,5 +1,6 @@
 package com.jnibridge.generator.model;
 
+import com.jnibridge.annotations.BridgeClass;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -8,6 +9,10 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Represents a model of a Java type, used in JNI-compatible
+ * code generation.
+ */
 @Getter
 @Builder
 public class TypeInfo {

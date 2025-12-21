@@ -14,7 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * Composes JNI-specific helper-code to handle polymorphism on a C++/jni level.
+ */
 @RequiredArgsConstructor
 public class PolymorphicHelperComposer implements Composer {
 
@@ -41,10 +43,23 @@ public class PolymorphicHelperComposer implements Composer {
         return replacements;
     }
 
+    /**
+     * Compose the replacements for the actual helper functions of the corresponding polymorphic type.
+     *
+     * <p>Contains helper for:</p>
+     * <ul>
+     *     <li>Raw types.</li>
+     *     <li>std::shared_ptr</li>
+     * </ul>
+     *
+     * @return A String representation of polymorphic helpers.
+     */
+    @NotNull
     private String getHelperFunctionReplacement() {
         RawPolymorphicFuncComposer rawPolymorphicFuncComposer = new RawPolymorphicFuncComposer(classInfo);
         SharedPolymorphicFuncComposer sharedPolymorphicFuncComposer = new SharedPolymorphicFuncComposer(classInfo);
 
+        //noinspection StringBufferReplaceableByString
         StringBuilder result = new StringBuilder();
 
         result.append(rawPolymorphicFuncComposer.compose()).append("\n\n");
@@ -53,10 +68,21 @@ public class PolymorphicHelperComposer implements Composer {
         return result.toString();
     }
 
+    /**
+     * Function computes the jni-helper filename for the passed type.
+     *
+     * @param classInfo The class to create helper functions for.
+     * @return A unique filename for the generated header file.
+     */
     public static String getHelperFilename(@NotNull final ClassInfo classInfo) {
-        return String.format("%s_%s.helper.hpp", classInfo.getClazz().getPackage().getName().replace(".", "_"), classInfo.getClazz().getSimpleName());
+        return String.format("%s_%s.helper.hpp",
+                classInfo.getClazz().getPackage().getName().replace(".", "_"),
+                classInfo.getClazz().getSimpleName());
     }
 
+    /**
+     * Composes JNI-specific code to handle polymorphism on a C++/jni level.
+     */
     @Getter
     public static abstract class PolymorphicFuncComposer implements Composer {
 
@@ -68,6 +94,12 @@ public class PolymorphicHelperComposer implements Composer {
         private final String cType;
         private final String cTypeUnderscore;
 
+        /**
+         * Constructor.
+         *
+         * @param polymorphicClass     The type to generate the helper function for.
+         * @param helperFunctionPrefix The function prefix for the generated helper function (to make the function-signature unique).
+         */
         public PolymorphicFuncComposer(@NotNull final ClassInfo polymorphicClass, @NotNull final String helperFunctionPrefix) {
             this.polymorphicClass = polymorphicClass;
             this.helperFunctionPrefix = helperFunctionPrefix;
@@ -86,6 +118,11 @@ public class PolymorphicHelperComposer implements Composer {
             return replacements;
         }
 
+        /**
+         * Generate a String representation of the actual helper function.
+         *
+         * @return A String representation of the helper function.
+         */
         public abstract String getHandleToInstanceReplacement();
 
     }

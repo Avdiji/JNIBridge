@@ -2,15 +2,12 @@ package com.jnibridge.generator.model.extractor;
 
 import com.jnibridge.annotations.Name;
 import com.jnibridge.annotations.Namespace;
-import com.jnibridge.annotations.lifecycle.Allocate;
-import com.jnibridge.annotations.lifecycle.Deallocate;
 import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.nativeaccess.IPointer;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.Optional;
 
 import static com.jnibridge.generator.model.extractor.ClassInfoExtractor.extractClassCType;
@@ -20,6 +17,9 @@ import static com.jnibridge.generator.model.extractor.ClassInfoExtractor.extract
  */
 public class MethodInfoExtractor {
 
+    /**
+     * Constructor
+     */
     private MethodInfoExtractor() { }
 
     /**
@@ -48,7 +48,7 @@ public class MethodInfoExtractor {
                 .returnType(TypeInfoExtractor.extractReturnType(method))
                 .params(TypeInfoExtractor.extractParamTypes(method));
 
-        // in case the method is a instance method
+        // in case the method is an instance method
         if (!isStatic && IPointer.class.isAssignableFrom(classToBeMapped)) {
             methodBuilder.selfType(TypeInfoExtractor.extractSelfType(classToBeMapped, extractClassCType(classToBeMapped)));
         }

@@ -48,7 +48,10 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
         return TemplateUtils.substitute(instanceMethodTemplate, getReplacements());
     }
 
-
+    /**
+     * compose the JNI code for allocation functions.
+     * @return The JNI code for allocation functions.
+     */
     private String composeAllocFunction() {
         // setup additional mappings...
         TypeInfo selfType = getMethodInfo().getSelfType();
@@ -84,7 +87,10 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
         return TemplateUtils.substitute(allocMethodTemplate, getReplacements());
     }
 
-
+    /**
+     * compose the JNI code for deallocation functions.
+     * @return The JNI code for deallocation functions.
+     */
     private String composeDeallocFunction() {
         // setup additional mappings...
         TypeInfo selfType = getMethodInfo().getSelfType();

@@ -30,6 +30,7 @@ public abstract class TypeInfoComposer implements Composer{
     @NonNull
     private final TypeInfo typeInfo;
 
+    @Override
     @NotNull
     public Map<String, String> getReplacements() {
         Map<String, String> replacements = new HashMap<>();

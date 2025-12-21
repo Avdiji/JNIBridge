@@ -10,13 +10,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Compose the JniBridgeHandle - helper file.
+ */
 public class JniBridgeHandleComposer implements Composer {
 
     public static final String INTERNAL_FILENAME = "JniBridgeHandle.internal.hpp";
 
     private final Collection<String> includes;
 
-
+    /**
+     * Constructor.
+     * @param includes All native includes.
+     */
     public JniBridgeHandleComposer(@NotNull final Collection<String> includes) {
         this.includes = includes;
     }

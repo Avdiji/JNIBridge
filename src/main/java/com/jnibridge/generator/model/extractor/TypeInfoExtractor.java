@@ -24,6 +24,9 @@ import java.util.stream.Collectors;
  */
 public class TypeInfoExtractor {
 
+    /**
+     * Constructor.
+     */
     private TypeInfoExtractor() { }
 
     /**
