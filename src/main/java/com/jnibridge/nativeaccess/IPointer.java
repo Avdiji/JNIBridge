@@ -9,6 +9,8 @@ package com.jnibridge.nativeaccess;
  * <p>
  * The {@code IPointer} interface is used by the JNI bridge to track object identity and ensure correct
  * construction, destruction, and pointer management on both the Java and native sides.
+ *
+ * @see Pointer
  */
 public interface IPointer {
 
