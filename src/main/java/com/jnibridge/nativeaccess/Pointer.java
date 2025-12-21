@@ -1,6 +1,10 @@
 package com.jnibridge.nativeaccess;
 
 import com.jnibridge.annotations.BridgeClass;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.Closeable;
 
 /**
  * Abstract base class for native-bound objects that simplifies {@link IPointer} implementation.
@@ -19,19 +23,17 @@ import com.jnibridge.annotations.BridgeClass;
  * {@code Cleaner} for reliable and modern resource cleanup.</strong>
  */
 @BridgeClass
-public abstract class Pointer implements IPointer {
+public abstract class Pointer implements IPointer, Closeable {
 
+    // use lombok to generate setter/getter from IPointer
+    @Getter(onMethod_ = {@Override})
+    @Setter(onMethod_ = {@Override})
     private long nativeHandle;
-
-    @Override
-    public long getNativeHandle() { return nativeHandle; }
-
-    @Override
-    public void setNativeHandle(long nativeHandle) {
-        this.nativeHandle = nativeHandle;
-    }
 
     @Override
     @SuppressWarnings("removal")
     protected void finalize() { destruct(); }
+
+    @Override
+    public void close() { destruct(); }
 }

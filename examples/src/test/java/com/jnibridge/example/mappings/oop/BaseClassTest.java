@@ -18,21 +18,21 @@ public class BaseClassTest {
     public void testGetString() {
         BaseClass baseClass = new BaseClass();
         assertEquals("BaseClass-String", baseClass.getString());
-        baseClass.destruct();
+        baseClass.close();
     }
 
     @Test
     public void testGetAString() {
         A a = new A();
         assertEquals("A-String", a.getString());
-        a.destruct();
+        a.close();
     }
 
     @Test
     public void testGetBString() {
         B b = new B();
         assertEquals("B-String", b.getString());
-        b.destruct();
+        b.close();
     }
 
 }

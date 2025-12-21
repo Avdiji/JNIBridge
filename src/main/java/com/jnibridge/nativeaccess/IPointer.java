@@ -35,6 +35,12 @@ public interface IPointer {
      * <p>
      * This should release any native memory or resources held by the object.
      * After calling this method, the native handle is invalidated.
+     * </p>
+     *
+     * <p>
+     * <strong>!IMPORTANT!</strong><br>
+     * Make sure that the implementing function is annotated with {@link com.jnibridge.annotations.lifecycle.Deallocate}
+     * </p>
      */
     void destruct();
 }

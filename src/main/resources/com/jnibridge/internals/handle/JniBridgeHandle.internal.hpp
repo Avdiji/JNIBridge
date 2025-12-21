@@ -139,7 +139,7 @@ namespace jnibridge::internal {
                 std::shared_ptr<T> original = std::get<std::shared_ptr<T>>(_store);
                 return std::dynamic_pointer_cast<X>(original);
             }
-            throw std::logic_error("The JNI-wrapped type is not an instance of std::shared_ptr<T>.")
+            throw std::logic_error("The JNI-wrapped type is not an instance of std::shared_ptr<T>.");
         }
 
         /**
