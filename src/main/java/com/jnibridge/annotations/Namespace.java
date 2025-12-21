@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Specifies an alternative native namespace for the annotated method.
+ * Specifies an alternative native namespace for the annotated <code>method</code>.
  * <p>
  * This annotation is useful when the method should be placed in a different namespace
  * in the generated native code (e.g., C++).

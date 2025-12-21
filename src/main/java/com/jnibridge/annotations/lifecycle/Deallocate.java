@@ -8,19 +8,35 @@ import java.lang.annotation.Target;
 /**
  * Marks a method as performing a native resource deallocation.
  *
- * <p>Intended for methods that release or free a native resource
- * (e.g., memory, file handle, native object) previously obtained
- * through a method annotated with {@link Allocate}.</p>
- *
- * <p>This annotation can help code generation, static analysis, or runtime
- * tooling track resource lifecycles across the JNI boundary and ensure
- * proper cleanup.</p>
- *
- * @see Allocate
+ * <p>
+ * The annotation ensures proper cleanup to avoid memory leaks.
+ * </p>
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Deallocate {
 
+    /**
+     * Specifies a custom native deallocation function template.
+     *
+     * <p>
+     * The referenced template file must contain valid C/C++ JNI code responsible
+     * for releasing the native resources associated with a Java object. During
+     * code generation, the placeholders listed below are replaced with
+     * context-specific values derived from the Java method.
+     * </p>
+     *
+     * <h3>Available placeholders</h3>
+     * <ul>
+     *   <li><code>${mangledFuncName}</code> – The JNI-mangled name of the corresponding Java method.</li>
+     * </ul>
+     *
+     * <p>
+     * Implementations are expected to fully release all native resources and
+     * ensure that the Java object no longer references an invalid native handle.
+     * </p>
+     *
+     * @return the classpath-relative location of the deallocation function template
+     */
     String deallocTemplate() default "com/jnibridge/internals/dealloc/dealloc.template";
 }

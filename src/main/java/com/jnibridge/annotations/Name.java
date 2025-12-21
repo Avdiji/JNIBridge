@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Specifies an alternative native name for the annotated method.
+ * Specifies an alternative native name for the annotated <code>method</code>.
  * <p>
  * This annotation is useful when the native method name differs from the Java method name.
  * It allows precise control over symbol generation and JNI binding.

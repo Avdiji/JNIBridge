@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
  * public native void process(@UseMapping(MyPointerIntMapper.class) int param);
  * }</pre>
  *
- * <p>Can be applied to methods or parameters. Must reference a {@link TypeMapper}-annotated class.
+ * <p>Can be applied to methods or parameters that <strong>DO NOT</strong> extend {@link com.jnibridge.nativeaccess.IPointer}. Must reference a {@link TypeMapper}-annotated class.
  */
 @Target({ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)

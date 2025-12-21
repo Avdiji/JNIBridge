@@ -75,7 +75,7 @@ public @interface Mapping {
      *
      * <p>Example substitution:
      * <pre>{@code
-     * int ${cVar} = static_cast<cType>(${jniVar});
+     * int ${cVar} = static_cast<${cType}>(${jniVar});
      * }</pre>
      */
     String inPath();
