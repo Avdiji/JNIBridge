@@ -14,6 +14,7 @@ public class MapJNI {
         String[] packagePattern = {"com.jnibridge.examples.mappings.*"};
         String[] includes = {
                 "../../../../../../../native/oop/PolymorphicStructure.cpp",
+                "../../../../../../../native/oop/Diamond.cpp",
                 "../../../../../../../native/simple/SimpleStatics.cpp"
         };
 
