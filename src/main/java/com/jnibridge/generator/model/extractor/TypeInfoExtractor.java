@@ -93,22 +93,19 @@ public class TypeInfoExtractor {
     private static TypeInfo extract(@NotNull final Class<?> type, @Nullable final String id, final Annotation[] annotations) {
         List<Annotation> annotationList = Arrays.stream(annotations).collect(Collectors.toList());
 
-        // check whether the param/returnValue is using a specific mapper
+        // Extract the TypeInfo from an IPointer type... (UseMapping should not work for these types)
+        if (IPointer.class.isAssignableFrom(type)) {
+            return extractIPointerType(type, id, annotationList);
+        }
+
+        // check whether the param/returnValue is using a specific mapper.
         Mapping paramSpecificMapping = annotationList.stream()
                 .filter(annotation -> annotation instanceof UseMapping)
                 .map(annotation -> ((UseMapping) annotation).value())
                 .map(mapper -> validateMapper(mapper, type.getSimpleName()))
                 .findFirst()
-                .orElse(null);
-
-        // extract the IPointer-Type
-        if (IPointer.class.isAssignableFrom(type)) {
-            return extractIPointerType(type, id, annotationList);
-
-            // use the mapping from the global registry
-        } else if (paramSpecificMapping == null) {
-            paramSpecificMapping = validateMapper(GlobalMapperRegistry.getMapperFor(type), type.getSimpleName());
-        }
+                // make use of the Mapper registry, if no specific mapper is being used.
+                .orElse(validateMapper(GlobalMapperRegistry.getMapperFor(type), type.getSimpleName()));
 
         // create a new TypeInfo
         return TypeInfo.builder()
@@ -123,7 +120,14 @@ public class TypeInfoExtractor {
                 .build();
     }
 
-
+    /**
+     * Extract the TypeInfo from a class, implementing the {@link IPointer} interface.
+     *
+     * @param type        The class-type of the type to extract the <code>InfoType</code> from.
+     * @param id          A unique identifier (used for the JNI-Mapping process).
+     * @param annotations All the annotations of the corresponding type.
+     * @return An instance of {@link TypeInfo} from the passed parameter.
+     */
     private static TypeInfo extractIPointerType(@NotNull final Class<?> type, @Nullable final String id, final List<Annotation> annotations) {
         final String cType = ClassInfoExtractor.extractClassCType(type);
         final String jniType = "jobject";
@@ -137,7 +141,6 @@ public class TypeInfoExtractor {
                 .isSelf(false)
                 .build();
 
-        // TODO might have to differentiate between sharedRef, UniqueRef
         // Default mappings (if nothing has been specified -> map by value)
         final StringBuilder inMappingTemplatePath = new StringBuilder("com/jnibridge/mappings/bridged_classes/raw/jnibridge.val.in.mapping");
         final StringBuilder outMappingTemplatePath = new StringBuilder("com/jnibridge/mappings/bridged_classes/raw/jnibridge.val.out.mapping");

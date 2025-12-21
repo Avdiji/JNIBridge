@@ -29,15 +29,16 @@ public class GlobalMapperRegistry {
     private static final Map<Class<?>, Class<? extends TypeMapper>> registry = new HashMap<>();
     static {
 
-        registry.put(int.class, IntMapper.class);
-        registry.put(void.class, VoidMapper.class);
-        registry.put(boolean.class, BoolMapper.class);
-        registry.put(char.class, CharMapper.class);
-        registry.put(double.class, DoubleMapper.class);
-        registry.put(float.class, FloatMapper.class);
-        registry.put(short.class, ShortMapper.class);
-        registry.put(long.class, LongMapper.class);
-        registry.put(String.class, StringMapper.class);
+        putIntoRegistry(int.class, IntMapper.class);
+        putIntoRegistry(int.class, IntMapper.class);
+        putIntoRegistry(void.class, VoidMapper.class);
+        putIntoRegistry(boolean.class, BoolMapper.class);
+        putIntoRegistry(char.class, CharMapper.class);
+        putIntoRegistry(double.class, DoubleMapper.class);
+        putIntoRegistry(float.class, FloatMapper.class);
+        putIntoRegistry(short.class, ShortMapper.class);
+        putIntoRegistry(long.class, LongMapper.class);
+        putIntoRegistry(String.class, StringMapper.class);
 
     }
     // @formatter:on
