@@ -1,9 +1,6 @@
 package com.jnibridge.generator.model;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,8 +25,11 @@ public class TypeInfo {
     @NonNull private final String cType;
     @NonNull private final String jniType;
 
-    @NonNull private final String inMapping;
-    @NonNull private final String outMapping;
+    @Setter
+    @Nullable private String inMapping;
+
+    @Setter
+    @Nullable private String outMapping;
 
     // @formatter:on
 
