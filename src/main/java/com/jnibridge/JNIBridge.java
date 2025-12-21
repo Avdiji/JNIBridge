@@ -49,12 +49,15 @@ public class JNIBridge {
                         clazz -> ClassInfoExtractor.extract(clazz, classesToMap)
                 ));
 
-        createInternalFiles(outPath, classMappings.values(), Arrays.stream(nativeIncludes).collect(Collectors.toList()));
+        // generate the JniBridgeHandle - helper file.
+        createJniBridgeHandleHelper(outPath, Arrays.stream(nativeIncludes).collect(Collectors.toList()));
 
+        // generate the polymorphic helper files.
         createPolymorphicHelpers(outPath, classMappings.values().stream()
                 .filter(classInfo -> IPointer.class.isAssignableFrom(classInfo.getClazz()))
                 .collect(Collectors.toList()));
 
+        // generate the 'actual' JNI files...
         createJNIFiles(outPath, classMappings);
     }
 
@@ -88,7 +91,7 @@ public class JNIBridge {
      * Create the file, which the JNIBridge uses internally, to handle mapping logic.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void createInternalFiles(@NotNull final Path outPath, Collection<ClassInfo> classesToMap, Collection<String> allNativeIncludes) {
+    private static void createJniBridgeHandleHelper(@NotNull final Path outPath, Collection<String> allNativeIncludes) {
         final Path internalPath = Paths.get(outPath.toString(), "internal");
         internalPath.toFile().mkdirs();
 
@@ -96,7 +99,7 @@ public class JNIBridge {
         final String ptrWrapperFilename = String.format("%s/%s", internalPath, JniBridgeHandleComposer.INTERNAL_FILENAME);
 
         // create the corresponding internal files...
-        try (FileWriter ptrWrapperWriter = new FileWriter(ptrWrapperFilename);
+        try (FileWriter ptrWrapperWriter = new FileWriter(ptrWrapperFilename)
         ) {
             ptrWrapperWriter.write(new JniBridgeHandleComposer(allNativeIncludes).compose());
         } catch (IOException e) {
@@ -104,12 +107,19 @@ public class JNIBridge {
         }
     }
 
-    private static void createPolymorphicHelpers(@NotNull final Path outPath, Collection<ClassInfo> instanceClasses) {
+    /**
+     * Generate the polymorphic helper, header files.
+     *
+     * @param outPath         Out-path of the Polymorphic helper files.
+     * @param iPointerClasses Classes, that implement the {@link IPointer} interface.
+     */
+    private static void createPolymorphicHelpers(@NotNull final Path outPath, Collection<ClassInfo> iPointerClasses) {
         final Path internalPath = Paths.get(outPath.toString(), "internal/polymorphism");
+        //noinspection ResultOfMethodCallIgnored
         internalPath.toFile().mkdirs();
 
         List<String> convenienceHeaderIncludes = new ArrayList<>();
-        for (ClassInfo classInfo : instanceClasses) {
+        for (ClassInfo classInfo : iPointerClasses) {
             final String filename = String.format("%s/%s", internalPath, PolymorphicHelperComposer.getHelperFilename(classInfo));
 
             try (FileWriter rawPolymorphicHelperWriter = new FileWriter(filename)) {
@@ -125,12 +135,19 @@ public class JNIBridge {
         createPolymorphicHelperConvenienceHeader(outPath, convenienceHeaderIncludes);
     }
 
+    /**
+     * Generate a convenience header for the polymorphic headers.
+     *
+     * @param outPath  The out-path of the convenience file.
+     * @param includes All polymorphic helper file-includes.
+     */
     private static void createPolymorphicHelperConvenienceHeader(@NotNull final Path outPath, @NotNull final Collection<String> includes) {
         final Path internalPath = Paths.get(outPath.toString(), "internal");
+        //noinspection ResultOfMethodCallIgnored
         internalPath.toFile().mkdirs();
 
         final String filename = String.format("%s/%s", internalPath, PolymorphicHelperComposer.POLYMORPHIC_CONVENIENCE_HEADER_FILENAME);
-        try(FileWriter headerWriter = new FileWriter(filename)) {
+        try (FileWriter headerWriter = new FileWriter(filename)) {
 
             final StringBuilder result = new StringBuilder();
             result.append("#pragma once\n");
