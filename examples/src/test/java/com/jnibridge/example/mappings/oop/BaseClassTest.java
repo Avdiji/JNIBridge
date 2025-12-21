@@ -24,14 +24,14 @@ public class BaseClassTest {
     @Test
     public void testGetAString() {
         A a = new A();
-        System.out.println(a.getString());
+        assertEquals("A-String", a.getString());
         a.destruct();
     }
 
     @Test
     public void testGetBString() {
         B b = new B();
-        System.out.println(b.getString());
+        assertEquals("B-String", b.getString());
         b.destruct();
     }
 

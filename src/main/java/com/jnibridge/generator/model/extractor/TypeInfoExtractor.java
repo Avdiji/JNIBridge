@@ -1,5 +1,7 @@
 package com.jnibridge.generator.model.extractor;
 
+import com.jnibridge.annotations.lifecycle.Ptr;
+import com.jnibridge.annotations.lifecycle.Ref;
 import com.jnibridge.annotations.lifecycle.Shared;
 import com.jnibridge.annotations.typemapping.Mapping;
 import com.jnibridge.annotations.typemapping.UseMapping;
@@ -70,7 +72,7 @@ public class TypeInfoExtractor {
                 .annotations(new ArrayList<>())
                 .cType(cType)
                 .jniType("jobject")
-                .inMapping(ResourceUtils.load("com/jnibridge/mappings/bridged_classes/jnibridge.raw.ptr.in.mapping")) // TODO might want to be careful here...
+                .inMapping(ResourceUtils.load("com/jnibridge/mappings/bridged_classes/raw/jnibridge.ptr.in.mapping"))
                 .outMapping("")
                 .isSelf(true)
                 .build();
@@ -123,7 +125,6 @@ public class TypeInfoExtractor {
         final String cType = ClassInfoExtractor.extractClassCType(type);
         final String jniType = "jobject";
 
-
         final TypeInfo result = TypeInfo.builder()
                 .type(type)
                 .id(id)
@@ -133,19 +134,39 @@ public class TypeInfoExtractor {
                 .isSelf(false)
                 .build();
 
-        // TODO might have to differentiate between ref/ptr/val/shared/unique...
-        // Default mappings (if nothing has been specified)
-        final StringBuilder inMappingTemplatePath = new StringBuilder("com/jnibridge/mappings/bridged_classes/jnibridge.raw.ptr.in.mapping");
-        final StringBuilder outMappingTemplatePath = new StringBuilder("com/jnibridge/mappings/bridged_classes/jnibridge.raw.ptr.out.mapping");
+        // TODO might have to differentiate between sharedRef, UniqueRef
+        // Default mappings (if nothing has been specified -> map by value)
+        final StringBuilder inMappingTemplatePath = new StringBuilder("com/jnibridge/mappings/bridged_classes/raw/jnibridge.val.in.mapping");
+        final StringBuilder outMappingTemplatePath = new StringBuilder("com/jnibridge/mappings/bridged_classes/raw/jnibridge.val.out.mapping");
 
-        // Mapping for sharedPtr...
-        Optional<Shared> annotationOpt = result.getAnnotation(Shared.class);
-        annotationOpt.ifPresent(shared -> {
+        // Mapping for ptr
+        Optional<Ptr> ptrOpt = result.getAnnotation(Ptr.class);
+        ptrOpt.ifPresent(ptr -> {
             inMappingTemplatePath.setLength(0);
             outMappingTemplatePath.setLength(0);
-            inMappingTemplatePath.append("com/jnibridge/mappings/bridged_classes/jnibridge.shared.in.mapping");
-            outMappingTemplatePath.append("com/jnibridge/mappings/bridged_classes/jnibridge.shared.out.mapping");
+            inMappingTemplatePath.append(ptr.inMapping());
+            outMappingTemplatePath.append(ptr.outMapping());
         });
+
+        // Mapping for refs
+        Optional<Ref> refOpt = result.getAnnotation(Ref.class);
+        refOpt.ifPresent(ref -> {
+            inMappingTemplatePath.setLength(0);
+            outMappingTemplatePath.setLength(0);
+            inMappingTemplatePath.append(ref.inMapping());
+            outMappingTemplatePath.append(ref.outMapping());
+        });
+
+        // Mapping for sharedPtr...
+        Optional<Shared> sharedOpt = result.getAnnotation(Shared.class);
+        sharedOpt.ifPresent(shared -> {
+            inMappingTemplatePath.setLength(0);
+            outMappingTemplatePath.setLength(0);
+            inMappingTemplatePath.append(shared.inMapping());
+            outMappingTemplatePath.append(shared.outMapping());
+        });
+
+        // TODO support unique mapping...
 
         result.setInMapping(ResourceUtils.load(inMappingTemplatePath.toString()));
         result.setOutMapping(ResourceUtils.load(outMappingTemplatePath.toString()));

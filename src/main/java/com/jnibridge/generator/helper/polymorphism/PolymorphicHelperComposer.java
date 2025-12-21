@@ -1,8 +1,8 @@
-package com.jnibridge.generator.compose.polymorphism;
+package com.jnibridge.generator.helper.polymorphism;
 
 import com.jnibridge.generator.compose.Composer;
 import com.jnibridge.generator.compose.TypeInfoComposer;
-import com.jnibridge.generator.compose.jni.PtrWrapperJNIComposer;
+import com.jnibridge.generator.helper.JniBridgeHandleComposer;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.extractor.ClassInfoExtractor;
 import com.jnibridge.utils.ResourceUtils;
@@ -36,7 +36,7 @@ public class PolymorphicHelperComposer implements Composer {
         final Map<String, String> replacements = new HashMap<>();
 
         replacements.put(PLACEHOLDER_HELPER_FUNCTIONS, getHelperFunctionReplacement());
-        replacements.put(PLACEHOLDER_HANDLE_INCLUDE, String.format("../%s", PtrWrapperJNIComposer.INTERNAL_FILENAME));
+        replacements.put(PLACEHOLDER_HANDLE_INCLUDE, String.format("../%s", JniBridgeHandleComposer.INTERNAL_FILENAME));
 
         return replacements;
     }

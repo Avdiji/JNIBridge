@@ -1,7 +1,8 @@
 package com.jnibridge.generator.compose;
 
 import com.jnibridge.generator.compose.jni.MethodInfoJNIComposer;
-import com.jnibridge.generator.compose.polymorphism.PolymorphicHelperComposer;
+
+import com.jnibridge.generator.helper.polymorphism.PolymorphicHelperComposer;
 import com.jnibridge.generator.model.ClassInfo;
 import lombok.Getter;
 import lombok.NonNull;
@@ -61,7 +62,7 @@ public abstract class ClassInfoComposer implements Composer {
             result.append("../");
         }
 
-        result.append(String.format("internal/%s",PolymorphicHelperComposer.POLYMORPHIC_CONVENIENCE_HEADER_FILENAME));
+        result.append(String.format("internal/%s", PolymorphicHelperComposer.POLYMORPHIC_CONVENIENCE_HEADER_FILENAME));
         return result.toString();
     }
 }

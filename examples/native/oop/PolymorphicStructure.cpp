@@ -29,7 +29,6 @@ namespace jnibridge::examples {
 
         std::string getString() override { return "B-String"; }
 
-        B* getThisInstance() { return this; }
     };
 
 }

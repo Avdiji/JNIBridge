@@ -1,4 +1,4 @@
-package com.jnibridge.generator.compose.polymorphism;
+package com.jnibridge.generator.helper.polymorphism;
 
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.extractor.ClassInfoExtractor;
@@ -8,17 +8,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.SortedSet;
 
-public class RawPolymorphicFuncComposer extends PolymorphicHelperComposer.PolymorphicFuncComposer {
+public class SharedPolymorphicFuncComposer extends PolymorphicHelperComposer.PolymorphicFuncComposer {
 
-    private static final String FUNC_NAME_PREFIX = "baseHandle_to_";
+    private static final String FUNC_NAME_PREFIX = "baseHandle_to_shared_";
 
-    public RawPolymorphicFuncComposer(@NotNull final ClassInfo polymorphicClass) {
+    public SharedPolymorphicFuncComposer(@NotNull final ClassInfo polymorphicClass) {
         super(polymorphicClass, FUNC_NAME_PREFIX);
     }
 
     @Override
     public String compose() {
-        String template = ResourceUtils.load("com/jnibridge/internals/polymorphism/PolymorphicHandlerFunc.raw.template");
+        String template = ResourceUtils.load("com/jnibridge/internals/polymorphism/PolymorphicHandlerFunc.shared.template");
         return TemplateUtils.substitute(template, getReplacements());
     }
 
@@ -37,7 +37,7 @@ public class RawPolymorphicFuncComposer extends PolymorphicHelperComposer.Polymo
             firstIteration = false;
 
             result.append(String.format("(auto* actualType = dynamic_cast<jnibridge::internal::Handle<%s>*>(handle)) {", subclassCType));
-            result.append(String.format("\n\t\t\treturn actualType->getAs<%s>();", getCType()));
+            result.append(String.format("\n\t\t\treturn actualType->getAsShared<%s>();", getCType()));
             result.append("\n\t\t}");
         }
         result.append("\n\n\t\treturn nullptr;");

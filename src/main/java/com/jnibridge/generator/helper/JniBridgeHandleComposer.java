@@ -1,4 +1,4 @@
-package com.jnibridge.generator.compose.jni;
+package com.jnibridge.generator.helper;
 
 import com.jnibridge.generator.compose.Composer;
 import com.jnibridge.utils.ResourceUtils;
@@ -10,14 +10,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class PtrWrapperJNIComposer implements Composer {
+public class JniBridgeHandleComposer implements Composer {
 
     public static final String INTERNAL_FILENAME = "JniBridgeHandle.internal.hpp";
 
     private final Collection<String> includes;
 
 
-    public PtrWrapperJNIComposer(@NotNull final Collection<String> includes) {
+    public JniBridgeHandleComposer(@NotNull final Collection<String> includes) {
         this.includes = includes;
     }
 

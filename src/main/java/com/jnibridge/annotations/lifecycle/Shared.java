@@ -10,7 +10,6 @@ import java.lang.annotation.Target;
 public @interface Shared {
 
     String allocTemplate() default "com/jnibridge/internals/alloc/alloc.shared.template";
-
-
-
+    String inMapping() default "com/jnibridge/mappings/bridged_classes/shared/jnibridge.shared.in.mapping";
+    String outMapping() default "com/jnibridge/mappings/bridged_classes/shared/jnibridge.shared.out.mapping";
 }

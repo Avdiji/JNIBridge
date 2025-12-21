@@ -1,6 +1,7 @@
 package com.jnibridge.generator.model.extractor;
 
 import com.jnibridge.annotations.BridgeClass;
+import com.jnibridge.annotations.Name;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.generator.scanner.MethodScanner;
@@ -39,14 +40,16 @@ public class ClassInfoExtractor {
                 .map(other -> extract(other, otherClassesToMap))
                 .collect(Collectors.toCollection(TreeSet::new));
 
+        final String nativeClassName = annotation.name().isEmpty() ? clazz.getSimpleName() : annotation.name();
         ClassInfo result = ClassInfo.builder()
                 .clazz(clazz)
                 .nativeNamespace(annotation.namespace())
-                .nativeName(annotation.name().isEmpty() ? clazz.getSimpleName() : annotation.name())
+                .nativeName(nativeClassName)
                 .jName(clazz.getSimpleName())
                 .subclasses(subclasses)
-                .methodsToMap(extractMethodsToMap(clazz, annotation.namespace()))
+                .methodsToMap(extractMethodsToMap(clazz, annotation.namespace(), nativeClassName))
                 .build();
+
 
         if (IPointer.class.isAssignableFrom(clazz)) { result.getSubclasses().add(result); }
         return result;
@@ -62,11 +65,18 @@ public class ClassInfoExtractor {
      * @return list of {@link MethodInfo} objects representing native methods
      */
     @NotNull
-    private static List<MethodInfo> extractMethodsToMap(@NotNull final Class<?> clazz, @NotNull final String namespace) {
+    private static List<MethodInfo> extractMethodsToMap(@NotNull final Class<?> clazz, @NotNull final String namespace, @NotNull final String nativeClassName) {
         Set<Method> allJNIBridgedMethods = MethodScanner.getAllJNIBridgedMethods(clazz);
+
+        // adjust namespace depending on whether the corresponding class is a utils or not
+        final StringBuilder actualNamespace = new StringBuilder(namespace);
+        if (IPointer.class.isAssignableFrom(clazz)) {
+            actualNamespace.append("::").append(nativeClassName);
+        }
+
         return allJNIBridgedMethods.stream()
                 .filter(method -> method.getDeclaringClass().equals(clazz))
-                .map(method -> MethodInfoExtractor.extract(method, namespace, clazz)).collect(Collectors.toList());
+                .map(method -> MethodInfoExtractor.extract(method, actualNamespace.toString(), clazz)).collect(Collectors.toList());
     }
 
 

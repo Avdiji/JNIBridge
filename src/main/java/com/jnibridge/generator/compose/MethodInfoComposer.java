@@ -81,6 +81,7 @@ public abstract class MethodInfoComposer implements Composer {
     private String getNativeFunctionCall() {
         final boolean isStatic = methodInfo.isStatic();
         final String ns = methodInfo.getNamespace();
+
         final String qualifier = (isStatic && !ns.isEmpty()) ? (ns + "::") : "";
         final String receiver = isStatic ? "" : ("cself" + "->");
         final String params = getNativeFunctionCallParams();

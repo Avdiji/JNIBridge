@@ -1,8 +1,8 @@
 package com.jnibridge;
 
 import com.jnibridge.generator.compose.jni.ClassInfoJNIComposer;
-import com.jnibridge.generator.compose.jni.PtrWrapperJNIComposer;
-import com.jnibridge.generator.compose.polymorphism.PolymorphicHelperComposer;
+import com.jnibridge.generator.helper.JniBridgeHandleComposer;
+import com.jnibridge.generator.helper.polymorphism.PolymorphicHelperComposer;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.extractor.ClassInfoExtractor;
 import com.jnibridge.generator.scanner.ClassScanner;
@@ -93,12 +93,12 @@ public class JNIBridge {
         internalPath.toFile().mkdirs();
 
         // generate filenames of the internals
-        final String ptrWrapperFilename = String.format("%s/%s", internalPath, PtrWrapperJNIComposer.INTERNAL_FILENAME);
+        final String ptrWrapperFilename = String.format("%s/%s", internalPath, JniBridgeHandleComposer.INTERNAL_FILENAME);
 
         // create the corresponding internal files...
         try (FileWriter ptrWrapperWriter = new FileWriter(ptrWrapperFilename);
         ) {
-            ptrWrapperWriter.write(new PtrWrapperJNIComposer(allNativeIncludes).compose());
+            ptrWrapperWriter.write(new JniBridgeHandleComposer(allNativeIncludes).compose());
         } catch (IOException e) {
             throw new RuntimeException(String.format("Unable to create file: %s", ptrWrapperFilename), e);
         }
