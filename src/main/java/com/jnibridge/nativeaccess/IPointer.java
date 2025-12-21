@@ -12,6 +12,7 @@ package com.jnibridge.nativeaccess;
  *
  * @see Pointer
  */
+@SuppressWarnings("unused") // methods are mostly being used on a JNI-level
 public interface IPointer {
 
     /**

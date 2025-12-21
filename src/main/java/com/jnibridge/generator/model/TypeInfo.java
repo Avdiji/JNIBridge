@@ -1,6 +1,5 @@
 package com.jnibridge.generator.model;
 
-import com.jnibridge.annotations.BridgeClass;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
