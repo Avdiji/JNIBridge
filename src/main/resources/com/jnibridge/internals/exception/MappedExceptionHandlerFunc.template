@@ -1,3 +1,11 @@
+    /**
+     * Determines the custom Java exception class for a given C++ exception.
+     * If an unknown exception is passed a nullptr will be returned instead.
+     *
+     * @param env the active JNI environment.
+     * @param e the C++ exception to classify.
+     * @return a {@code jclass} representing the selected Java exception type.
+     */
     static jclass getMappedExceptionClass(JNIEnv *env, const std::exception& e) {
 ${exceptionFuncLogic}
         return nullptr;

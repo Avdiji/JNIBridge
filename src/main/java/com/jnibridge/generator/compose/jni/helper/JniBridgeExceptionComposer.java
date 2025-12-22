@@ -9,6 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Composes JNI-specific helper-code to handle exceptions on a C++/jni level.
+ */
 public class JniBridgeExceptionComposer implements Composer {
     private static final String PLACEHOLDER_EXCEPTION_FUNC = "exceptionFunc";
     private static final String PLACEHOLDER_HANDLE_INCLUDE = "internalHandlePath";
@@ -29,7 +32,9 @@ public class JniBridgeExceptionComposer implements Composer {
         return replacements;
     }
 
-
+    /**
+     * Composes JNI-specific helper-code to handle exceptions on a C++/jni level.
+     */
     private static class JniBridgeExceptionFuncComposer implements Composer {
         private static final String PLACEHOLDER_EXCEPTION_FUNC_LOGIC = "exceptionFuncLogic";
 
@@ -46,6 +51,11 @@ public class JniBridgeExceptionComposer implements Composer {
             return replacements;
         }
 
+        /**
+         * Generate the actual Body of the MappedExceptionHandler.
+         *
+         * @return A replacement String, that helps the tool generate the ExceptionHandler.
+         */
         private String getFuncBodyReplacement() {
             final StringBuilder result = new StringBuilder();
 
@@ -68,7 +78,6 @@ public class JniBridgeExceptionComposer implements Composer {
                         .append(exceptionMappingEntry.getValue().getCanonicalName().replace(".", "/"))
                         .append("\");\n\t\t}\n");
             }
-
             return result.toString();
         }
 
