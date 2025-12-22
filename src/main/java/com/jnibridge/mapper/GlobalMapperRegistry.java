@@ -22,23 +22,30 @@ import java.util.Map;
  */
 public class GlobalMapperRegistry {
 
+    /**
+     * Constructor.
+     */
     private GlobalMapperRegistry() { }
 
+    // type registry with default mappings...
+    private static final Map<Class<?>, Class<? extends TypeMapper>> typeRegistry = new HashMap<>();
+
+    // exception registry...
+    public static final Map<String, Class<? extends Throwable>> exceptionRegistry = new HashMap<>();
+
     // @formatter:off
-    // registry with default mappings...
-    private static final Map<Class<?>, Class<? extends TypeMapper>> registry = new HashMap<>();
     static {
 
-        putIntoRegistry(int.class, IntMapper.class);
-        putIntoRegistry(int.class, IntMapper.class);
-        putIntoRegistry(void.class, VoidMapper.class);
-        putIntoRegistry(boolean.class, BoolMapper.class);
-        putIntoRegistry(char.class, CharMapper.class);
-        putIntoRegistry(double.class, DoubleMapper.class);
-        putIntoRegistry(float.class, FloatMapper.class);
-        putIntoRegistry(short.class, ShortMapper.class);
-        putIntoRegistry(long.class, LongMapper.class);
-        putIntoRegistry(String.class, StringMapper.class);
+        putIntoTypeRegistry(int.class, IntMapper.class);
+        putIntoTypeRegistry(int.class, IntMapper.class);
+        putIntoTypeRegistry(void.class, VoidMapper.class);
+        putIntoTypeRegistry(boolean.class, BoolMapper.class);
+        putIntoTypeRegistry(char.class, CharMapper.class);
+        putIntoTypeRegistry(double.class, DoubleMapper.class);
+        putIntoTypeRegistry(float.class, FloatMapper.class);
+        putIntoTypeRegistry(short.class, ShortMapper.class);
+        putIntoTypeRegistry(long.class, LongMapper.class);
+        putIntoTypeRegistry(String.class, StringMapper.class);
 
     }
     // @formatter:on
@@ -50,8 +57,8 @@ public class GlobalMapperRegistry {
      * @param typeMapper the corresponding {@link TypeMapper} implementation class
      * @throws NullPointerException if either argument is null
      */
-    public static void putIntoRegistry(@NotNull final Class<?> clazz, @NotNull final Class<? extends TypeMapper> typeMapper) {
-        registry.put(clazz, typeMapper);
+    public static void putIntoTypeRegistry(@NotNull final Class<?> clazz, @NotNull final Class<? extends TypeMapper> typeMapper) {
+        typeRegistry.put(clazz, typeMapper);
     }
 
     /**
@@ -61,8 +68,21 @@ public class GlobalMapperRegistry {
      * @return the mapped {@link TypeMapper} class, or {@code null} if none registered
      */
     @Nullable
-    public static Class<? extends TypeMapper> getMapperFor(Class<?> clazz) {
-        return registry.get(clazz);
+    public static Class<? extends TypeMapper> getMapperForType(Class<?> clazz) {
+        return typeRegistry.get(clazz);
+    }
+
+    /**
+     * Registers a mapping between a C++ exception and a Java exception.
+     * <p>
+     * When the specified C++ exception is encountered, it will be translated
+     * into the provided Java {@link Throwable} type.
+     *
+     * @param cppException the fully qualified name or identifier of the C++ exception to be mapped.
+     * @param javaException the Java exception class that the C++ exception should be translated into.
+     */
+    public static void registerException(@NotNull final String cppException, @NotNull final Class<? extends Throwable> javaException) {
+        exceptionRegistry.put(cppException, javaException);
     }
 
 }

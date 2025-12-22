@@ -1,8 +1,9 @@
 package com.jnibridge;
 
+import com.jnibridge.generator.compose.helper.JniBridgeExceptionComposer;
 import com.jnibridge.generator.compose.jni.ClassInfoJNIComposer;
-import com.jnibridge.generator.helper.JniBridgeHandleComposer;
-import com.jnibridge.generator.helper.polymorphism.PolymorphicHelperComposer;
+import com.jnibridge.generator.compose.helper.JniBridgeHandleComposer;
+import com.jnibridge.generator.compose.helper.polymorphism.PolymorphicHelperComposer;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.extractor.ClassInfoExtractor;
 import com.jnibridge.generator.scanner.ClassScanner;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
  * @author Fitor Avdiji
  * @version 1.0.0
  */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class JNIBridge {
 
     /**
@@ -50,10 +52,13 @@ public class JNIBridge {
                 ));
 
         // generate the JniBridgeHandle - helper file.
-        createJniBridgeHandleHelper(outPath, Arrays.stream(nativeIncludes).collect(Collectors.toList()));
+        generateJniBridgeHandleHelper(outPath, Arrays.stream(nativeIncludes).collect(Collectors.toList()));
+
+        // generate the JniBridge Exception-handler file.
+        generateJniBridgeExceptionHandler(outPath);
 
         // generate the polymorphic helper files.
-        createPolymorphicHelpers(outPath, classMappings.values().stream()
+        generatePolymorphicHelpers(outPath, classMappings.values().stream()
                 .filter(classInfo -> IPointer.class.isAssignableFrom(classInfo.getClazz()))
                 .collect(Collectors.toList()));
 
@@ -64,7 +69,7 @@ public class JNIBridge {
     /**
      * Method creates actual .jni.cpp files for the corresponding java classes.
      *
-     * @param outPath       The output path of the generated JNI-Files.
+     * @param outPath       The output path of the generated JNI-File.
      * @param classMappings The generated JNI-Content.
      */
     private static void createJNIFiles(@NotNull final Path outPath, @NotNull final Map<Class<?>, ClassInfo> classMappings) {
@@ -73,8 +78,6 @@ public class JNIBridge {
             Class<?> clazz = classMapping.getKey();
             Path classPackageAsPath = Paths.get(clazz.getPackage().getName().replace(".", "/"));
             Path actualPath = outPath.resolve(classPackageAsPath);
-
-            //noinspection ResultOfMethodCallIgnored
             actualPath.toFile().mkdirs();
 
             final String filename = String.format("%s/%s.jni.cpp", actualPath, clazz.getSimpleName());
@@ -88,10 +91,10 @@ public class JNIBridge {
     }
 
     /**
-     * Create the file, which the JNIBridge uses internally, to handle mapping logic.
+     * Generate the file, which the JNIBridge uses internally, to handle mapping logic.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void createJniBridgeHandleHelper(@NotNull final Path outPath, Collection<String> allNativeIncludes) {
+    private static void generateJniBridgeHandleHelper(@NotNull final Path outPath, Collection<String> allNativeIncludes) {
         final Path internalPath = Paths.get(outPath.toString(), "internal");
         internalPath.toFile().mkdirs();
 
@@ -99,11 +102,26 @@ public class JNIBridge {
         final String ptrWrapperFilename = String.format("%s/%s", internalPath, JniBridgeHandleComposer.INTERNAL_FILENAME);
 
         // create the corresponding internal files...
-        try (FileWriter ptrWrapperWriter = new FileWriter(ptrWrapperFilename)
+        try (FileWriter jniHandleWriter = new FileWriter(ptrWrapperFilename)
         ) {
-            ptrWrapperWriter.write(new JniBridgeHandleComposer(allNativeIncludes).compose());
+            jniHandleWriter.write(new JniBridgeHandleComposer(allNativeIncludes).compose());
         } catch (IOException e) {
             throw new RuntimeException(String.format("Unable to create file: %s", ptrWrapperFilename), e);
+        }
+    }
+
+    /**
+     *
+     * @param outPath The output path of the generated JNI-File.
+     */
+    private static void generateJniBridgeExceptionHandler(@NotNull final Path outPath) {
+        final Path internalPath = Paths.get(outPath.toString(), "internal");
+        internalPath.toFile().mkdirs();
+
+        try (FileWriter jniExceptionWriter = new FileWriter(String.format("%s/%s", internalPath, JniBridgeExceptionComposer.INTERNAL_FILENAME))) {
+            jniExceptionWriter.write(new JniBridgeExceptionComposer().compose());
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to create JNIBridge exception-handler", e);
         }
     }
 
@@ -113,9 +131,8 @@ public class JNIBridge {
      * @param outPath         Out-path of the Polymorphic helper files.
      * @param iPointerClasses Classes, that implement the {@link IPointer} interface.
      */
-    private static void createPolymorphicHelpers(@NotNull final Path outPath, Collection<ClassInfo> iPointerClasses) {
+    private static void generatePolymorphicHelpers(@NotNull final Path outPath, Collection<ClassInfo> iPointerClasses) {
         final Path internalPath = Paths.get(outPath.toString(), "internal/polymorphism");
-        //noinspection ResultOfMethodCallIgnored
         internalPath.toFile().mkdirs();
 
         List<String> convenienceHeaderIncludes = new ArrayList<>();
@@ -132,7 +149,7 @@ public class JNIBridge {
             }
         }
 
-        createPolymorphicHelperConvenienceHeader(outPath, convenienceHeaderIncludes);
+        generatePolymorphicHelperConvenienceHeader(outPath, convenienceHeaderIncludes);
     }
 
     /**
@@ -141,9 +158,8 @@ public class JNIBridge {
      * @param outPath  The out-path of the convenience file.
      * @param includes All polymorphic helper file-includes.
      */
-    private static void createPolymorphicHelperConvenienceHeader(@NotNull final Path outPath, @NotNull final Collection<String> includes) {
+    private static void generatePolymorphicHelperConvenienceHeader(@NotNull final Path outPath, @NotNull final Collection<String> includes) {
         final Path internalPath = Paths.get(outPath.toString(), "internal");
-        //noinspection ResultOfMethodCallIgnored
         internalPath.toFile().mkdirs();
 
         final String filename = String.format("%s/%s", internalPath, PolymorphicHelperComposer.POLYMORPHIC_CONVENIENCE_HEADER_FILENAME);

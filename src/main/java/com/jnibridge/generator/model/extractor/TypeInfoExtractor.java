@@ -105,7 +105,7 @@ public class TypeInfoExtractor {
                 .map(mapper -> validateMapper(mapper, type.getSimpleName()))
                 .findFirst()
                 // make use of the Mapper registry, if no specific mapper is being used.
-                .orElse(validateMapper(GlobalMapperRegistry.getMapperFor(type), type.getSimpleName()));
+                .orElse(validateMapper(GlobalMapperRegistry.getMapperForType(type), type.getSimpleName()));
 
         // create a new TypeInfo
         return TypeInfo.builder()

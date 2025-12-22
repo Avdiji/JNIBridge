@@ -1,6 +1,7 @@
 package com.jnibridge.examples.mappings;
 
 import com.jnibridge.JNIBridge;
+import com.jnibridge.mapper.GlobalMapperRegistry;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,6 +18,10 @@ public class MapJNI {
                 "../../../../../../../native/oop/Diamond.cpp",
                 "../../../../../../../native/simple/SimpleStatics.cpp"
         };
+
+        GlobalMapperRegistry.registerException("std::runtime_error", RuntimeException.class);
+        GlobalMapperRegistry.registerException("std::logic_error", IllegalStateException.class);
+
 
         // Pass both correctly:
         JNIBridge.generateJNIInterface(outputDir, packagePattern, includes);

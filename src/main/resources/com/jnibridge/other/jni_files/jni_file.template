@@ -1,7 +1,7 @@
 #pragma once
 
 #include <jni.h>
-#include "${internal_include}"
+${internal_includes}
 
 extern "C" {
 ${mappedMethods}

@@ -1,0 +1,4 @@
+    static jclass getMappedExceptionClass(JNIEnv *env, const std::exception& e) {
+${exceptionFuncLogic}
+        return nullptr;
+    }
