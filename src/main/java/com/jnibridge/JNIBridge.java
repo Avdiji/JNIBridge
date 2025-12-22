@@ -1,9 +1,9 @@
 package com.jnibridge;
 
-import com.jnibridge.generator.compose.helper.JniBridgeExceptionComposer;
+import com.jnibridge.generator.compose.jni.helper.JniBridgeExceptionComposer;
 import com.jnibridge.generator.compose.jni.ClassInfoJNIComposer;
-import com.jnibridge.generator.compose.helper.JniBridgeHandleComposer;
-import com.jnibridge.generator.compose.helper.polymorphism.PolymorphicHelperComposer;
+import com.jnibridge.generator.compose.jni.helper.JniBridgeHandleComposer;
+import com.jnibridge.generator.compose.jni.helper.polymorphism.PolymorphicHelperComposer;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.extractor.ClassInfoExtractor;
 import com.jnibridge.generator.scanner.ClassScanner;

@@ -1,8 +1,8 @@
-package com.jnibridge.generator.compose.helper.polymorphism;
+package com.jnibridge.generator.compose.jni.helper.polymorphism;
 
 import com.jnibridge.generator.compose.Composer;
 import com.jnibridge.generator.compose.TypeInfoComposer;
-import com.jnibridge.generator.compose.helper.JniBridgeHandleComposer;
+import com.jnibridge.generator.compose.jni.helper.JniBridgeHandleComposer;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.extractor.ClassInfoExtractor;
 import com.jnibridge.utils.ResourceUtils;

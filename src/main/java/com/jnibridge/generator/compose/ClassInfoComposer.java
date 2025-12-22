@@ -1,9 +1,9 @@
 package com.jnibridge.generator.compose;
 
-import com.jnibridge.generator.compose.helper.JniBridgeExceptionComposer;
+import com.jnibridge.generator.compose.jni.helper.JniBridgeExceptionComposer;
 import com.jnibridge.generator.compose.jni.MethodInfoJNIComposer;
 
-import com.jnibridge.generator.compose.helper.polymorphism.PolymorphicHelperComposer;
+import com.jnibridge.generator.compose.jni.helper.polymorphism.PolymorphicHelperComposer;
 import com.jnibridge.generator.model.ClassInfo;
 import lombok.Getter;
 import lombok.NonNull;

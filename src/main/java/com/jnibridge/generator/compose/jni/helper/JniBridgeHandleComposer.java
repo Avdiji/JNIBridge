@@ -1,4 +1,4 @@
-package com.jnibridge.generator.compose.helper;
+package com.jnibridge.generator.compose.jni.helper;
 
 import com.jnibridge.generator.compose.Composer;
 import com.jnibridge.utils.ResourceUtils;
