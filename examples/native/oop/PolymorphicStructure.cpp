@@ -18,6 +18,15 @@ namespace jnibridge::examples {
                     std::throw_with_nested(std::logic_error("outer error"));
                 }
             }
+
+            const BaseClass& getThisRef() {
+                return *this;
+            }
+
+            static void printString(const std::shared_ptr<BaseClass> &other) {
+                std::cout << other->getString() << std::endl;
+            }
+
     };
 
 

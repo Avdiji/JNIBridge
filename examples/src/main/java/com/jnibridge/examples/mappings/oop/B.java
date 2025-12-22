@@ -4,6 +4,7 @@ import com.jnibridge.annotations.BridgeClass;
 import com.jnibridge.annotations.lifecycle.Allocate;
 import com.jnibridge.annotations.lifecycle.Ptr;
 import com.jnibridge.annotations.lifecycle.Ref;
+import com.jnibridge.annotations.lifecycle.Shared;
 
 @BridgeClass(namespace = "jnibridge::examples")
 public class B extends A {

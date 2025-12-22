@@ -3,9 +3,11 @@ package com.jnibridge.example.mappings.oop;
 import com.jnibridge.examples.mappings.oop.A;
 import com.jnibridge.examples.mappings.oop.B;
 import com.jnibridge.examples.mappings.oop.BaseClass;
+import com.jnibridge.exception.JniBridgeException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class BaseClassTest {
 
@@ -15,9 +17,24 @@ public class BaseClassTest {
     }
 
     @Test
-    public void testExceptionHandling() {
+    public void testGetThisRef() {
         BaseClass baseClass = new BaseClass();
-        try {
+        BaseClass thisRef = baseClass.getThisRef();
+
+        baseClass.close();
+        assertThrows(JniBridgeException.class, thisRef::getString);
+    }
+
+    @Test
+    public void testPrintFromOther() {
+        B b = new B();
+        assertThrows(JniBridgeException.class, () ->BaseClass.printString(b));
+        b.close();
+    }
+
+    @Test
+    public void testExceptionHandling() {
+        try (BaseClass baseClass = new BaseClass()) {
             baseClass.throwNestedError();
         } catch (IllegalStateException e) {
             assertEquals("outer error", e.getMessage());
@@ -29,7 +46,7 @@ public class BaseClassTest {
     public void testIllegalOperation() {
         BaseClass baseClass = new BaseClass();
         baseClass.close();
-        baseClass.getString();
+        assertThrows(JniBridgeException.class, baseClass::getString);
     }
 
     @Test

@@ -25,7 +25,8 @@ namespace jnibridge::internal {
             NotASharedPtr, // When the wrapped type is supposed to be a sharedPtr but isn't.
             NotAUniquePtr, // When the wrapped type is supposed to be a uniquePtr but isn't.
             PassingUniquePtr, // When theres an attempt to pass a uniquePtr to a function.
-            CorruptHandleStorage // When the Handle-storage is corrupted.
+            CorruptHandleStorage, // When the Handle-storage is corrupted.
+            CSelfMustNotBeNull // The wrapped value of the calling handle must never be null.
         };
 
         /**
@@ -51,6 +52,7 @@ namespace jnibridge::internal {
                 case Code::NotASharedPtr: return "Illegal handle state: shared ownership expected.";
                 case Code::NotAUniquePtr: return "Illegal handle state: unique ownership expected.";
                 case Code::PassingUniquePtr: return "JNIBridge does not allow passing std::unique_ptr to other functions.";
+                case Code::CSelfMustNotBeNull: return "Cannot perform the operation because the native instance is null.";
                 case Code::Unknown:
                 default: return "An unknown JNIBridge-Error has occurred.";
             }
@@ -237,7 +239,7 @@ namespace jnibridge::internal {
         jmethodID mid = env->GetMethodID(cls, "getNativeHandle", "()J");
 
         jlong handle = env->CallLongMethod(obj, mid);
-        if(handle == 0) { throw JniBridgeError(JniBridgeError::Code::DestroyedHandle); }
+        if(handle == -1) { throw JniBridgeError(JniBridgeError::Code::DestroyedHandle); }
 
         env->DeleteLocalRef(cls);
         return handle;

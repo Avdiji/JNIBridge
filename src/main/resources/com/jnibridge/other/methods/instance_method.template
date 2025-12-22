@@ -3,6 +3,9 @@
         try {
             // mapping the calling instance...
 ${jselfInMapping}
+            if(!cself) {
+                throw jnibridge::internal::JniBridgeError(jnibridge::internal::JniBridgeError::Code::CSelfMustNotBeNull);
+            }
 
             // mapping parameters...
 ${paramInMapping}

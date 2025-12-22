@@ -19,10 +19,6 @@ public class MapJNI {
                 "../../../../../../../native/simple/SimpleStatics.cpp"
         };
 
-        GlobalMapperRegistry.registerException("std::runtime_error", RuntimeException.class);
-        GlobalMapperRegistry.registerException("std::logic_error", IllegalStateException.class);
-
-
         // Pass both correctly:
         JNIBridge.generateJNIInterface(outputDir, packagePattern, includes);
 

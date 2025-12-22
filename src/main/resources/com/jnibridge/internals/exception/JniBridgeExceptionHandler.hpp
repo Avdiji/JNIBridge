@@ -20,7 +20,10 @@ ${exceptionFunc}
      * @return a {@code jclass} representing the selected Java exception type.
      */
     static jclass getDefaultExceptionClass(JNIEnv *env, const std::exception& e) {
-        if (dynamic_cast<const std::invalid_argument*>(&e)) {
+        if (dynamic_cast<const jnibridge::internal::JniBridgeError*>(&e)) {
+            return env->FindClass("com/jnibridge/exception/JniBridgeException");
+        }
+        else if (dynamic_cast<const std::invalid_argument*>(&e)) {
             return env->FindClass("java/lang/IllegalArgumentException");
         }
         else if (dynamic_cast<const std::out_of_range*>(&e)) {

@@ -8,7 +8,7 @@
 
             jclass cls = env->GetObjectClass(jself);
             jmethodID setHandle = env->GetMethodID(cls, "setNativeHandle", "(J)V");
-            env->CallVoidMethod(jself, setHandle, (jlong) 0);
+            env->CallVoidMethod(jself, setHandle, (jlong) -1);
             env->DeleteLocalRef(cls);
 
         } catch (const std::exception &e) {
