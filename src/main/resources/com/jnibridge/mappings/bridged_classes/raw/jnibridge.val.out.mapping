@@ -1,6 +1,6 @@
-        auto *nativeResult = new ${cType}(${functionCall});
+            auto *nativeResult = new ${cType}(${functionCall});
 
-        auto resultHandle = new jnibridge::internal::Handle<${cType}>(nativeResult, true);
-        auto resultBaseHandle = static_cast<jnibridge::internal::BaseHandle*>(resultHandle);
+            auto resultHandle = new jnibridge::internal::Handle<${cType}>(nativeResult, true);
+            auto resultBaseHandle = static_cast<jnibridge::internal::BaseHandle*>(resultHandle);
 
-        return jnibridge::internal::jobjectFromBaseHandle(env, "${fullJPath}", resultBaseHandle);
+            return jnibridge::internal::jobjectFromBaseHandle(env, "${fullJPath}", resultBaseHandle);

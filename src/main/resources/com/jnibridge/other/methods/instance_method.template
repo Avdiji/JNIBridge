@@ -1,8 +1,14 @@
     JNIEXPORT ${jniType} JNICALL ${mangledFuncName}(JNIEnv* env, jobject jself${jniParams})
     {
-        // input mappings...
+        try {
+            // input mappings...
 ${jselfInMapping}
 ${paramInMapping}
-        // output mappings...
+            // output mappings...
 ${resultOutMapping}
+        } catch (const std::exception& e) {
+            jthrowable jexception = jnibridge::internal::handleException(env, e);
+            env->Throw(jexception);
+            return jnibridge::internal::jniDefaultReturn<${jniType}>();
+        }
     }

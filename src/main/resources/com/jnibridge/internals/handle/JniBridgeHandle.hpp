@@ -213,4 +213,49 @@ namespace jnibridge::internal {
         return result;
     }
 
+
+    /**
+     * Returns a safe default value for JNI methods after a Java exception
+     * has been thrown.
+     *
+     * The returned value satisfies the native method signature but is
+     * semantically meaningless. It must not be observed by Java code
+     * while an exception is pending.
+     *
+     * @tparam T
+     *         JNI return type.
+     */
+    template <typename T>
+    static inline T jniDefaultReturn();
+
+    template <>
+    inline void jniDefaultReturn<void>() { }
+
+    template <>
+    inline jboolean jniDefaultReturn<jboolean>() { return JNI_FALSE; }
+
+    template <>
+    inline jint jniDefaultReturn<jint>() { return 0; }
+
+    template <>
+    inline jlong jniDefaultReturn<jlong>() { return 0; }
+
+    template <>
+    inline jshort jniDefaultReturn<jshort>() { return 0; }
+
+    template <>
+    inline jbyte jniDefaultReturn<jbyte>() { return 0; }
+
+    template <>
+    inline jchar jniDefaultReturn<jchar>() { return 0; }
+
+    template <>
+    inline jfloat jniDefaultReturn<jfloat>() { return 0.0f; }
+
+    template <>
+    inline jdouble jniDefaultReturn<jdouble>() { return 0.0; }
+
+    template <typename T>
+    inline T jniDefaultReturn() { return nullptr; } // objects, arrays, etc.
+
 }  // namespace jnibridge::internal

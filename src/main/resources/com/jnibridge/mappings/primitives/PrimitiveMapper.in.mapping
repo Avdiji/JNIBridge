@@ -1,1 +1,1 @@
-        ${cType} ${cVar} = static_cast<${cType}>(${jniVar});
+            ${cType} ${cVar} = static_cast<${cType}>(${jniVar});
