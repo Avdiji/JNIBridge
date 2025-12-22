@@ -15,6 +15,24 @@ public class BaseClassTest {
     }
 
     @Test
+    public void testExceptionHandling() {
+        BaseClass baseClass = new BaseClass();
+        try {
+            baseClass.throwNestedError();
+        } catch (IllegalStateException e) {
+            assertEquals("outer error", e.getMessage());
+            assertEquals("inner error", e.getCause().getMessage());
+        }
+    }
+
+    @Test
+    public void testIllegalOperation() {
+        BaseClass baseClass = new BaseClass();
+        baseClass.close();
+        baseClass.getString();
+    }
+
+    @Test
     public void testGetString() {
         BaseClass baseClass = new BaseClass();
         assertEquals("BaseClass-String", baseClass.getString());

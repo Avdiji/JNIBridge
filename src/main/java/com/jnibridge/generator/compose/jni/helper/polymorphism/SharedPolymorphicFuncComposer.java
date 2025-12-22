@@ -47,8 +47,6 @@ public class SharedPolymorphicFuncComposer extends PolymorphicHelperComposer.Pol
             result.append(String.format("\n\t\t\treturn actualType->getAsShared<%s>();", getCType()));
             result.append("\n\t\t}");
         }
-        result.append("\n\n\t\treturn nullptr;");
-
         return result.toString();
     }
 }

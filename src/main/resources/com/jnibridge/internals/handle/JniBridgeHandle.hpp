@@ -12,18 +12,49 @@ ${allIncludes}
 namespace jnibridge::internal {
 
     /**
-     * Describes how a native instance is stored and owned by a Handle.
+     * Base exception type for errors raised by the JNI bridge.
      *
-     * - RawOwned    : Handle owns a raw pointer and deletes it on destruction
-     * - RawBorrowed : Handle stores a non-owning raw pointer
-     * - Shared      : Handle stores a std::shared_ptr<T>
-     * - Unique      : Handle stores a std::unique_ptr<T>
+     * Use this exception for bridge-level failures such as.
      */
-    enum StorageStrategy {
-        RawOwned,
-        RawBorrowed,
-        Shared,
-        Unique
+    class JniBridgeError : public std::runtime_error {
+    public:
+
+        enum class Code {
+            Unknown, // unknown exception causes...
+            DestroyedHandle, // When the Handle has already been destroyed.
+            NotASharedPtr, // When the wrapped type is supposed to be a sharedPtr but isn't.
+            NotAUniquePtr, // When the wrapped type is supposed to be a uniquePtr but isn't.
+            PassingUniquePtr, // When theres an attempt to pass a uniquePtr to a function.
+            CorruptHandleStorage // When the Handle-storage is corrupted.
+        };
+
+        /**
+         * Creates a bridge exception with the given message and optional code.
+         *
+         * @param message Human-readable error message.
+         * @param code Optional machine-readable category.
+         */
+        explicit JniBridgeError(const Code code = Code::Unknown)
+            : std::runtime_error(getMessageFromCode(code)) {}
+
+    private:
+        /**
+         * This function provides a stable, user-facing explanation of bridge-level failures.
+         *
+         * @param code The JNIBridge error code describing the failure category.
+         * @return A human-readable error message corresponding to the given error code.
+         */
+        static const std::string getMessageFromCode(const Code &code) {
+            switch(code) {
+                case Code::DestroyedHandle: return "The underlying JNIBridge-handle has been destroyed or was never initialized.";
+                case Code::CorruptHandleStorage: return "The underlying JNIBridge-handle has been corrupted.";
+                case Code::NotASharedPtr: return "Illegal handle state: shared ownership expected.";
+                case Code::NotAUniquePtr: return "Illegal handle state: unique ownership expected.";
+                case Code::PassingUniquePtr: return "JNIBridge does not allow passing std::unique_ptr to other functions.";
+                case Code::Unknown:
+                default: return "An unknown JNIBridge-Error has occurred.";
+            }
+        }
     };
 
     /**
@@ -35,6 +66,21 @@ namespace jnibridge::internal {
     class BaseHandle {
     public:
         virtual ~BaseHandle() = default;
+
+        /**
+         * Describes how a native instance is stored and owned by a Handle.
+         *
+         * - RawOwned    : Handle owns a raw pointer and deletes it on destruction
+         * - RawBorrowed : Handle stores a non-owning raw pointer
+         * - Shared      : Handle stores a std::shared_ptr<T>
+         * - Unique      : Handle stores a std::unique_ptr<T>
+         */
+        enum StorageStrategy {
+            RawOwned,
+            RawBorrowed,
+            Shared,
+            Unique
+        };
     };
 
     /**
@@ -108,7 +154,7 @@ namespace jnibridge::internal {
                 case StorageStrategy::Unique:
                     return std::get<std::unique_ptr<T>>(_store).get();
             }
-            throw std::logic_error("JniBridge-Handle can not return a wrapped instance.");
+            throw JniBridgeError(JniBridgeError::Code::CorruptHandleStorage);
         }
 
         /**
@@ -135,11 +181,12 @@ namespace jnibridge::internal {
          */
         template<class X>
         std::shared_ptr<X> getAsShared() const {
-            if(_strategy == StorageStrategy::Shared) {
-                std::shared_ptr<T> original = std::get<std::shared_ptr<T>>(_store);
-                return std::dynamic_pointer_cast<X>(original);
+            if(_strategy != StorageStrategy::Shared) {
+                throw JniBridgeError(JniBridgeError::Code::NotASharedPtr);
             }
-            throw std::logic_error("The JNI-wrapped type is not an instance of std::shared_ptr<T>.");
+
+            std::shared_ptr<T> original = std::get<std::shared_ptr<T>>(_store);
+            return std::dynamic_pointer_cast<X>(original);
         }
 
         /**
@@ -151,11 +198,10 @@ namespace jnibridge::internal {
          */
         template<class X>
         std::unique_ptr<X> getAsUnique() const {
-            if (_strategy == StorageStrategy::Unique) {
-                // Cannot transfer ownership from const handle safely
-                throw std::logic_error("Accessing unique_ptr<X> by value is not supported.");
+            if (_strategy != StorageStrategy::Unique) {
+                throw JniBridgeError(JniBridgeError::Code::NotAUniquePtr);
             }
-            throw std::logic_error("JNI-wrapped instance is not stored as std::unique_ptr<T>.");
+            throw JniBridgeError(JniBridgeError::Code::PassingUniquePtr);
         }
 
     private:
@@ -191,6 +237,8 @@ namespace jnibridge::internal {
         jmethodID mid = env->GetMethodID(cls, "getNativeHandle", "()J");
 
         jlong handle = env->CallLongMethod(obj, mid);
+        if(handle == 0) { throw JniBridgeError(JniBridgeError::Code::DestroyedHandle); }
+
         env->DeleteLocalRef(cls);
         return handle;
     }
@@ -230,31 +278,22 @@ namespace jnibridge::internal {
 
     template <>
     inline void jniDefaultReturn<void>() { }
-
     template <>
     inline jboolean jniDefaultReturn<jboolean>() { return JNI_FALSE; }
-
     template <>
     inline jint jniDefaultReturn<jint>() { return 0; }
-
     template <>
     inline jlong jniDefaultReturn<jlong>() { return 0; }
-
     template <>
     inline jshort jniDefaultReturn<jshort>() { return 0; }
-
     template <>
     inline jbyte jniDefaultReturn<jbyte>() { return 0; }
-
     template <>
     inline jchar jniDefaultReturn<jchar>() { return 0; }
-
     template <>
     inline jfloat jniDefaultReturn<jfloat>() { return 0.0f; }
-
     template <>
     inline jdouble jniDefaultReturn<jdouble>() { return 0.0; }
-
     template <typename T>
     inline T jniDefaultReturn() { return nullptr; } // objects, arrays, etc.
 

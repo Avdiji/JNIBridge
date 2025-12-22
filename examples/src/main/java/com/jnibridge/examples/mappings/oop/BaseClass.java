@@ -18,4 +18,5 @@ public class BaseClass extends Pointer {
     public native void destruct();
 
     public native String getString();
+    public native void throwNestedError();
 }

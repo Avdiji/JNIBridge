@@ -47,8 +47,6 @@ public class RawPolymorphicFuncComposer extends PolymorphicHelperComposer.Polymo
             result.append(String.format("\n\t\t\treturn actualType->getAs<%s>();", getCType()));
             result.append("\n\t\t}");
         }
-        result.append("\n\n\t\treturn nullptr;");
-
         return result.toString();
     }
 }
