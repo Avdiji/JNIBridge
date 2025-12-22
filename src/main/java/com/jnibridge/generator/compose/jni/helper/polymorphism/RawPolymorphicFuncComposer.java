@@ -1,4 +1,4 @@
-package com.jnibridge.generator.helper.polymorphism;
+package com.jnibridge.generator.compose.jni.helper.polymorphism;
 
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.extractor.ClassInfoExtractor;
@@ -47,8 +47,6 @@ public class RawPolymorphicFuncComposer extends PolymorphicHelperComposer.Polymo
             result.append(String.format("\n\t\t\treturn actualType->getAs<%s>();", getCType()));
             result.append("\n\t\t}");
         }
-        result.append("\n\n\t\treturn nullptr;");
-
         return result.toString();
     }
 }

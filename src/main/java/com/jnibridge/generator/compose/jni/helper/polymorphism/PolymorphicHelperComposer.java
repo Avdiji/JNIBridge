@@ -1,8 +1,8 @@
-package com.jnibridge.generator.helper.polymorphism;
+package com.jnibridge.generator.compose.jni.helper.polymorphism;
 
 import com.jnibridge.generator.compose.Composer;
 import com.jnibridge.generator.compose.TypeInfoComposer;
-import com.jnibridge.generator.helper.JniBridgeHandleComposer;
+import com.jnibridge.generator.compose.jni.helper.JniBridgeHandleComposer;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.extractor.ClassInfoExtractor;
 import com.jnibridge.utils.ResourceUtils;
@@ -20,7 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PolymorphicHelperComposer implements Composer {
 
-    public static final String POLYMORPHIC_CONVENIENCE_HEADER_FILENAME = "JniBridgePolyHelper.hpp";
+    public static final String POLYMORPHIC_CONVENIENCE_HEADER_FILENAME = "JniBridgePolymorphicHelper.hpp";
 
     private static final String PLACEHOLDER_HANDLE_INCLUDE = "internalHandlePath";
     private static final String PLACEHOLDER_HELPER_FUNCTIONS = "helperFunctions";

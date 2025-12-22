@@ -1,6 +1,7 @@
 package com.jnibridge.examples.mappings;
 
 import com.jnibridge.JNIBridge;
+import com.jnibridge.mapper.GlobalMapperRegistry;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

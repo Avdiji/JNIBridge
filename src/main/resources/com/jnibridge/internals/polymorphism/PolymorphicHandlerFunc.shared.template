@@ -2,4 +2,5 @@
     jlong_to_shared_${cTypeUnderscore}(jnibridge::internal::BaseHandle *handle)
     {
 ${handleToInstance}
+        return nullptr;
     }

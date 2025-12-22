@@ -1,4 +1,4 @@
-package com.jnibridge.generator.helper;
+package com.jnibridge.generator.compose.jni.helper;
 
 import com.jnibridge.generator.compose.Composer;
 import com.jnibridge.utils.ResourceUtils;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  */
 public class JniBridgeHandleComposer implements Composer {
 
-    public static final String INTERNAL_FILENAME = "JniBridgeHandle.internal.hpp";
+    public static final String INTERNAL_FILENAME = "JniBridgeHandle.hpp";
 
     private final Collection<String> includes;
 

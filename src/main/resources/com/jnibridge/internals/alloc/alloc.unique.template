@@ -1,19 +1,26 @@
     JNIEXPORT void JNICALL ${mangledFuncName}(JNIEnv* env, jobject jself${jniParams})
     {
-        // check whether jobject has already been allocated
-        if (jnibridge::internal::getHandle(env, jself) != 0) return;
+        try {
+         // check whether jobject has already been allocated
+            if (jnibridge::internal::getHandle(env, jself) != 0) return;
 
-        // super-types allocate() function should not be executed
-        bool canAlloc = env->IsSameObject(env->GetObjectClass(jself), env->FindClass("${fullJPath}"));
-        if(!canAlloc) { return; }
+            // super-types allocate() function should not be executed
+            bool canAlloc = env->IsSameObject(env->GetObjectClass(jself), env->FindClass("${fullJPath}"));
+            if(!canAlloc) { return; }
 
-        // input mappings...
+            // input mappings...
 ${paramInMapping}
 
-        // output mappings...
-        auto uniqueNativeObject = std::make_unique<${cType}>(${functionCallParams});
-        auto newHandle = new jnibridge::internal::Handle<${cType}>(std::move(uniqueNativeObject));
-        auto newBaseHandle = static_cast<jnibridge::internal::BaseHandle*>(newHandle);
+            // output mappings...
+            auto uniqueNativeObject = std::make_unique<${cType}>(${functionCallParams});
+            auto newHandle = new jnibridge::internal::Handle<${cType}>(std::move(uniqueNativeObject));
+            auto newBaseHandle = static_cast<jnibridge::internal::BaseHandle*>(newHandle);
 
-        jnibridge::internal::setNativeHandle(env, jself, newBaseHandle);
+            jnibridge::internal::setNativeHandle(env, jself, newBaseHandle);
+
+        } catch (const std::exception &e) {
+            jthrowable jexception = jnibridge::internal::handleException(env, e);
+            env->Throw(jexception);
+            return jnibridge::internal::jniDefaultReturn<${jniType}>();
+        }
     }

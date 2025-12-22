@@ -10,6 +10,23 @@ namespace jnibridge::examples {
             ~BaseClass() { std::cout << "Dealloc: BaseClass" << std::endl; }
 
             virtual std::string getString() { return "BaseClass-String"; }
+
+            void throwNestedError() {
+                try {
+                    throw std::runtime_error("inner error");
+                } catch (...) {
+                    std::throw_with_nested(std::logic_error("outer error"));
+                }
+            }
+
+            const BaseClass& getThisRef() {
+                return *this;
+            }
+
+            static void printString(const std::shared_ptr<BaseClass> &other) {
+                std::cout << other->getString() << std::endl;
+            }
+
     };
 
 
