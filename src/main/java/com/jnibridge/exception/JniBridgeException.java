@@ -15,6 +15,7 @@ package com.jnibridge.exception;
  *   <li>Unexpected internal bridge errors</li>
  * </ul>
  */
+@SuppressWarnings("unused")
 public class JniBridgeException extends RuntimeException {
 
     // @formatter:off

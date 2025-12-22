@@ -81,6 +81,7 @@ public class GlobalMapperRegistry {
      * @param cppException the fully qualified name or identifier of the C++ exception to be mapped.
      * @param javaException the Java exception class that the C++ exception should be translated into.
      */
+    @SuppressWarnings("unused")
     public static void registerException(@NotNull final String cppException, @NotNull final Class<? extends Throwable> javaException) {
         exceptionRegistry.put(cppException, javaException);
     }
