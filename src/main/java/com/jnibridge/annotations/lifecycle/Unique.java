@@ -6,20 +6,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation can be used to pass/return a parameter/return value as a std::shared_ptr.
+ * Annotation can be used to pass/return a parameter/return value as a std::unique_ptr.
  *
  * @see Ptr
  * @see Ref
- * @see Unique
+ * @see Shared
  */
 @Target({ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Shared {
+public @interface Unique {
 
     /**
-     * Specifies a custom native allocation function template-path (alloc as std::shared_ptr).
+     * Specifies a custom native allocation function template-path (alloc as std::unique_ptr).
      * <p>
-     * Only works for functions that have been annotated with {@link Allocate} as well as {@link Shared}.
+     * Only works for functions that have been annotated with {@link Allocate} as well as {@link Unique}.
      * </p>
      *
      * <p>
@@ -40,7 +40,7 @@ public @interface Shared {
      *
      * @return the classpath-relative location of the allocation function template
      */
-    String allocTemplate() default "com/jnibridge/internals/alloc/alloc.shared.template";
+    String allocTemplate() default "com/jnibridge/internals/alloc/alloc.unique.template";
 
     /**
      * Specifies how a parameter should be mapped (Java -> C++)
@@ -61,7 +61,7 @@ public @interface Shared {
      *
      * @return the classpath-relative location of the allocation function template
      */
-    String inMapping() default "com/jnibridge/mappings/bridged_classes/shared/jnibridge.shared.in.mapping";
+    String inMapping() default "com/jnibridge/mappings/bridged_classes/unique/jnibridge.unique.in.mapping";
 
     /**
      * Specifies how a parameter should be mapped (C++ -> Java)
@@ -81,5 +81,5 @@ public @interface Shared {
      *
      * @return the classpath-relative location of the allocation function template
      */
-    String outMapping() default "com/jnibridge/mappings/bridged_classes/shared/jnibridge.shared.out.mapping";
+    String outMapping() default "com/jnibridge/mappings/bridged_classes/unique/jnibridge.unique.out.mapping";
 }

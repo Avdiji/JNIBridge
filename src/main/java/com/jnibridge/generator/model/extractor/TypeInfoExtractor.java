@@ -4,6 +4,7 @@ import com.jnibridge.annotations.BridgeClass;
 import com.jnibridge.annotations.lifecycle.Ptr;
 import com.jnibridge.annotations.lifecycle.Ref;
 import com.jnibridge.annotations.lifecycle.Shared;
+import com.jnibridge.annotations.lifecycle.Unique;
 import com.jnibridge.annotations.mapping.Mapping;
 import com.jnibridge.annotations.mapping.UseMapping;
 import com.jnibridge.exception.JniBridgeException;
@@ -193,7 +194,14 @@ public class TypeInfoExtractor {
             outMappingTemplatePath.append(shared.outMapping());
         });
 
-        // TODO support unique mapping...
+        // Mapping for uniquePtr...
+        Optional<Unique> uniqueOpt = result.getAnnotation(Unique.class);
+        uniqueOpt.ifPresent(unique -> {
+            inMappingTemplatePath.setLength(0);
+            outMappingTemplatePath.setLength(0);
+            inMappingTemplatePath.append(unique.inMapping());
+            outMappingTemplatePath.append(unique.outMapping());
+        });
 
         result.setInMapping(ResourceUtils.load(inMappingTemplatePath.toString()));
         result.setOutMapping(ResourceUtils.load(outMappingTemplatePath.toString()));

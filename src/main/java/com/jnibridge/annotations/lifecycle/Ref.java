@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
  *
  * @see Ptr
  * @see Shared
+ * @see Unique
  */
 @Target({ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)

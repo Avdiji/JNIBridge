@@ -4,6 +4,7 @@ package com.jnibridge.generator.compose.jni;
 import com.jnibridge.annotations.lifecycle.Allocate;
 import com.jnibridge.annotations.lifecycle.Deallocate;
 import com.jnibridge.annotations.lifecycle.Shared;
+import com.jnibridge.annotations.lifecycle.Unique;
 import com.jnibridge.generator.compose.MethodInfoComposer;
 import com.jnibridge.generator.compose.TypeInfoComposer;
 import com.jnibridge.generator.model.MethodInfo;
@@ -76,12 +77,12 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
             allocMethodTemplatePath.append(alloc.allocTemplate());
         });
 
-        // alloc as uniquePtr // TODO(unique support)
-//        Optional<Unique> uniqueOpt = returnType.getAnnotation(Unique.class);
-//        uniqueOpt.ifPresent(alloc -> {
-//            allocMethodTemplatePath.setLength(0);
-//            allocMethodTemplatePath.append(alloc.allocTemplate());
-//        });
+        // alloc as uniquePtr
+        Optional<Unique> uniqueOpt = returnType.getAnnotation(Unique.class);
+        uniqueOpt.ifPresent(alloc -> {
+            allocMethodTemplatePath.setLength(0);
+            allocMethodTemplatePath.append(alloc.allocTemplate());
+        });
 
         // compose the allocation function...
         String allocMethodTemplate = ResourceUtils.load(allocMethodTemplatePath.toString());
