@@ -1,6 +1,7 @@
 package com.jnibridge;
 
 import com.jnibridge.exception.JniBridgeException;
+import com.jnibridge.generator.compose.Composer;
 import com.jnibridge.generator.compose.jni.helper.JniBridgeExceptionComposer;
 import com.jnibridge.generator.compose.jni.ClassInfoJNIComposer;
 import com.jnibridge.generator.compose.jni.helper.JniBridgeHandleComposer;
@@ -161,7 +162,7 @@ public class JNIBridge {
 
         List<String> convenienceHeaderIncludes = new ArrayList<>();
         for (ClassInfo classInfo : iPointerClasses) {
-            final String filename = String.format("%s/%s", internalPath, PolymorphicHelperComposer.getHelperFilename(classInfo));
+            final String filename = String.format("%s/%s", internalPath, Composer.getPolyHelperFilename(classInfo));
 
             try (FileWriter rawPolymorphicHelperWriter = new FileWriter(filename)) {
                 rawPolymorphicHelperWriter.write(new PolymorphicHelperComposer(classInfo).compose());
@@ -169,7 +170,7 @@ public class JNIBridge {
             } catch (IOException e) {
                 throw new JniBridgeException("Unable to create polymorphic helper", e);
             } finally {
-                convenienceHeaderIncludes.add(String.format("#include \"polymorphism/%s\"", PolymorphicHelperComposer.getHelperFilename(classInfo)));
+                convenienceHeaderIncludes.add(String.format("#include \"polymorphism/%s\"", Composer.getPolyHelperFilename(classInfo)));
             }
         }
 

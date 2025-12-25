@@ -16,7 +16,6 @@ import java.util.Map;
 public class JniBridgeExceptionComposer implements Composer {
     public static final String INTERNAL_FILENAME = "JniBridgeExceptionHandler.hpp";
 
-
     @Override
     public String compose() {
         final String exceptionHandler = ResourceUtils.load("com/jnibridge/internals/exception/JniBridgeExceptionHandler.hpp");
@@ -35,7 +34,6 @@ public class JniBridgeExceptionComposer implements Composer {
      * Composes JNI-specific helper-code to handle exceptions on a C++/jni level.
      */
     private static class JniBridgeExceptionFuncComposer implements Composer {
-        private static final String PLACEHOLDER_EXCEPTION_FUNC_LOGIC = "exceptionFuncLogic";
 
         @Override
         public String compose() {
@@ -46,7 +44,7 @@ public class JniBridgeExceptionComposer implements Composer {
         @Override
         public @NotNull Map<String, String> getReplacements() {
             final Map<String, String> replacements = new HashMap<>();
-            replacements.put(PLACEHOLDER_EXCEPTION_FUNC_LOGIC, getFuncBodyReplacement());
+            replacements.put(Placeholder.EXCEPTION_FUNC_BODY, getFuncBodyReplacement());
             return replacements;
         }
 

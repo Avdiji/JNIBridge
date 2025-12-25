@@ -30,6 +30,10 @@ public class Placeholder {
 
     // Exception specific...
     public static final String EXCEPTION_FUNC = "exceptionFunc";
+    public static final String EXCEPTION_FUNC_BODY = "exceptionFuncBody";
+
+    // Polymorphic helper specific...
+    public static final String HANDLE_TO_INSTANCE = "handleToInstance";
 
 
 
