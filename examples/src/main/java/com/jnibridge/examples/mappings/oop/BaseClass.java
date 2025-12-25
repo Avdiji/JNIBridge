@@ -8,7 +8,7 @@ import com.jnibridge.annotations.lifecycle.Shared;
 import com.jnibridge.annotations.modifiers.Const;
 import com.jnibridge.nativeaccess.Pointer;
 
-@BridgeClass(namespace = "jnibridge::examples")
+@BridgeClass(namespace = "jnibridge::examples", customJniCodePaths = "someJNICode.mapping")
 public class BaseClass extends Pointer {
 
     public BaseClass() {  allocBase(); }

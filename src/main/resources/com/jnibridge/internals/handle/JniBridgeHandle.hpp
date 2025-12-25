@@ -299,4 +299,6 @@ namespace jnibridge::internal {
     template <typename T>
     inline T jniDefaultReturn() { return nullptr; } // objects, arrays, etc.
 
+    ${customJNICode}
+
 }  // namespace jnibridge::internal

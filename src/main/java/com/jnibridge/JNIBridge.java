@@ -34,16 +34,19 @@ public class JNIBridge {
     /**
      * Generates JNI interface header files (.jni.h) for the specified Java classes.
      *
-     * @param outPath the output directory where the generated JNI header files will be stored.
-     *                If the directory does not exist, it will be created.
-     * @param classes fully qualified names of the classes/packages to generate JNI headers for.
+     * @param outPath            the output directory where the generated JNI header files will be stored.
+     *                           If the directory does not exist, it will be created.
+     * @param classes            fully qualified names of the classes/packages to generate JNI headers for.
+     * @param nativeIncludes     All C++ includes needed for the mapping.
+     * @param customJNICodePaths Resource-Paths, to include centralized, custom JNI-code.
      * @throws RuntimeException if a header file cannot be created or written.
      */
-    public static void generateJNIInterface(@NotNull final Path outPath, @NotNull final String[] classes, @NotNull final String[] nativeIncludes) {
+    public static void generateJNIInterface(@NotNull final Path outPath, @NotNull final String[] classes, @NotNull final String[] nativeIncludes, @NotNull final String[] customJNICodePaths) {
 
         // extract all classes to map
         List<Class<?>> classesToMap = ClassScanner.getClassesToMap(classes);
 
+        // @formatter:off
         // map classes to map/extracted class-infos
         Map<Class<?>, ClassInfo> classMappings = classesToMap.stream()
                 .collect(Collectors.toMap(
@@ -52,18 +55,37 @@ public class JNIBridge {
                 ));
 
         // generate the JniBridgeHandle - helper file.
-        generateJniBridgeHandleHelper(outPath, Arrays.stream(nativeIncludes).collect(Collectors.toList()));
+        generateJniBridgeHandle(
+                outPath,
+                Arrays.stream(nativeIncludes).collect(Collectors.toList()),
+                Arrays.stream(customJNICodePaths).collect(Collectors.toList())
+        );
 
         // generate the JniBridge Exception-handler file.
         generateJniBridgeExceptionHandler(outPath);
 
         // generate the polymorphic helper files.
-        generatePolymorphicHelpers(outPath, classMappings.values().stream()
-                .filter(classInfo -> IPointer.class.isAssignableFrom(classInfo.getClazz()))
-                .collect(Collectors.toList()));
+        generatePolymorphicHelpers(
+                outPath,
+                classMappings.values().stream()
+                        .filter(classInfo -> IPointer.class.isAssignableFrom(classInfo.getClazz()))
+                        .collect(Collectors.toList()));
+        // @formatter:on
 
         // generate the 'actual' JNI files...
         createJNIFiles(outPath, classMappings);
+    }
+
+    /**
+     * Generates JNI interface header files (.jni.h) for the specified Java classes.
+     *
+     * @param outPath the output directory where the generated JNI header files will be stored.
+     *                If the directory does not exist, it will be created.
+     * @param classes fully qualified names of the classes/packages to generate JNI headers for.
+     * @throws RuntimeException if a header file cannot be created or written.
+     */
+    public static void generateJNIInterface(@NotNull final Path outPath, @NotNull final String[] classes, @NotNull final String[] nativeIncludes) {
+        generateJNIInterface(outPath, classes, nativeIncludes, new String[]{});
     }
 
     /**
@@ -75,13 +97,14 @@ public class JNIBridge {
     private static void createJNIFiles(@NotNull final Path outPath, @NotNull final Map<Class<?>, ClassInfo> classMappings) {
         for (Map.Entry<Class<?>, ClassInfo> classMapping : classMappings.entrySet()) {
 
+            // compute the output path of the generated jni-file (reflects the package path)
             Class<?> clazz = classMapping.getKey();
             Path classPackageAsPath = Paths.get(clazz.getPackage().getName().replace(".", "/"));
             Path actualPath = outPath.resolve(classPackageAsPath);
             actualPath.toFile().mkdirs();
 
+            // compose and write the jni-file...
             final String filename = String.format("%s/%s.jni.cpp", actualPath, clazz.getSimpleName());
-
             try (FileWriter writer = new FileWriter(filename)) {
                 writer.write(new ClassInfoJNIComposer(classMapping.getValue()).compose());
             } catch (IOException e) {
@@ -94,7 +117,7 @@ public class JNIBridge {
      * Generate the file, which the JNIBridge uses internally, to handle mapping logic.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void generateJniBridgeHandleHelper(@NotNull final Path outPath, Collection<String> allNativeIncludes) {
+    private static void generateJniBridgeHandle(@NotNull final Path outPath, Collection<String> allNativeIncludes, @NotNull final Collection<String> customJNICodePaths) {
         final Path internalPath = Paths.get(outPath.toString(), "internal");
         internalPath.toFile().mkdirs();
 
@@ -104,7 +127,7 @@ public class JNIBridge {
         // create the corresponding internal files...
         try (FileWriter jniHandleWriter = new FileWriter(ptrWrapperFilename)
         ) {
-            jniHandleWriter.write(new JniBridgeHandleComposer(allNativeIncludes).compose());
+            jniHandleWriter.write(new JniBridgeHandleComposer(allNativeIncludes, customJNICodePaths).compose());
         } catch (IOException e) {
             throw new RuntimeException(String.format("Unable to create file: %s", ptrWrapperFilename), e);
         }
