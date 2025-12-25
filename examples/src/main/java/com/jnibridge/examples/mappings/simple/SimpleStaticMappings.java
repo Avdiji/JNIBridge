@@ -3,6 +3,7 @@ package com.jnibridge.examples.mappings.simple;
 import com.jnibridge.annotations.BridgeClass;
 import com.jnibridge.annotations.mapping.MethodName;
 import com.jnibridge.annotations.mapping.UseMapping;
+import com.jnibridge.annotations.modifiers.Custom;
 import com.jnibridge.mapper.primitives.BoolMapper;
 import com.jnibridge.mapper.standard.StringMapper;
 import com.jnibridge.mapper.standard.StringViewMapper;

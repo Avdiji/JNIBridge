@@ -1,5 +1,6 @@
 package com.jnibridge.generator.compose;
 
+import com.jnibridge.annotations.modifiers.Custom;
 import com.jnibridge.generator.compose.jni.TypeInfoJNIComposer;
 import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.generator.model.TypeInfo;
@@ -48,7 +49,8 @@ public abstract class MethodInfoComposer implements Composer {
 
         replacements.put(PLACEHOLDER_JNI_PARAMS, getJNIFunctionParams());
 
-        replacements.put(PLACEHOLDER_FUNCTION_CALL, getNativeFunctionCall());
+        Optional<Custom> custom = methodInfo.getReturnType().getAnnotation(Custom.class);
+        replacements.put(PLACEHOLDER_FUNCTION_CALL, TypeInfoComposer.getReplacement(getNativeFunctionCall(), custom.map(Custom::functionCall).orElse(null)));
         replacements.put(PLACEHOLDER_FUNCTION_CALL_PARAMS, getNativeFunctionCallParams());
 
         return replacements;
