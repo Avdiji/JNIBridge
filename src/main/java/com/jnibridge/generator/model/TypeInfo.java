@@ -19,7 +19,6 @@ public class TypeInfo {
     // @formatter:off
     @NonNull private final Class<?> type;
 
-    @Getter(AccessLevel.NONE)
     @NonNull private final List<Annotation> annotations;
 
     @Nullable private final String id;

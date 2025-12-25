@@ -28,7 +28,6 @@ public class MethodInfo {
     @NonNull private final String nativeName;
     private final String jName;
 
-
     // types used
     @Nullable private final TypeInfo selfType;
     @NonNull private final TypeInfo returnType;

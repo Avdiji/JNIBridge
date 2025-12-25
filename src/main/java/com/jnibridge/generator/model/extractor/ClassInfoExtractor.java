@@ -31,18 +31,20 @@ public class ClassInfoExtractor {
      */
     @NotNull
     public static ClassInfo extract(@NotNull final Class<?> clazz, @NotNull final List<Class<?>> otherClassesToMap) {
+        // ensure that the corresponding class has been annotated properly...
         BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
         if (annotation == null) {
-            throw new JniBridgeException(String.format("Class '%s' must be annotated properly in order to be mapped.", clazz.getSimpleName()));
+            throw new JniBridgeException(String.format("Class '%s' must be annotated with 'BridgeClass' in order to be mapped.", clazz.getSimpleName()));
         }
 
-        // sorted set of all the subclasses to be mapped...
-        SortedSet<ClassInfo> subclasses = otherClassesToMap.stream()
+        // sorted set of all the subclasses to be mapped (for polymorphic handlers)...
+        final SortedSet<ClassInfo> subclasses = otherClassesToMap.stream()
                 .filter(otherClazz -> !otherClazz.equals(clazz))
                 .filter(clazz::isAssignableFrom)
                 .map(other -> extract(other, otherClassesToMap))
                 .collect(Collectors.toCollection(TreeSet::new));
 
+        // Compose ClassInfo...
         final String nativeClassName = annotation.name().isEmpty() ? clazz.getSimpleName() : annotation.name();
         final ClassInfo result = ClassInfo.builder()
                 .clazz(clazz)
@@ -53,7 +55,7 @@ public class ClassInfoExtractor {
                 .methodsToMap(extractMethodsToMap(clazz, annotation.namespace(), nativeClassName))
                 .build();
 
-
+        // for polymorphic helpers...
         if (IPointer.class.isAssignableFrom(clazz)) { result.getSubclasses().add(result); }
         return result;
     }
@@ -79,11 +81,11 @@ public class ClassInfoExtractor {
             actualNamespace.append("::").append(nativeClassName);
         }
 
+        // compose MethodInfos...
         return allJNIBridgedMethods.stream()
                 .filter(method -> method.getDeclaringClass().equals(clazz))
                 .map(method -> MethodInfoExtractor.extract(method, actualNamespace.toString(), clazz)).collect(Collectors.toList());
     }
-
 
     /**
      * Method extract the full C++ type from the given class.
@@ -95,7 +97,7 @@ public class ClassInfoExtractor {
     public static String extractClassCType(@NotNull final Class<?> clazz) {
         final BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
         if (annotation == null) {
-            throw new JniBridgeException(String.format("Class '%s' must be annotated with 'BridgeClass', for it to be mapped properly", clazz.getSimpleName()));
+            throw new JniBridgeException(String.format("Class '%s' must be annotated with 'BridgeClass'", clazz.getSimpleName()));
         }
 
         String namespace = annotation.namespace();
