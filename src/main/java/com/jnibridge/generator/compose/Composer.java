@@ -1,6 +1,8 @@
 package com.jnibridge.generator.compose;
 
+import com.jnibridge.generator.model.ClassInfo;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -26,4 +28,29 @@ public interface Composer {
      */
     @NotNull
     Map<String, String> getReplacements();
+
+    /**
+     * Method returns a replacement String.
+     *
+     * @param defaultReplacement The replacement to use if nothing else has been specified.
+     * @param customReplacement  The user-defined custom replacement.
+     * @return A replacement String.
+     */
+    static String getReplacement(@NotNull final String defaultReplacement, @Nullable final String customReplacement) {
+        if (customReplacement != null && !customReplacement.isEmpty()) {
+            return customReplacement;
+        } else return defaultReplacement;
+    }
+
+    /**
+     * Function computes the jni-helper filename for the passed type.
+     *
+     * @param classInfo The class to create helper functions for.
+     * @return A unique filename for the generated header file.
+     */
+    static String getPolyHelperFilename(@NotNull final ClassInfo classInfo) {
+        return String.format("%s_%s.helper.hpp",
+                classInfo.getClazz().getPackage().getName().replace(".", "_"),
+                classInfo.getClazz().getSimpleName());
+    }
 }

@@ -7,7 +7,7 @@
 #include <variant>
 #include <stdexcept>
 
-${allIncludes}
+${internal_includes}
 
 namespace jnibridge::internal {
 
@@ -299,6 +299,6 @@ namespace jnibridge::internal {
     template <typename T>
     inline T jniDefaultReturn() { return nullptr; } // objects, arrays, etc.
 
-    ${customJNICode}
+    ${customJNIContent}
 
 }  // namespace jnibridge::internal

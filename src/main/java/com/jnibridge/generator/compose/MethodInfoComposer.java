@@ -21,15 +21,6 @@ import java.util.stream.Collectors;
 public abstract class MethodInfoComposer implements Composer {
 
     // MethodInfo - related Placeholders...
-    public static final String PLACEHOLDER_MANGLED_FUNCTION_NAME = "mangledFuncName";
-
-    public static final String PLACEHOLDER_JNI_PARAMS = "jniParams";
-    public static final String PLACEHOLDER_FUNCTION_CALL = "functionCall";
-    public static final String PLACEHOLDER_FUNCTION_CALL_PARAMS = "functionCallParams";
-
-    public static final String PLACEHOLDER_SELF_IN_MAPPING = "jselfInMapping";
-    public static final String PLACEHOLDER_PARAMS_IN_MAPPING = "paramInMapping";
-    public static final String PLACEHOLDER_RESULT_OUT_MAPPING = "resultOutMapping";
 
 
     @NonNull
@@ -39,19 +30,19 @@ public abstract class MethodInfoComposer implements Composer {
     public Map<String, String> getReplacements() {
         Map<String, String> replacements = new HashMap<>();
 
-        Optional.ofNullable(methodInfo.getSelfType()).ifPresent(selfType -> replacements.put(PLACEHOLDER_SELF_IN_MAPPING, new TypeInfoJNIComposer(selfType).compose()));
+        Optional.ofNullable(methodInfo.getSelfType()).ifPresent(selfType -> replacements.put(Placeholder.SELF_IN_MAPPING, new TypeInfoJNIComposer(selfType).compose()));
 
-        replacements.put(PLACEHOLDER_PARAMS_IN_MAPPING, getParamInputMappings());
-        replacements.put(PLACEHOLDER_RESULT_OUT_MAPPING, new TypeInfoJNIComposer(methodInfo.getReturnType()).compose());
+        replacements.put(Placeholder.PARAMS_IN_MAPPING, getParamInputMappings());
+        replacements.put(Placeholder.RESULT_OUT_MAPPING, new TypeInfoJNIComposer(methodInfo.getReturnType()).compose());
 
-        replacements.put(TypeInfoComposer.PLACEHOLDER_JNI_TYPE, methodInfo.getReturnType().getJniType());
-        replacements.put(PLACEHOLDER_MANGLED_FUNCTION_NAME, JNIMangler.getMangledMethodDescriptor(methodInfo.getMethod()));
+        replacements.put(Placeholder.JNI_TYPE, methodInfo.getReturnType().getJniType());
+        replacements.put(Placeholder.MANGLED_FUNC_NAME, JNIMangler.getMangledMethodDescriptor(methodInfo.getMethod()));
 
-        replacements.put(PLACEHOLDER_JNI_PARAMS, getJNIFunctionParams());
+        replacements.put(Placeholder.JNI_PARAMS, getJNIFunctionParams());
 
         Optional<Custom> custom = methodInfo.getReturnType().getAnnotation(Custom.class);
-        replacements.put(PLACEHOLDER_FUNCTION_CALL, TypeInfoComposer.getReplacement(getNativeFunctionCall(), custom.map(Custom::functionCall).orElse(null)));
-        replacements.put(PLACEHOLDER_FUNCTION_CALL_PARAMS, getNativeFunctionCallParams());
+        replacements.put(Placeholder.FUNC_CALL, Composer.getReplacement(getNativeFunctionCall(), custom.map(Custom::functionCall).orElse(null)));
+        replacements.put(Placeholder.FUNC_CALL_PARAMS, getNativeFunctionCallParams());
 
         return replacements;
     }
@@ -68,7 +59,7 @@ public abstract class MethodInfoComposer implements Composer {
         String result = params.stream().map(typeInfo -> {
 
             String id = Objects.requireNonNull(typeInfo.getId(), "TypeInfo's that act as parameter types must have a id!");
-            return String.format("%s %s%s", typeInfo.getJniType(), TypeInfoComposer.PLACEHOLDER_JNI_VAR, id);
+            return String.format("%s %s%s", typeInfo.getJniType(), Placeholder.JNI_VAR, id);
 
         }).collect(Collectors.joining(", "));
 
@@ -100,7 +91,7 @@ public abstract class MethodInfoComposer implements Composer {
         return params.stream().map(typeInfo -> {
 
             String id = Objects.requireNonNull(typeInfo.getId(), "TypeInfo's that act as parameter types must have a id!");
-            return String.format("%s%s", TypeInfoComposer.PLACEHOLDER_C_VAR, id);
+            return String.format("%s%s", Placeholder.C_VAR, id);
 
         }).collect(Collectors.joining(", "));
     }

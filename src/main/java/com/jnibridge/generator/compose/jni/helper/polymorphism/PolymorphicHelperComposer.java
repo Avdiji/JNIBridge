@@ -1,7 +1,7 @@
 package com.jnibridge.generator.compose.jni.helper.polymorphism;
 
 import com.jnibridge.generator.compose.Composer;
-import com.jnibridge.generator.compose.TypeInfoComposer;
+import com.jnibridge.generator.compose.Placeholder;
 import com.jnibridge.generator.compose.jni.helper.JniBridgeHandleComposer;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.extractor.ClassInfoExtractor;
@@ -20,11 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PolymorphicHelperComposer implements Composer {
 
-    public static final String POLYMORPHIC_CONVENIENCE_HEADER_FILENAME = "JniBridgePolymorphicHelper.hpp";
-
-    private static final String PLACEHOLDER_HANDLE_INCLUDE = "internalHandlePath";
-    private static final String PLACEHOLDER_HELPER_FUNCTIONS = "helperFunctions";
-
+    public static final String FILENAME = "JniBridgePolymorphicHelper.hpp";
     private final ClassInfo classInfo;
 
     @Override
@@ -37,8 +33,8 @@ public class PolymorphicHelperComposer implements Composer {
     public @NotNull Map<String, String> getReplacements() {
         final Map<String, String> replacements = new HashMap<>();
 
-        replacements.put(PLACEHOLDER_HELPER_FUNCTIONS, getHelperFunctionReplacement());
-        replacements.put(PLACEHOLDER_HANDLE_INCLUDE, String.format("../%s", JniBridgeHandleComposer.INTERNAL_FILENAME));
+        replacements.put(Placeholder.FUNCTIONS, getHelperFunctionReplacement());
+        replacements.put(Placeholder.HANDLE_FILE_INCLUDE, String.format("../%s", JniBridgeHandleComposer.INTERNAL_FILENAME));
 
         return replacements;
     }
@@ -70,25 +66,12 @@ public class PolymorphicHelperComposer implements Composer {
         return result.toString();
     }
 
-    /**
-     * Function computes the jni-helper filename for the passed type.
-     *
-     * @param classInfo The class to create helper functions for.
-     * @return A unique filename for the generated header file.
-     */
-    public static String getHelperFilename(@NotNull final ClassInfo classInfo) {
-        return String.format("%s_%s.helper.hpp",
-                classInfo.getClazz().getPackage().getName().replace(".", "_"),
-                classInfo.getClazz().getSimpleName());
-    }
 
     /**
      * Composes JNI-specific code to handle polymorphism on a C++/jni level.
      */
     @Getter
     public static abstract class PolymorphicFuncComposer implements Composer {
-
-        private static final String PLACEHOLDER_HANDLE_TO_INSTANCE = "handleToInstance";
 
         private final ClassInfo polymorphicClass;
         private final String helperFunctionPrefix;
@@ -113,9 +96,9 @@ public class PolymorphicHelperComposer implements Composer {
         public @NotNull Map<String, String> getReplacements() {
             final Map<String, String> replacements = new HashMap<>();
 
-            replacements.put(TypeInfoComposer.PLACEHOLDER_C_TYPE, cType);
-            replacements.put(TypeInfoComposer.PLACEHOLDER_C_TYPE_UNDERSCORE, cTypeUnderscore);
-            replacements.put(PLACEHOLDER_HANDLE_TO_INSTANCE, getHandleToInstanceReplacement());
+            replacements.put(Placeholder.C_TYPE, cType);
+            replacements.put(Placeholder.C_TYPE_UNDERSCORE, cTypeUnderscore);
+            replacements.put(Placeholder.HANDLE_TO_INSTANCE, getHandleToInstanceReplacement());
 
             return replacements;
         }

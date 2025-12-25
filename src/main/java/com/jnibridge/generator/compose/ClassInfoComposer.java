@@ -24,10 +24,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class ClassInfoComposer implements Composer {
 
-    public static final String PLACEHOLDER_INTERNAL_INCLUDES = "internal_includes";
-
-    public static final String PLACEHOLDER_CUSTOM_JNI_CONTENT = "customJNIContent";
-    public static final String PLACEHOLDER_METHODS = "mappedMethods";
 
     @NonNull
     private final ClassInfo classInfo;
@@ -36,10 +32,9 @@ public abstract class ClassInfoComposer implements Composer {
     public @NotNull Map<String, String> getReplacements() {
         Map<String, String> replacements = new HashMap<>();
 
-        replacements.put(PLACEHOLDER_INTERNAL_INCLUDES, computeInternalInclude());
-        replacements.put(PLACEHOLDER_CUSTOM_JNI_CONTENT, getCustomJNIContent());
-
-        replacements.put(PLACEHOLDER_METHODS, getMappedMethods());
+        replacements.put(Placeholder.INTERNAL_INCLUDES, computeInternalInclude());
+        replacements.put(Placeholder.CUSTOM_JNI, getCustomJNIContent());
+        replacements.put(Placeholder.FUNCTIONS, getMappedMethods());
 
         return replacements;
     }
@@ -58,7 +53,6 @@ public abstract class ClassInfoComposer implements Composer {
         for (final String resourcePath : annotation.customJniCodePaths()) {
             result.append(ResourceUtils.load(resourcePath));
         }
-
         return result.toString();
     }
 
@@ -87,9 +81,9 @@ public abstract class ClassInfoComposer implements Composer {
         }
 
         String internalIncludeTemplate = "#include " + "\"" + relativeParentPath + "internal/%s\"";
-        result.append(String.format(internalIncludeTemplate, PolymorphicHelperComposer.POLYMORPHIC_CONVENIENCE_HEADER_FILENAME))
+        result.append(String.format(internalIncludeTemplate, PolymorphicHelperComposer.FILENAME))
                 .append("\n")
-                .append(String.format(internalIncludeTemplate, JniBridgeExceptionComposer.INTERNAL_FILENAME));
+                .append(String.format(internalIncludeTemplate, JniBridgeExceptionComposer.FILENAME));
 
         return result.toString();
     }

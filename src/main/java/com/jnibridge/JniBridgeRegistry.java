@@ -38,7 +38,6 @@ public class JniBridgeRegistry {
     static {
 
         putIntoTypeRegistry(int.class, IntMapper.class);
-        putIntoTypeRegistry(int.class, IntMapper.class);
         putIntoTypeRegistry(void.class, VoidMapper.class);
         putIntoTypeRegistry(boolean.class, BoolMapper.class);
         putIntoTypeRegistry(char.class, CharMapper.class);

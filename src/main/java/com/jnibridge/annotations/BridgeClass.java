@@ -1,8 +1,6 @@
 package com.jnibridge.annotations;
 
 import com.jnibridge.mapper.TypeMapper;
-import org.jetbrains.annotations.NotNull;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

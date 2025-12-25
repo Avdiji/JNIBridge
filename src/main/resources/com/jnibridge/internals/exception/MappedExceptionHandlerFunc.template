@@ -7,6 +7,6 @@
      * @return a {@code jclass} representing the selected Java exception type.
      */
     static jclass getMappedExceptionClass(JNIEnv *env, const std::exception& e) {
-${exceptionFuncLogic}
+${exceptionFuncBody}
         return nullptr;
     }

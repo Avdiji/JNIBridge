@@ -17,22 +17,10 @@ import java.util.*;
 public class ClassInfo implements Comparable<ClassInfo> {
 
     // @formatter:off
-
-    // the class to be mapped
     @NonNull  private final Class<?> clazz;
-
-    // metadata
-    @NonNull private final String nativeNamespace;
-    @NonNull private final String nativeName;
-    @NonNull private final String jName;
-
-    // all the native methods (excluding the inherited ones...).
-    @NonNull private final List<MethodInfo> methodsToMap;
-
-    // all the subclasses
-    @NonNull private final SortedSet<ClassInfo> subclasses;
+    @NonNull private final List<MethodInfo> methodsToMap; // <- excluding inherited methods
+    @NonNull private final SortedSet<ClassInfo> subclasses; // <- including itself
     // @formatter:on
-
 
     @Override
     public int compareTo(@NotNull ClassInfo other) {

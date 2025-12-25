@@ -23,88 +23,44 @@ import java.util.stream.Stream;
 @Getter
 public class ClassScanner {
 
-    private ClassScanner() {}
+    private ClassScanner() { }
 
     /**
      * Initializes the scanner by loading classes based on the input patterns
      * and filtering them according to the presence of {@link BridgeClass}.
      *
      * @param classPatterns class or package patterns to scan
-     *
      * @throws IllegalArgumentException if the classPatterns are invalid.
      * @throws IllegalArgumentException if one of the classes within the pattern can not be found.
      */
     @NotNull
     public static List<Class<?>> getClassesToMap(@NotNull final String... classPatterns) {
-
-        // validate class patterns
-        if (!validateClassPatterns(classPatterns)) {
-            throw new JniBridgeException("The passed class-patterns are invalid.");
-        }
-
-        List<Class<?>> classesToMap = new ArrayList<>();
         try {
+            // validate class patterns
+            if (!validateClassPatterns(classPatterns)) {
+                throw new JniBridgeException("The passed class-patterns are invalid.");
+            }
 
-            List<Class<?>> loadedClasses = loadClasses(classPatterns);
-            for (Class<?> clazz : loadedClasses) {
+            List<Class<?>> loadedClasses = new ArrayList<>();
+            for (final String pattern : classPatterns) {
 
-                // only map annotated classes
-                if (clazz.isAnnotationPresent(BridgeClass.class)) {
+                // add all classes in package.
+                if (pattern.endsWith(".*")) {
+                    String packageName = pattern.substring(0, pattern.length() - 2);
+                    loadedClasses.addAll(scanPackage(packageName));
 
-                    // handle enum-classes
-                    final BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
-                    if(annotation.isEnum()) {
-                        checkEnumClass(clazz);
-                        classesToMap.add(clazz);
-                        continue;
-                    }
-
-                    // map only classes that extend IPointer, or classes which contain only static functions
-                    boolean isIPointer = IPointer.class.isAssignableFrom(clazz);
-                    boolean isUtilityClass = Arrays.stream(clazz.getDeclaredMethods()).allMatch(m -> Modifier.isStatic(m.getModifiers()) || m.isSynthetic());
-                    boolean containsNativeMethods = Arrays.stream(clazz.getDeclaredMethods()).anyMatch(method -> Modifier.isNative(method.getModifiers()));
-
-                    // implements IPointer = instance class
-                    if (isIPointer || (isUtilityClass && containsNativeMethods)) {
-                        classesToMap.add(clazz);
-                    }
+                } else {
+                    loadedClasses.add(Class.forName(pattern));
                 }
             }
 
+            // filter all the classes that are irrelevant for the JniBridgeTool
+            return filterRelevantClasses(loadedClasses);
         } catch (ClassNotFoundException e) {
             throw new JniBridgeException("One of the passed classes have not been found", e);
         }
-
-        return classesToMap;
     }
 
-    /**
-     * Check whether the enum to be mapped declares the proper methods.
-     * @param clazz The enum-class to check.
-     */
-    private static void checkEnumClass(Class<?> clazz) {
-        Method[] declaredMethods = clazz.getDeclaredMethods();
-
-        // Check whether the enum contains a static, fromInt Method.
-        boolean fromIntMethodExists = Arrays.stream(declaredMethods)
-                .filter(method -> !Modifier.isNative(method.getModifiers()))
-                .filter(method -> Modifier.isStatic(method.getModifiers()))
-                .anyMatch(method -> method.getName().equals("fromInt"));
-
-        // Check whether the enum contains a non-static, toInt instance Method.
-        boolean toIntExists = Arrays.stream(declaredMethods)
-                .filter(method ->  !Modifier.isNative(method.getModifiers()))
-                .filter(method -> !Modifier.isStatic(method.getModifiers()))
-                .anyMatch(method -> method.getName().equals("toInt"));
-
-        if(!fromIntMethodExists) {
-            throw new JniBridgeException("Mapped enums must declare a static,native 'fromInt' method.");
-        }
-
-        if(!toIntExists) {
-            throw new JniBridgeException("Mapped enums must declare a non-static,native 'toInt' method.");
-        }
-    }
 
     /**
      * Validates that the provided class patterns are not null, empty, or malformed.
@@ -116,37 +72,10 @@ public class ClassScanner {
         if (classPatterns == null) { return false; }
         if (classPatterns.length == 0) { return false; }
 
-
         for (final String pattern : classPatterns) {
             if (pattern == null || pattern.isEmpty()) { return false; }
         }
-
         return true;
-    }
-
-    /**
-     * Loads classes from the given patterns. Supports exact class names and
-     * package patterns ending in {@code .*}.
-     *
-     * @param classPatterns class names or package patterns
-     * @return list of loaded classes
-     * @throws ClassNotFoundException if a class cannot be found
-     */
-    @NotNull
-    private static List<Class<?>> loadClasses(String... classPatterns) throws ClassNotFoundException {
-        List<Class<?>> loadedClasses = new ArrayList<>();
-        for (final String pattern : classPatterns) {
-
-            // add all classes in package.
-            if (pattern.endsWith(".*")) {
-                String packageName = pattern.substring(0, pattern.length() - 2);
-                loadedClasses.addAll(scanPackage(packageName));
-
-            } else {
-                loadedClasses.add(Class.forName(pattern));
-            }
-        }
-        return loadedClasses;
     }
 
     /**
@@ -179,6 +108,67 @@ public class ClassScanner {
 
         } catch (Exception e) {
             throw new JniBridgeException(String.format("Unable to find classes in package '%s'", packageName), e);
+        }
+    }
+
+    /**
+     * Method filters all relevant (for the jnibridge) classes to map.
+     *
+     * @param classesToFilter The classes to filter.
+     * @return A List of classes, relevant for the JniBridge tool.
+     */
+    @NotNull
+    private static List<Class<?>> filterRelevantClasses(@NotNull final Collection<Class<?>> classesToFilter) {
+        ArrayList<Class<?>> result = new ArrayList<>();
+
+        for (final Class<?> clazz : classesToFilter) {
+            if (!clazz.isAnnotationPresent(BridgeClass.class)) { continue; }
+
+            // handle special case - enum classes...
+            final BridgeClass bridgeClass = clazz.getAnnotation(BridgeClass.class);
+            if (bridgeClass.isEnum()) {
+                checkEnumClass(clazz);
+                result.add(clazz);
+                continue;
+            }
+
+            // map only classes that extend IPointer, or mapped utils classes...
+            boolean isIPointer = IPointer.class.isAssignableFrom(clazz);
+            boolean isUtilityClass = Arrays.stream(clazz.getDeclaredMethods()).allMatch(m -> Modifier.isStatic(m.getModifiers()) || m.isSynthetic());
+            boolean containsNativeMethods = Arrays.stream(clazz.getDeclaredMethods()).anyMatch(method -> Modifier.isNative(method.getModifiers()));
+
+            // implements IPointer = instance class
+            if (isIPointer || (isUtilityClass && containsNativeMethods)) {
+                result.add(clazz);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Check whether the enum to be mapped declares the proper methods.
+     *
+     * @param clazz The enum-class to check.
+     */
+    private static void checkEnumClass(Class<?> clazz) {
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+
+        // Check whether the enum contains a static, fromInt Method.
+        boolean fromIntMethodExists = Arrays.stream(declaredMethods)
+                .filter(method -> !Modifier.isNative(method.getModifiers()))
+                .filter(method -> Modifier.isStatic(method.getModifiers()))
+                .anyMatch(method -> method.getName().equals("fromInt"));
+        if (!fromIntMethodExists) {
+            throw new JniBridgeException("Mapped enums must declare a static,native 'fromInt' method.");
+        }
+
+        // Check whether the enum contains a non-static, toInt instance Method.
+        boolean toIntExists = Arrays.stream(declaredMethods)
+                .filter(method -> !Modifier.isNative(method.getModifiers()))
+                .filter(method -> !Modifier.isStatic(method.getModifiers()))
+                .anyMatch(method -> method.getName().equals("toInt"));
+        if (!toIntExists) {
+            throw new JniBridgeException("Mapped enums must declare a non-static,native 'toInt' method.");
         }
     }
 

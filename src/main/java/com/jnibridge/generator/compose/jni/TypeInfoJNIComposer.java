@@ -1,5 +1,6 @@
 package com.jnibridge.generator.compose.jni;
 
+import com.jnibridge.generator.compose.Placeholder;
 import com.jnibridge.generator.compose.TypeInfoComposer;
 import com.jnibridge.generator.model.TypeInfo;
 import com.jnibridge.utils.TemplateUtils;
@@ -25,10 +26,10 @@ public class TypeInfoJNIComposer extends TypeInfoComposer {
     public @NotNull String compose() {
         final TypeInfo typeInfo = getTypeInfo();
 
-        if(typeInfo.isSelf()) {
+        if(typeInfo.isInvoker()) {
             Map<String, String> selfReplacements = new HashMap<>();
-            selfReplacements.put(PLACEHOLDER_C_VAR, "cself");
-            selfReplacements.put(PLACEHOLDER_JNI_VAR, "jself");
+            selfReplacements.put(Placeholder.C_VAR, "cself");
+            selfReplacements.put(Placeholder.JNI_VAR, "jself");
 
             String selfInMapping = typeInfo.getInMapping();
             selfInMapping = TemplateUtils.substitute(selfInMapping, selfReplacements);

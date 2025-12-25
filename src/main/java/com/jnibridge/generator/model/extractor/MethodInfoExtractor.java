@@ -1,6 +1,5 @@
 package com.jnibridge.generator.model.extractor;
 
-import com.jnibridge.annotations.BridgeClass;
 import com.jnibridge.annotations.mapping.MethodName;
 import com.jnibridge.annotations.mapping.MethodNamespace;
 import com.jnibridge.generator.model.MethodInfo;
@@ -32,23 +31,24 @@ public class MethodInfoExtractor {
      */
     @NotNull
     protected static MethodInfo extract(@NotNull final Method method, @NotNull final String classNamespace, @NotNull final Class<?> classToBeMapped) {
+
+        // Extract methods namespace and name...
         Optional<MethodNamespace> namespaceOpt = Optional.ofNullable(method.getAnnotation(MethodNamespace.class));
         Optional<MethodName> nameOpt = Optional.ofNullable(method.getAnnotation(MethodName.class));
 
+        // determine whether the method is static...
         final boolean isStatic = Modifier.isStatic(method.getModifiers());
-        final BridgeClass bridgeClassAnnotation = method.getDeclaringClass().getAnnotation(BridgeClass.class);
 
-        MethodInfo.MethodInfoBuilder methodBuilder = MethodInfo.builder()
+        // compose MethodInfo...
+        final MethodInfo.MethodInfoBuilder methodBuilder = MethodInfo.builder()
                 .method(method)
-
                 .isStatic(isStatic)
 
                 .namespace(namespaceOpt.isPresent() ? namespaceOpt.get().value() : classNamespace)
                 .nativeName(nameOpt.isPresent() ? nameOpt.get().value() : method.getName())
-                .jName(method.getName())
 
-                .returnType(TypeInfoExtractor.extractReturnType(method, bridgeClassAnnotation))
-                .params(TypeInfoExtractor.extractParamTypes(method, bridgeClassAnnotation));
+                .returnType(TypeInfoExtractor.extractReturnType(method))
+                .params(TypeInfoExtractor.extractParamTypes(method));
 
         // in case the method is an instance method
         if (!isStatic && IPointer.class.isAssignableFrom(classToBeMapped)) {

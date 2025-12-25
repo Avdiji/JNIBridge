@@ -1,6 +1,7 @@
 package com.jnibridge;
 
 import com.jnibridge.exception.JniBridgeException;
+import com.jnibridge.generator.compose.Composer;
 import com.jnibridge.generator.compose.jni.helper.JniBridgeExceptionComposer;
 import com.jnibridge.generator.compose.jni.ClassInfoJNIComposer;
 import com.jnibridge.generator.compose.jni.helper.JniBridgeHandleComposer;
@@ -85,6 +86,7 @@ public class JNIBridge {
      * @param classes fully qualified names of the classes/packages to generate JNI headers for.
      * @throws RuntimeException if a header file cannot be created or written.
      */
+    @SuppressWarnings("unused")
     public static void generateJNIInterface(@NotNull final Path outPath, @NotNull final String[] classes, @NotNull final String[] nativeIncludes) {
         generateJNIInterface(outPath, classes, nativeIncludes, new String[]{});
     }
@@ -142,7 +144,7 @@ public class JNIBridge {
         final Path internalPath = Paths.get(outPath.toString(), "internal");
         internalPath.toFile().mkdirs();
 
-        try (FileWriter jniExceptionWriter = new FileWriter(String.format("%s/%s", internalPath, JniBridgeExceptionComposer.INTERNAL_FILENAME))) {
+        try (FileWriter jniExceptionWriter = new FileWriter(String.format("%s/%s", internalPath, JniBridgeExceptionComposer.FILENAME))) {
             jniExceptionWriter.write(new JniBridgeExceptionComposer().compose());
         } catch (IOException e) {
             throw new JniBridgeException("Unable to create JNIBridge exception-handler", e);
@@ -161,7 +163,7 @@ public class JNIBridge {
 
         List<String> convenienceHeaderIncludes = new ArrayList<>();
         for (ClassInfo classInfo : iPointerClasses) {
-            final String filename = String.format("%s/%s", internalPath, PolymorphicHelperComposer.getHelperFilename(classInfo));
+            final String filename = String.format("%s/%s", internalPath, Composer.getPolyHelperFilename(classInfo));
 
             try (FileWriter rawPolymorphicHelperWriter = new FileWriter(filename)) {
                 rawPolymorphicHelperWriter.write(new PolymorphicHelperComposer(classInfo).compose());
@@ -169,10 +171,9 @@ public class JNIBridge {
             } catch (IOException e) {
                 throw new JniBridgeException("Unable to create polymorphic helper", e);
             } finally {
-                convenienceHeaderIncludes.add(String.format("#include \"polymorphism/%s\"", PolymorphicHelperComposer.getHelperFilename(classInfo)));
+                convenienceHeaderIncludes.add(String.format("#include \"polymorphism/%s\"", Composer.getPolyHelperFilename(classInfo)));
             }
         }
-
         generatePolymorphicHelperConvenienceHeader(outPath, convenienceHeaderIncludes);
     }
 
@@ -186,7 +187,7 @@ public class JNIBridge {
         final Path internalPath = Paths.get(outPath.toString(), "internal");
         internalPath.toFile().mkdirs();
 
-        final String filename = String.format("%s/%s", internalPath, PolymorphicHelperComposer.POLYMORPHIC_CONVENIENCE_HEADER_FILENAME);
+        final String filename = String.format("%s/%s", internalPath, PolymorphicHelperComposer.FILENAME);
         try (FileWriter headerWriter = new FileWriter(filename)) {
 
             final StringBuilder result = new StringBuilder();

@@ -19,12 +19,9 @@ public class TypeInfo {
     // @formatter:off
     @NonNull private final Class<?> type;
 
-    @Getter(AccessLevel.NONE)
-    @NonNull private final List<Annotation> annotations;
 
     @Nullable private final String id;
-
-    private final boolean isSelf;
+    private final boolean isInvoker; // <- is this type invoking the native function?
 
     @NonNull private final String cType;
     @NonNull private final String jniType;
@@ -35,6 +32,7 @@ public class TypeInfo {
     @Setter
     @Nullable private String outMapping;
 
+    @NonNull private final List<Annotation> annotations;
     // @formatter:on
 
     /**

@@ -1,6 +1,7 @@
 package com.jnibridge.generator.compose.jni.helper;
 
 import com.jnibridge.generator.compose.Composer;
+import com.jnibridge.generator.compose.Placeholder;
 import com.jnibridge.utils.ResourceUtils;
 import com.jnibridge.utils.TemplateUtils;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,6 @@ public class JniBridgeHandleComposer implements Composer {
 
     public static final String INTERNAL_FILENAME = "JniBridgeHandle.hpp";
 
-    private static final String PLACEHOLDER_CUSTOM_JNI_CODE = "customJNICode";
-    private static final String PLACEHOLDER_INCLUDES = "allIncludes";
-
     private final Collection<String> includes;
     private final Collection<String> customJniCodePaths;
 
@@ -39,12 +37,12 @@ public class JniBridgeHandleComposer implements Composer {
         final String allIncludesStr = includes.stream()
                 .map(include -> String.format("#include \"%s\"", include))
                 .collect(Collectors.joining("\n"));
-        replacements.put(PLACEHOLDER_INCLUDES, allIncludesStr);
+        replacements.put(Placeholder.INTERNAL_INCLUDES, allIncludesStr);
 
         // add all custom JNI-code.
         final StringBuilder result = new StringBuilder();
         customJniCodePaths.stream().map(ResourceUtils::load).forEach(result::append);
-        replacements.put(PLACEHOLDER_CUSTOM_JNI_CODE, result.toString());
+        replacements.put(Placeholder.CUSTOM_JNI, result.toString());
 
         return replacements;
     }

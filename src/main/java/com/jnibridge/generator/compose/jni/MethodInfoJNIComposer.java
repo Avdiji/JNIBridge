@@ -6,7 +6,7 @@ import com.jnibridge.annotations.lifecycle.Deallocate;
 import com.jnibridge.annotations.lifecycle.Shared;
 import com.jnibridge.annotations.lifecycle.Unique;
 import com.jnibridge.generator.compose.MethodInfoComposer;
-import com.jnibridge.generator.compose.TypeInfoComposer;
+import com.jnibridge.generator.compose.Placeholder;
 import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.generator.model.TypeInfo;
 import com.jnibridge.utils.ResourceUtils;
@@ -59,8 +59,8 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
         Objects.requireNonNull(selfType, "Self type must be set for the allocator");
         Map<String, String> allocReplacements = new HashMap<>();
 
-        allocReplacements.put(TypeInfoComposer.PLACEHOLDER_C_TYPE, selfType.getCType());
-        allocReplacements.put(TypeInfoComposer.PLACEHOLDER_FULL_J_PATH, selfType.getType().getName().replace(".", "/"));
+        allocReplacements.put(Placeholder.C_TYPE, selfType.getCType());
+        allocReplacements.put(Placeholder.JAVA_PATH, selfType.getType().getName().replace(".", "/"));
 
         // extract the allocation method
         final TypeInfo returnType = getMethodInfo().getReturnType();
@@ -99,7 +99,7 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
         TypeInfo selfType = getMethodInfo().getSelfType();
         Objects.requireNonNull(selfType, "Self type must be set for the allocator");
         Map<String, String> deallocReplacements = new HashMap<>();
-        deallocReplacements.put(TypeInfoComposer.PLACEHOLDER_C_TYPE, selfType.getCType());
+        deallocReplacements.put(Placeholder.C_TYPE, selfType.getCType());
 
         // fetch deallocation annotation
         final TypeInfo returnType = getMethodInfo().getReturnType();
