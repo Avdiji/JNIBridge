@@ -1,7 +1,7 @@
 package com.jnibridge.generator.scanner;
 
 import com.jnibridge.annotations.BridgeClass;
-import com.jnibridge.annotations.typemapping.JniBridgeIgnore;
+import com.jnibridge.annotations.JniBridgeIgnore;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;

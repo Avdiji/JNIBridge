@@ -1,7 +1,7 @@
 package com.jnibridge.generator.model.extractor;
 
-import com.jnibridge.annotations.Name;
-import com.jnibridge.annotations.Namespace;
+import com.jnibridge.annotations.mapping.MethodName;
+import com.jnibridge.annotations.mapping.MethodNamespace;
 import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.nativeaccess.IPointer;
 import org.jetbrains.annotations.NotNull;
@@ -31,8 +31,8 @@ public class MethodInfoExtractor {
      */
     @NotNull
     protected static MethodInfo extract(@NotNull final Method method, @NotNull final String classNamespace, @NotNull final Class<?> classToBeMapped) {
-        Optional<Namespace> namespaceOpt = Optional.ofNullable(method.getAnnotation(Namespace.class));
-        Optional<Name> nameOpt = Optional.ofNullable(method.getAnnotation(Name.class));
+        Optional<MethodNamespace> namespaceOpt = Optional.ofNullable(method.getAnnotation(MethodNamespace.class));
+        Optional<MethodName> nameOpt = Optional.ofNullable(method.getAnnotation(MethodName.class));
 
         final boolean isStatic = Modifier.isStatic(method.getModifiers());
 

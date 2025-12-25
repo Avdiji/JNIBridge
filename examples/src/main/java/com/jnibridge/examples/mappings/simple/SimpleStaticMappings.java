@@ -1,29 +1,29 @@
 package com.jnibridge.examples.mappings.simple;
 
 import com.jnibridge.annotations.BridgeClass;
-import com.jnibridge.annotations.Name;
-import com.jnibridge.annotations.typemapping.UseMapping;
+import com.jnibridge.annotations.mapping.MethodName;
+import com.jnibridge.annotations.mapping.UseMapping;
 import com.jnibridge.mapper.standard.StringViewMapper;
 
 @BridgeClass(namespace = "jnibridge::examples")
 public class SimpleStaticMappings {
 
-    @Name("voidFunction")
+    @MethodName("voidFunction")
     public static native void nativeVoidFunction();
 
-    @Name("incrementInt")
+    @MethodName("incrementInt")
     public static native int nativeIncrementInt(final int value);
 
-    @Name("incrementShort")
+    @MethodName("incrementShort")
     public static native short nativeIncrementShort(final short value);
 
-    @Name("incrementFloat")
+    @MethodName("incrementFloat")
     public static native int nativeIncrementFloat(final float value);
 
-    @Name("incrementLong")
+    @MethodName("incrementLong")
     public static native int nativeIncrementLong(final long value);
 
-    @Name("incrementDouble")
+    @MethodName("incrementDouble")
     public static native int nativeIncrementDouble(final double value);
 
     public static native boolean isTrue(final boolean value);

@@ -1,4 +1,4 @@
-package com.jnibridge.annotations.typemapping;
+package com.jnibridge.annotations.mapping;
 
 import com.jnibridge.mapper.TypeMapper;
 
