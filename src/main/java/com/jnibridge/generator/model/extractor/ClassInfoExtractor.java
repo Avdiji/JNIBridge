@@ -93,11 +93,7 @@ public class ClassInfoExtractor {
      * @throws RuntimeException If the class has not been annotated properly.
      */
     public static String extractClassCType(@NotNull final Class<?> clazz) {
-        if (!IPointer.class.isAssignableFrom(clazz)) {
-            throw new JniBridgeException(String.format("Class '%s' must implement IPointer.", clazz.getSimpleName()));
-        }
-
-        BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
+        final BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
         if (annotation == null) {
             throw new JniBridgeException(String.format("Class '%s' must be annotated with 'BridgeClass', for it to be mapped properly", clazz.getSimpleName()));
         }

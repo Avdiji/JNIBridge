@@ -3,6 +3,7 @@ package com.jnibridge.example.mappings.oop;
 import com.jnibridge.examples.mappings.oop.A;
 import com.jnibridge.examples.mappings.oop.B;
 import com.jnibridge.examples.mappings.oop.BaseClass;
+import com.jnibridge.examples.mappings.oop.Color;
 import com.jnibridge.exception.JniBridgeException;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +15,13 @@ public class BaseClassTest {
     static {
         String dllPath = System.getProperty("user.dir") + "/build/jni/JNIBridgeExamples.dll";
         System.load(dllPath);
+    }
+
+    @Test
+    public void testEnumMapping() {
+        B b = new B();
+        Color color = b.getColor();
+        System.out.println(color);
     }
 
     @Test

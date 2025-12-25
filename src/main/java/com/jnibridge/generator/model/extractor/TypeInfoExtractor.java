@@ -1,5 +1,6 @@
 package com.jnibridge.generator.model.extractor;
 
+import com.jnibridge.annotations.BridgeClass;
 import com.jnibridge.annotations.lifecycle.Ptr;
 import com.jnibridge.annotations.lifecycle.Ref;
 import com.jnibridge.annotations.lifecycle.Shared;
@@ -94,10 +95,17 @@ public class TypeInfoExtractor {
     private static TypeInfo extract(@NotNull final Class<?> type, @Nullable final String id, final Annotation[] annotations) {
         List<Annotation> annotationList = Arrays.stream(annotations).collect(Collectors.toList());
 
+        // Extract enum types...
+        BridgeClass bridgeClassAnnotation = type.getAnnotation(BridgeClass.class);
+        if(bridgeClassAnnotation != null && bridgeClassAnnotation.isEnum()) {
+            return extractEnumType(type, id, annotationList);
+        }
+
         // Extract the TypeInfo from an IPointer type... (UseMapping should not work for these types)
         if (IPointer.class.isAssignableFrom(type)) {
             return extractIPointerType(type, id, annotationList);
         }
+
 
         // check whether the param/returnValue is using a specific mapper.
         Mapping paramSpecificMapping = annotationList.stream()
@@ -130,15 +138,12 @@ public class TypeInfoExtractor {
      * @return An instance of {@link TypeInfo} from the passed parameter.
      */
     private static TypeInfo extractIPointerType(@NotNull final Class<?> type, @Nullable final String id, final List<Annotation> annotations) {
-        final String cType = ClassInfoExtractor.extractClassCType(type);
-        final String jniType = "jobject";
-
         final TypeInfo result = TypeInfo.builder()
                 .type(type)
                 .id(id)
                 .annotations(annotations)
-                .cType(cType)
-                .jniType(jniType)
+                .cType(ClassInfoExtractor.extractClassCType(type))
+                .jniType("jobject")
                 .isSelf(false)
                 .build();
 
@@ -178,6 +183,26 @@ public class TypeInfoExtractor {
         result.setInMapping(ResourceUtils.load(inMappingTemplatePath.toString()));
         result.setOutMapping(ResourceUtils.load(outMappingTemplatePath.toString()));
         return result;
+    }
+
+    /**
+     * Extract the {@link TypeInfo} for enum-types.
+     * @param type The enum type to extract the info from.
+     * @param id A unique identifier.
+     * @param annotations The annotations of the corresponding type.
+     * @return An instance of {@link TypeInfo}.
+     */
+    private static TypeInfo extractEnumType(@NotNull final Class<?> type, @Nullable final String id, final List<Annotation> annotations) {
+        return TypeInfo.builder()
+                .type(type)
+                .id(id)
+                .annotations(annotations)
+                .cType(ClassInfoExtractor.extractClassCType(type))
+                .jniType("jobject")
+                .isSelf(false)
+                .inMapping(ResourceUtils.load("com/jnibridge/mappings/bridged_classes/enum/jnibridge.enum.in.mapping"))
+                .outMapping(ResourceUtils.load("com/jnibridge/mappings/bridged_classes/enum/jnibridge.enum.out.mapping"))
+                .build();
     }
 
     /**
