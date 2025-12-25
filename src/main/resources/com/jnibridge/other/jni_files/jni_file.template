@@ -7,5 +7,5 @@ extern "C" {
 
 ${customJNIContent}
 
-${mappedMethods}
+${functions}
 }

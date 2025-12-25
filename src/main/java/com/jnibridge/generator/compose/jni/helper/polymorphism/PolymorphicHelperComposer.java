@@ -1,7 +1,7 @@
 package com.jnibridge.generator.compose.jni.helper.polymorphism;
 
 import com.jnibridge.generator.compose.Composer;
-import com.jnibridge.generator.compose.TypeInfoComposer;
+import com.jnibridge.generator.compose.Placeholder;
 import com.jnibridge.generator.compose.jni.helper.JniBridgeHandleComposer;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.extractor.ClassInfoExtractor;
@@ -22,8 +22,6 @@ public class PolymorphicHelperComposer implements Composer {
 
     public static final String POLYMORPHIC_CONVENIENCE_HEADER_FILENAME = "JniBridgePolymorphicHelper.hpp";
 
-    private static final String PLACEHOLDER_HANDLE_INCLUDE = "internalHandlePath";
-    private static final String PLACEHOLDER_HELPER_FUNCTIONS = "helperFunctions";
 
     private final ClassInfo classInfo;
 
@@ -37,8 +35,8 @@ public class PolymorphicHelperComposer implements Composer {
     public @NotNull Map<String, String> getReplacements() {
         final Map<String, String> replacements = new HashMap<>();
 
-        replacements.put(PLACEHOLDER_HELPER_FUNCTIONS, getHelperFunctionReplacement());
-        replacements.put(PLACEHOLDER_HANDLE_INCLUDE, String.format("../%s", JniBridgeHandleComposer.INTERNAL_FILENAME));
+        replacements.put(Placeholder.FUNCTIONS, getHelperFunctionReplacement());
+        replacements.put(Placeholder.HANDLE_FILE_INCLUDE, String.format("../%s", JniBridgeHandleComposer.INTERNAL_FILENAME));
 
         return replacements;
     }
@@ -113,8 +111,8 @@ public class PolymorphicHelperComposer implements Composer {
         public @NotNull Map<String, String> getReplacements() {
             final Map<String, String> replacements = new HashMap<>();
 
-            replacements.put(TypeInfoComposer.PLACEHOLDER_C_TYPE, cType);
-            replacements.put(TypeInfoComposer.PLACEHOLDER_C_TYPE_UNDERSCORE, cTypeUnderscore);
+            replacements.put(Placeholder.C_TYPE, cType);
+            replacements.put(Placeholder.C_TYPE_UNDERSCORE, cTypeUnderscore);
             replacements.put(PLACEHOLDER_HANDLE_TO_INSTANCE, getHandleToInstanceReplacement());
 
             return replacements;

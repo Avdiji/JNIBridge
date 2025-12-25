@@ -2,6 +2,7 @@ package com.jnibridge.generator.compose.jni.helper;
 
 import com.jnibridge.generator.compose.Composer;
 import com.jnibridge.JniBridgeRegistry;
+import com.jnibridge.generator.compose.Placeholder;
 import com.jnibridge.utils.ResourceUtils;
 import com.jnibridge.utils.TemplateUtils;
 import org.jetbrains.annotations.NotNull;
@@ -13,8 +14,6 @@ import java.util.Map;
  * Composes JNI-specific helper-code to handle exceptions on a C++/jni level.
  */
 public class JniBridgeExceptionComposer implements Composer {
-    private static final String PLACEHOLDER_EXCEPTION_FUNC = "exceptionFunc";
-    private static final String PLACEHOLDER_HANDLE_INCLUDE = "internalHandlePath";
     public static final String INTERNAL_FILENAME = "JniBridgeExceptionHandler.hpp";
 
 
@@ -27,8 +26,8 @@ public class JniBridgeExceptionComposer implements Composer {
     @Override
     public @NotNull Map<String, String> getReplacements() {
         final Map<String, String> replacements = new HashMap<>();
-        replacements.put(PLACEHOLDER_EXCEPTION_FUNC, new JniBridgeExceptionFuncComposer().compose());
-        replacements.put(PLACEHOLDER_HANDLE_INCLUDE, String.format("%s", JniBridgeHandleComposer.INTERNAL_FILENAME));
+        replacements.put(Placeholder.EXCEPTION_FUNC, new JniBridgeExceptionFuncComposer().compose());
+        replacements.put(Placeholder.HANDLE_FILE_INCLUDE, String.format("%s", JniBridgeHandleComposer.INTERNAL_FILENAME));
         return replacements;
     }
 

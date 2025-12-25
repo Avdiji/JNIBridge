@@ -1,6 +1,7 @@
 package com.jnibridge.generator.compose;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -26,4 +27,17 @@ public interface Composer {
      */
     @NotNull
     Map<String, String> getReplacements();
+
+    /**
+     * Method returns a replacement String.
+     *
+     * @param defaultReplacement The replacement to use if nothing else has been specified.
+     * @param customReplacement  The user-defined custom replacement.
+     * @return A replacement String.
+     */
+    static String getReplacement(@NotNull final String defaultReplacement, @Nullable final String customReplacement) {
+        if (customReplacement != null && !customReplacement.isEmpty()) {
+            return customReplacement;
+        } else return defaultReplacement;
+    }
 }

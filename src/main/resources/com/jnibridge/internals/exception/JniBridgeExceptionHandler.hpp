@@ -1,6 +1,6 @@
 #pragma once
 
-#include "${internalHandlePath}"
+#include "${handleFileInclude}"
 #include <jni.h>
 
 namespace jnibridge::internal {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "${internalHandlePath}"
+#include "${handleFileInclude}"
 
 namespace jnibridge::internal {
 
-${helperFunctions}
+${functions}
 }
