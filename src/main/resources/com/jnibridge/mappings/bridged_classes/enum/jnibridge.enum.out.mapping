@@ -1,4 +1,4 @@
-            jint enumCode = static_cast<jint>(${functionCall});
-            jclass enumClass = env->FindClass("${fullJPath}");
-            jmethodID enumFromInt = env->GetStaticMethodID(enumClass, "fromInt", "(I)L${fullJPath};");
-            return env->CallStaticObjectMethod(enumClass, enumFromInt, enumCode);
+            jint enumResultCode = static_cast<jint>(${functionCall});
+            jclass enumResultClass = env->FindClass("${fullJPath}");
+            jmethodID enumResultFromInt = env->GetStaticMethodID(enumResultClass, "fromInt", "(I)L${fullJPath};");
+            return env->CallStaticObjectMethod(enumResultClass, enumResultFromInt, enumResultCode);

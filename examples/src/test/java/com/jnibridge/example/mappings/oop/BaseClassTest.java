@@ -20,8 +20,11 @@ public class BaseClassTest {
     @Test
     public void testEnumMapping() {
         B b = new B();
-        Color color = b.getColor();
-        System.out.println(color);
+
+        assertEquals(Color.Red, b.getColor());
+        b.setColor(Color.Blue);
+        assertEquals(Color.Blue, b.getColor());
+        b.close();
     }
 
     @Test

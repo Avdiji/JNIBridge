@@ -37,7 +37,7 @@ namespace jnibridge::examples {
             void setColor(const Color &color) { _color = color; }
 
     private:
-        Color _color = static_cast<Color>(2);
+        Color _color = static_cast<Color>(0);
 
     };
 

@@ -32,6 +32,5 @@ public class BaseClass extends Pointer {
 
     public native Color getColor();
 
-    @JniBridgeIgnore
     public native void setColor(Color color);
 }
