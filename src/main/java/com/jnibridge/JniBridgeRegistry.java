@@ -29,7 +29,7 @@ public class JniBridgeRegistry {
     private JniBridgeRegistry() { }
 
     // type registry with default mappings...
-    private static final Map<Class<?>, Class<? extends TypeMapper>> typeRegistry = new HashMap<>();
+    public static final Map<Class<?>, Class<? extends TypeMapper>> typeRegistry = new HashMap<>();
 
     // exception registry...
     public static final Map<String, Class<? extends Throwable>> exceptionRegistry = new HashMap<>();

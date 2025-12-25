@@ -1,5 +1,8 @@
 package com.jnibridge.annotations;
 
+import com.jnibridge.mapper.TypeMapper;
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -35,6 +38,39 @@ public @interface BridgeClass {
     String name() default "";
 
     /**
+     * Defines type-to-mapper associations that apply at the class level.
+     *
+     * <p>
+     * These mappings participate in a well-defined resolution hierarchy that determines
+     * how Java types are translated into their native representations during code generation.
+     * The resolution order is as follows (from highest to lowest priority):
+     * </p>
+     *
+     * <ol>
+     *   <li>
+     *     {@link com.jnibridge.annotations.mapping.UseMapping} —
+     *     takes precedence over all other mapping definitions.
+     *   </li>
+     *   <li>
+     *     {@link MappingEntry} —
+     *     applies to the annotated class and overrides globally registered mappings.
+     *   </li>
+     *   <li>
+     *     {@link com.jnibridge.JniBridgeRegistry#typeRegistry} —
+     *     global fallback mappings used when no more specific configuration is present.
+     *   </li>
+     * </ol>
+     *
+     * <p>
+     * This mechanism allows fine-grained control over type mapping behavior while still
+     * providing sensible global defaults.
+     * </p>
+     *
+     * @return an array of {@link MappingEntry} defining type mappings local to this class
+     */
+    MappingEntry[] typeMappers() default {};
+
+    /**
      * Specifies paths to custom JNI source fragments that should be included
      * in the generated JNI output.
      * <p>
@@ -47,4 +83,36 @@ public @interface BridgeClass {
      * to be included in the generated JNI file
      */
     String[] customJniCodePaths() default {};
+
+    /**
+     * Declares a class-wide type-to-mapper association used during JNI bridge generation.
+     * <p>
+     * Each {@code @MappingEntry} defines how a specific Java type should be
+     * converted to and from its native representation by associating it with
+     * a {@link TypeMapper} implementation.
+     * </p>
+     *
+     * @see TypeMapper
+     */
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface MappingEntry {
+
+        /**
+         * The Java type that should be mapped.
+         *
+         * @return the Java class for which a native mapping is defined
+         */
+        Class<?> type();
+
+        /**
+         * The {@link TypeMapper} implementation responsible for converting
+         * between the Java type and its native representation.
+         *
+         * @return the mapper class used for this type
+         */
+        Class<? extends TypeMapper> mapper();
+
+
+    }
 }
