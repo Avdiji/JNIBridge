@@ -5,6 +5,7 @@ import com.jnibridge.annotations.lifecycle.Ref;
 import com.jnibridge.annotations.lifecycle.Shared;
 import com.jnibridge.annotations.mapping.Mapping;
 import com.jnibridge.annotations.mapping.UseMapping;
+import com.jnibridge.exception.JniBridgeException;
 import com.jnibridge.generator.model.TypeInfo;
 import com.jnibridge.mapper.TypeMapper;
 import com.jnibridge.JniBridgeRegistry;
@@ -191,12 +192,12 @@ public class TypeInfoExtractor {
     @NotNull
     private static Mapping validateMapper(@Nullable final Class<? extends TypeMapper> mapper, @NotNull final String typename) {
         if (mapper == null) {
-            throw new IllegalArgumentException(String.format("Mapper for type '%s' has not been registered properly.", typename));
+            throw new JniBridgeException(String.format("Mapper for type '%s' has not been registered.", typename));
         }
 
         Mapping mapping = mapper.getAnnotation(Mapping.class);
         if (mapping == null) {
-            throw new IllegalArgumentException(String.format("Mapper '%s' must be annotated properly.", mapper.getSimpleName()));
+            throw new JniBridgeException(String.format("Mapper '%s' must be annotated properly.", mapper.getSimpleName()));
         }
         return mapping;
     }

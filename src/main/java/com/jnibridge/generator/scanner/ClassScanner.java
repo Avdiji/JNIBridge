@@ -1,6 +1,7 @@
 package com.jnibridge.generator.scanner;
 
 import com.jnibridge.annotations.BridgeClass;
+import com.jnibridge.exception.JniBridgeException;
 import com.jnibridge.nativeaccess.IPointer;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
@@ -37,7 +38,7 @@ public class ClassScanner {
 
         // validate class patterns
         if (!validateClassPatterns(classPatterns)) {
-            throw new IllegalArgumentException("The passed class-patterns are invalid.");
+            throw new JniBridgeException("The passed class-patterns are invalid.");
         }
 
         List<Class<?>> classesToMap = new ArrayList<>();
@@ -62,7 +63,7 @@ public class ClassScanner {
             }
 
         } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException("One of the passed classes have not been found", e);
+            throw new JniBridgeException("One of the passed classes have not been found", e);
         }
 
         return classesToMap;
@@ -140,7 +141,7 @@ public class ClassScanner {
                     .collect(Collectors.toList());
 
         } catch (Exception e) {
-            throw new RuntimeException(String.format("Unable to find classes in package '%s'", packageName), e);
+            throw new JniBridgeException(String.format("Unable to find classes in package '%s'", packageName), e);
         }
     }
 
