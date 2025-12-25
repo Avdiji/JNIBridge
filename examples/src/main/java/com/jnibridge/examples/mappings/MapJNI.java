@@ -1,7 +1,6 @@
 package com.jnibridge.examples.mappings;
 
 import com.jnibridge.JNIBridge;
-import com.jnibridge.mapper.GlobalMapperRegistry;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,8 +18,13 @@ public class MapJNI {
                 "../../../../../../../native/simple/SimpleStatics.cpp"
         };
 
+
+        String[] customJNICodePaths = {
+            "someJNICode.mapping"
+        };
+
         // Pass both correctly:
-        JNIBridge.generateJNIInterface(outputDir, packagePattern, includes);
+        JNIBridge.generateJNIInterface(outputDir, packagePattern, includes, customJNICodePaths);
 
     }
 }

@@ -4,5 +4,8 @@
 ${internal_includes}
 
 extern "C" {
+
+${customJNIContent}
+
 ${mappedMethods}
 }

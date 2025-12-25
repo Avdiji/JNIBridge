@@ -27,4 +27,18 @@ public @interface BridgeClass {
      * @return The name to use in native code.
      */
     String name() default "";
+
+    /**
+     * Specifies paths to custom JNI source fragments that should be included
+     * in the generated JNI output.
+     * <p>
+     * The contents of each referenced file will be inserted verbatim into the
+     * generated JNI source file during code generation. This allows developers
+     * to extend or customize the generated JNI code with handwritten logic.
+     * </p>
+     *
+     * @return an array of resource-paths pointing to custom JNI code snippets
+     * to be included in the generated JNI file
+     */
+    String[] customJniCodePaths() default {};
 }

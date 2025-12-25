@@ -7,7 +7,7 @@ import com.jnibridge.annotations.typemapping.Mapping;
 import com.jnibridge.annotations.typemapping.UseMapping;
 import com.jnibridge.generator.model.TypeInfo;
 import com.jnibridge.mapper.TypeMapper;
-import com.jnibridge.mapper.GlobalMapperRegistry;
+import com.jnibridge.JniBridgeRegistry;
 import com.jnibridge.nativeaccess.IPointer;
 import com.jnibridge.utils.ResourceUtils;
 import org.jetbrains.annotations.NotNull;
@@ -105,7 +105,7 @@ public class TypeInfoExtractor {
                 .map(mapper -> validateMapper(mapper, type.getSimpleName()))
                 .findFirst()
                 // make use of the Mapper registry, if no specific mapper is being used.
-                .orElse(validateMapper(GlobalMapperRegistry.getMapperForType(type), type.getSimpleName()));
+                .orElse(validateMapper(JniBridgeRegistry.getMapperForType(type), type.getSimpleName()));
 
         // create a new TypeInfo
         return TypeInfo.builder()

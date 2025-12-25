@@ -1,5 +1,6 @@
-package com.jnibridge.mapper;
+package com.jnibridge;
 
+import com.jnibridge.mapper.TypeMapper;
 import com.jnibridge.mapper.primitives.*;
 import com.jnibridge.mapper.standard.StringMapper;
 import org.jetbrains.annotations.NotNull;
@@ -20,12 +21,12 @@ import java.util.Map;
  * MappingRegistry.putIntoRegistry(String.class, StringMapper.class);
  * }</pre>
  */
-public class GlobalMapperRegistry {
+public class JniBridgeRegistry {
 
     /**
      * Constructor.
      */
-    private GlobalMapperRegistry() { }
+    private JniBridgeRegistry() { }
 
     // type registry with default mappings...
     private static final Map<Class<?>, Class<? extends TypeMapper>> typeRegistry = new HashMap<>();

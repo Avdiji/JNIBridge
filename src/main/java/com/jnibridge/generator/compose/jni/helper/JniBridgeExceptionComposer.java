@@ -1,7 +1,7 @@
 package com.jnibridge.generator.compose.jni.helper;
 
 import com.jnibridge.generator.compose.Composer;
-import com.jnibridge.mapper.GlobalMapperRegistry;
+import com.jnibridge.JniBridgeRegistry;
 import com.jnibridge.utils.ResourceUtils;
 import com.jnibridge.utils.TemplateUtils;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +60,7 @@ public class JniBridgeExceptionComposer implements Composer {
             final StringBuilder result = new StringBuilder();
 
             boolean isFirstIteration = true;
-            final Map<String, Class<? extends Throwable>> exceptionRegistry = GlobalMapperRegistry.exceptionRegistry;
+            final Map<String, Class<? extends Throwable>> exceptionRegistry = JniBridgeRegistry.exceptionRegistry;
             for (final Map.Entry<String, Class<? extends Throwable>> exceptionMappingEntry : exceptionRegistry.entrySet()) {
 
                 String keyword = isFirstIteration ? "if" : "else if";
