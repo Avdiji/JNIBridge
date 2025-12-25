@@ -26,7 +26,7 @@ public class TypeInfoJNIComposer extends TypeInfoComposer {
     public @NotNull String compose() {
         final TypeInfo typeInfo = getTypeInfo();
 
-        if(typeInfo.isSelf()) {
+        if(typeInfo.isInvoker()) {
             Map<String, String> selfReplacements = new HashMap<>();
             selfReplacements.put(Placeholder.C_VAR, "cself");
             selfReplacements.put(Placeholder.JNI_VAR, "jself");

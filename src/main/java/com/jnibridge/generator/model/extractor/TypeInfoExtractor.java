@@ -48,7 +48,7 @@ public class TypeInfoExtractor {
                 .jniType("jobject")
                 .inMapping(ResourceUtils.load("com/jnibridge/mappings/bridged_classes/raw/jnibridge.ptr.in.mapping"))
                 .outMapping("") // not needed...
-                .isSelf(true)
+                .isInvoker(true)
                 .build();
     }
 
@@ -131,7 +131,7 @@ public class TypeInfoExtractor {
                 .annotations(annotations)
                 .cType(ClassInfoExtractor.extractClassCType(type))
                 .jniType("jobject")
-                .isSelf(false)
+                .isInvoker(false)
                 .inMapping(ResourceUtils.load("com/jnibridge/mappings/bridged_classes/enum/jnibridge.enum.in.mapping"))
                 .outMapping(ResourceUtils.load("com/jnibridge/mappings/bridged_classes/enum/jnibridge.enum.out.mapping"))
                 .build();
@@ -152,7 +152,7 @@ public class TypeInfoExtractor {
                 .annotations(annotations)
                 .cType(ClassInfoExtractor.extractClassCType(type))
                 .jniType("jobject")
-                .isSelf(false)
+                .isInvoker(false)
                 .build();
 
         // Default mappings (if nothing has been specified -> map by value)
@@ -242,7 +242,7 @@ public class TypeInfoExtractor {
                 .jniType(paramSpecificMapping.jniType())
                 .inMapping(ResourceUtils.load(paramSpecificMapping.inPath()))
                 .outMapping(ResourceUtils.load(paramSpecificMapping.outPath()))
-                .isSelf(false)
+                .isInvoker(false)
                 .build();
     }
 

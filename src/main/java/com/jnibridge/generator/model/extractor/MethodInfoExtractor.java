@@ -46,7 +46,6 @@ public class MethodInfoExtractor {
 
                 .namespace(namespaceOpt.isPresent() ? namespaceOpt.get().value() : classNamespace)
                 .nativeName(nameOpt.isPresent() ? nameOpt.get().value() : method.getName())
-                .jName(method.getName())
 
                 .returnType(TypeInfoExtractor.extractReturnType(method))
                 .params(TypeInfoExtractor.extractParamTypes(method));

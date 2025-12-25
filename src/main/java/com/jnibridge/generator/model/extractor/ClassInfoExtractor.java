@@ -48,9 +48,6 @@ public class ClassInfoExtractor {
         final String nativeClassName = annotation.name().isEmpty() ? clazz.getSimpleName() : annotation.name();
         final ClassInfo result = ClassInfo.builder()
                 .clazz(clazz)
-                .nativeNamespace(annotation.namespace())
-                .nativeName(nativeClassName)
-                .jName(clazz.getSimpleName())
                 .subclasses(subclasses)
                 .methodsToMap(extractMethodsToMap(clazz, annotation.namespace(), nativeClassName))
                 .build();

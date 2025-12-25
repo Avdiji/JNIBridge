@@ -34,7 +34,6 @@ public abstract class ClassInfoComposer implements Composer {
 
         replacements.put(Placeholder.INTERNAL_INCLUDES, computeInternalInclude());
         replacements.put(Placeholder.CUSTOM_JNI, getCustomJNIContent());
-
         replacements.put(Placeholder.FUNCTIONS, getMappedMethods());
 
         return replacements;
@@ -54,7 +53,6 @@ public abstract class ClassInfoComposer implements Composer {
         for (final String resourcePath : annotation.customJniCodePaths()) {
             result.append(ResourceUtils.load(resourcePath));
         }
-
         return result.toString();
     }
 
@@ -83,9 +81,9 @@ public abstract class ClassInfoComposer implements Composer {
         }
 
         String internalIncludeTemplate = "#include " + "\"" + relativeParentPath + "internal/%s\"";
-        result.append(String.format(internalIncludeTemplate, PolymorphicHelperComposer.POLYMORPHIC_CONVENIENCE_HEADER_FILENAME))
+        result.append(String.format(internalIncludeTemplate, PolymorphicHelperComposer.FILENAME))
                 .append("\n")
-                .append(String.format(internalIncludeTemplate, JniBridgeExceptionComposer.INTERNAL_FILENAME));
+                .append(String.format(internalIncludeTemplate, JniBridgeExceptionComposer.FILENAME));
 
         return result.toString();
     }

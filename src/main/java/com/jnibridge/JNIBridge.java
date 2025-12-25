@@ -143,7 +143,7 @@ public class JNIBridge {
         final Path internalPath = Paths.get(outPath.toString(), "internal");
         internalPath.toFile().mkdirs();
 
-        try (FileWriter jniExceptionWriter = new FileWriter(String.format("%s/%s", internalPath, JniBridgeExceptionComposer.INTERNAL_FILENAME))) {
+        try (FileWriter jniExceptionWriter = new FileWriter(String.format("%s/%s", internalPath, JniBridgeExceptionComposer.FILENAME))) {
             jniExceptionWriter.write(new JniBridgeExceptionComposer().compose());
         } catch (IOException e) {
             throw new JniBridgeException("Unable to create JNIBridge exception-handler", e);
@@ -187,7 +187,7 @@ public class JNIBridge {
         final Path internalPath = Paths.get(outPath.toString(), "internal");
         internalPath.toFile().mkdirs();
 
-        final String filename = String.format("%s/%s", internalPath, PolymorphicHelperComposer.POLYMORPHIC_CONVENIENCE_HEADER_FILENAME);
+        final String filename = String.format("%s/%s", internalPath, PolymorphicHelperComposer.FILENAME);
         try (FileWriter headerWriter = new FileWriter(filename)) {
 
             final StringBuilder result = new StringBuilder();
