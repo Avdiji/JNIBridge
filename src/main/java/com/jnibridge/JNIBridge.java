@@ -86,6 +86,7 @@ public class JNIBridge {
      * @param classes fully qualified names of the classes/packages to generate JNI headers for.
      * @throws RuntimeException if a header file cannot be created or written.
      */
+    @SuppressWarnings("unused")
     public static void generateJNIInterface(@NotNull final Path outPath, @NotNull final String[] classes, @NotNull final String[] nativeIncludes) {
         generateJNIInterface(outPath, classes, nativeIncludes, new String[]{});
     }
@@ -173,7 +174,6 @@ public class JNIBridge {
                 convenienceHeaderIncludes.add(String.format("#include \"polymorphism/%s\"", Composer.getPolyHelperFilename(classInfo)));
             }
         }
-
         generatePolymorphicHelperConvenienceHeader(outPath, convenienceHeaderIncludes);
     }
 
