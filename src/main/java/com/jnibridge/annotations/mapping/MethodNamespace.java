@@ -1,4 +1,4 @@
-package com.jnibridge.annotations;
+package com.jnibridge.annotations.mapping;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Namespace {
+public @interface MethodNamespace {
 
     /**
      * The fully qualified native namespace for the method (e.g., C++ namespace).

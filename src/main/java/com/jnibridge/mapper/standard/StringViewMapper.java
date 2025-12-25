@@ -1,6 +1,6 @@
 package com.jnibridge.mapper.standard;
 
-import com.jnibridge.annotations.typemapping.Mapping;
+import com.jnibridge.annotations.mapping.Mapping;
 import com.jnibridge.mapper.TypeMapper;
 
 /**

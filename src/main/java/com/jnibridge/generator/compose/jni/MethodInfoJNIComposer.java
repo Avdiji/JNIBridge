@@ -57,7 +57,9 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
         TypeInfo selfType = getMethodInfo().getSelfType();
         Objects.requireNonNull(selfType, "Self type must be set for the allocator");
         Map<String, String> allocReplacements = new HashMap<>();
+
         allocReplacements.put(TypeInfoComposer.PLACEHOLDER_C_TYPE, selfType.getCType());
+        allocReplacements.put(TypeInfoComposer.PLACEHOLDER_FULL_J_PATH, selfType.getType().getName().replace(".", "/"));
 
         // extract the allocation method
         final TypeInfo returnType = getMethodInfo().getReturnType();

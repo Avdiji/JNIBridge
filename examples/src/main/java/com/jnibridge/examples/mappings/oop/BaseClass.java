@@ -1,6 +1,7 @@
 package com.jnibridge.examples.mappings.oop;
 
 import com.jnibridge.annotations.BridgeClass;
+import com.jnibridge.annotations.JniBridgeIgnore;
 import com.jnibridge.annotations.lifecycle.Allocate;
 import com.jnibridge.annotations.lifecycle.Deallocate;
 import com.jnibridge.annotations.lifecycle.Ref;
@@ -28,4 +29,8 @@ public class BaseClass extends Pointer {
     public native BaseClass getThisRef();
 
     public static native void printString(@Shared BaseClass other);
+
+    public native Color getColor();
+
+    public native void setColor(Color color);
 }

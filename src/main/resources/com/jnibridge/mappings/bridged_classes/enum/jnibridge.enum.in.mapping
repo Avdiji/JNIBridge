@@ -1,0 +1,3 @@
+            jclass enumClass${id} = env->GetObjectClass(${jniVar});
+            jmethodID enumToIntMethod${id} = env->GetMethodID(enumClass${id}, "toInt", "()I");
+            ${cType} ${cVar} = static_cast<${cType}>(env->CallIntMethod(${jniVar}, enumToIntMethod${id}));

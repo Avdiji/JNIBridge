@@ -4,6 +4,12 @@
 
 namespace jnibridge::examples {
 
+    enum Color {
+        Red,
+        Green,
+        Blue
+    };
+
     class BaseClass {
     public:
             explicit BaseClass(){ std::cout << "ALLOC: BaseClass" << std::endl; }
@@ -26,6 +32,12 @@ namespace jnibridge::examples {
             static void printString(const std::shared_ptr<BaseClass> &other) {
                 std::cout << other->getString() << std::endl;
             }
+
+            Color getColor() { return _color; }
+            void setColor(const Color &color) { _color = color; }
+
+    private:
+        Color _color = static_cast<Color>(0);
 
     };
 

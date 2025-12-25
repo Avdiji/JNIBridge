@@ -15,6 +15,12 @@ import java.lang.annotation.Target;
 public @interface BridgeClass {
 
     /**
+     * Indicates whether the class to bridge is an enum.
+     * @return True if the type to bridge is an enum, else false.
+     */
+    boolean isEnum() default false;
+
+    /**
      * Native namespace for the mapped class (e.g., "core::math").
      *
      * @return The C++/native namespace in which the generated type should reside.

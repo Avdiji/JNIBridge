@@ -23,6 +23,8 @@ public abstract class TypeInfoComposer implements Composer{
     public static final String PLACEHOLDER_C_TYPE_UNDERSCORE = "cTypeUnderscore";
     public static final String PLACEHOLDER_C_VAR = "cVar";
 
+    public static final String PLACEHOLDER_FULL_J_PATH = "fullJPath";
+
     public static final String PLACEHOLDER_JNI_TYPE = "jniType";
     public static final String PLACEHOLDER_JNI_VAR = "jniVar";
     public static final String PLACEHOLDER_ID = "id";
@@ -48,6 +50,8 @@ public abstract class TypeInfoComposer implements Composer{
 
         replacements.put(PLACEHOLDER_C_VAR, PLACEHOLDER_C_VAR + id);
         replacements.put(PLACEHOLDER_JNI_VAR, PLACEHOLDER_JNI_VAR + id);
+
+        replacements.put(PLACEHOLDER_FULL_J_PATH, typeInfo.getType().getName().replace(".", "/"));
 
         return replacements;
     }

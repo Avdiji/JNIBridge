@@ -1,0 +1,4 @@
+            jint enumResultCode = static_cast<jint>(${functionCall});
+            jclass enumResultClass = env->FindClass("${fullJPath}");
+            jmethodID enumResultFromInt = env->GetStaticMethodID(enumResultClass, "fromInt", "(I)L${fullJPath};");
+            return env->CallStaticObjectMethod(enumResultClass, enumResultFromInt, enumResultCode);

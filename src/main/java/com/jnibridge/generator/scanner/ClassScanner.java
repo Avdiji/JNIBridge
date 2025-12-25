@@ -1,12 +1,14 @@
 package com.jnibridge.generator.scanner;
 
 import com.jnibridge.annotations.BridgeClass;
+import com.jnibridge.exception.JniBridgeException;
 import com.jnibridge.nativeaccess.IPointer;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,7 +39,7 @@ public class ClassScanner {
 
         // validate class patterns
         if (!validateClassPatterns(classPatterns)) {
-            throw new IllegalArgumentException("The passed class-patterns are invalid.");
+            throw new JniBridgeException("The passed class-patterns are invalid.");
         }
 
         List<Class<?>> classesToMap = new ArrayList<>();
@@ -49,23 +51,59 @@ public class ClassScanner {
                 // only map annotated classes
                 if (clazz.isAnnotationPresent(BridgeClass.class)) {
 
+                    // handle enum-classes
+                    final BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
+                    if(annotation.isEnum()) {
+                        checkEnumClass(clazz);
+                        classesToMap.add(clazz);
+                        continue;
+                    }
+
                     // map only classes that extend IPointer, or classes which contain only static functions
                     boolean isIPointer = IPointer.class.isAssignableFrom(clazz);
                     boolean isUtilityClass = Arrays.stream(clazz.getDeclaredMethods()).allMatch(m -> Modifier.isStatic(m.getModifiers()) || m.isSynthetic());
-                    boolean containsStaticMethods = Arrays.stream(clazz.getDeclaredMethods()).anyMatch(method -> Modifier.isNative(method.getModifiers()));
+                    boolean containsNativeMethods = Arrays.stream(clazz.getDeclaredMethods()).anyMatch(method -> Modifier.isNative(method.getModifiers()));
 
                     // implements IPointer = instance class
-                    if (isIPointer || (isUtilityClass && containsStaticMethods)) {
+                    if (isIPointer || (isUtilityClass && containsNativeMethods)) {
                         classesToMap.add(clazz);
                     }
                 }
             }
 
         } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException("One of the passed classes have not been found", e);
+            throw new JniBridgeException("One of the passed classes have not been found", e);
         }
 
         return classesToMap;
+    }
+
+    /**
+     * Check whether the enum to be mapped declares the proper methods.
+     * @param clazz The enum-class to check.
+     */
+    private static void checkEnumClass(Class<?> clazz) {
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+
+        // Check whether the enum contains a static, fromInt Method.
+        boolean fromIntMethodExists = Arrays.stream(declaredMethods)
+                .filter(method -> !Modifier.isNative(method.getModifiers()))
+                .filter(method -> Modifier.isStatic(method.getModifiers()))
+                .anyMatch(method -> method.getName().equals("fromInt"));
+
+        // Check whether the enum contains a non-static, toInt instance Method.
+        boolean toIntExists = Arrays.stream(declaredMethods)
+                .filter(method ->  !Modifier.isNative(method.getModifiers()))
+                .filter(method -> !Modifier.isStatic(method.getModifiers()))
+                .anyMatch(method -> method.getName().equals("toInt"));
+
+        if(!fromIntMethodExists) {
+            throw new JniBridgeException("Mapped enums must declare a static,native 'fromInt' method.");
+        }
+
+        if(!toIntExists) {
+            throw new JniBridgeException("Mapped enums must declare a non-static,native 'toInt' method.");
+        }
     }
 
     /**
@@ -140,7 +178,7 @@ public class ClassScanner {
                     .collect(Collectors.toList());
 
         } catch (Exception e) {
-            throw new RuntimeException(String.format("Unable to find classes in package '%s'", packageName), e);
+            throw new JniBridgeException(String.format("Unable to find classes in package '%s'", packageName), e);
         }
     }
 

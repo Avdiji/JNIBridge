@@ -1,6 +1,7 @@
 package com.jnibridge.generator.model.extractor;
 
 import com.jnibridge.annotations.BridgeClass;
+import com.jnibridge.exception.JniBridgeException;
 import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.generator.scanner.MethodScanner;
@@ -32,7 +33,7 @@ public class ClassInfoExtractor {
     public static ClassInfo extract(@NotNull final Class<?> clazz, @NotNull final List<Class<?>> otherClassesToMap) {
         BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
         if (annotation == null) {
-            throw new IllegalArgumentException(String.format("Class '%s' must be annotated properly in order to be mapped.", clazz.getSimpleName()));
+            throw new JniBridgeException(String.format("Class '%s' must be annotated properly in order to be mapped.", clazz.getSimpleName()));
         }
 
         // sorted set of all the subclasses to be mapped...
@@ -92,13 +93,9 @@ public class ClassInfoExtractor {
      * @throws RuntimeException If the class has not been annotated properly.
      */
     public static String extractClassCType(@NotNull final Class<?> clazz) {
-        if (!IPointer.class.isAssignableFrom(clazz)) {
-            throw new IllegalArgumentException(String.format("Class '%s' must implement IPointer.", clazz.getSimpleName()));
-        }
-
-        BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
+        final BridgeClass annotation = clazz.getAnnotation(BridgeClass.class);
         if (annotation == null) {
-            throw new RuntimeException(String.format("Class '%s' must be annotated properly, for it to be mapped properly", clazz.getSimpleName()));
+            throw new JniBridgeException(String.format("Class '%s' must be annotated with 'BridgeClass', for it to be mapped properly", clazz.getSimpleName()));
         }
 
         String namespace = annotation.namespace();
