@@ -1,6 +1,5 @@
 package com.jnibridge.nativeaccess;
 
-import com.jnibridge.annotations.BridgeClass;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,7 +21,6 @@ import java.io.Closeable;
  * <strong>It is encouraged to implement your own {@code Pointer} subclass or utility that integrates
  * {@code Cleaner} for reliable and modern resource cleanup.</strong>
  */
-@BridgeClass
 public abstract class Pointer implements IPointer, Closeable {
 
     // use lombok to generate setter/getter from IPointer

@@ -1,6 +1,5 @@
 package com.jnibridge;
 
-import com.jnibridge.annotations.IgnoreJniBridgePolymorphism;
 import com.jnibridge.exception.JniBridgeException;
 import com.jnibridge.generator.compose.Composer;
 import com.jnibridge.generator.compose.jni.ClassInfoJNIComposer;
@@ -11,8 +10,10 @@ import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.extractor.ClassInfoExtractor;
 import com.jnibridge.generator.scanner.ClassScanner;
 import com.jnibridge.nativeaccess.IPointer;
+import com.jnibridge.utils.ResourceUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -37,14 +38,14 @@ public class JNIBridge {
     /**
      * Generates JNI interface header files (.jni.h) for the specified Java classes.
      *
-     * @param outPath            the output directory where the generated JNI header files will be stored.
-     *                           If the directory does not exist, it will be created.
-     * @param classes            fully qualified names of the classes/packages to generate JNI headers for.
-     * @param nativeIncludes     All C++ includes needed for the mapping.
-     * @param customJNICodePaths Resource-Paths, to include centralized, custom JNI-code.
+     * @param outPath        the output directory where the generated JNI header files will be stored.
+     *                       If the directory does not exist, it will be created.
+     * @param classes        fully qualified names of the classes/packages to generate JNI headers for.
+     * @param nativeIncludes All C++ includes needed for the mapping.
+     * @param customJNIFiles Resource-Paths, to include centralized, custom JNI-code.
      * @throws RuntimeException if a header file cannot be created or written.
      */
-    public static void generateJNIInterface(@NotNull final Path outPath, @NotNull final String[] classes, @NotNull final String[] nativeIncludes, @NotNull final String[] customJNICodePaths) {
+    public static void generateJNIInterface(@NotNull final Path outPath, @NotNull final String[] classes, @NotNull final String[] nativeIncludes, @NotNull final Map<Path, String> customJNIFiles) {
 
         // extract all classes to map
         List<Class<?>> classesToMap = ClassScanner.getClassesToMap(classes);
@@ -58,11 +59,7 @@ public class JNIBridge {
                 ));
 
         // generate the JniBridgeHandle - helper file.
-        generateJniBridgeHandle(
-                outPath,
-                Arrays.stream(nativeIncludes).collect(Collectors.toList()),
-                Arrays.stream(customJNICodePaths).collect(Collectors.toList())
-        );
+        generateJniBridgeHandle(outPath, Arrays.stream(nativeIncludes).collect(Collectors.toList()));
 
         // generate the JniBridge Exception-handler file.
         generateJniBridgeExceptionHandler(outPath);
@@ -73,6 +70,9 @@ public class JNIBridge {
                 classMappings.values().stream()
                         .filter(classInfo -> IPointer.class.isAssignableFrom(classInfo.getClazz()))
                         .collect(Collectors.toList()));
+
+        // generate any user-defined custom files.
+        generateCustomJNIFiles(customJNIFiles);
         // @formatter:on
 
         // generate the 'actual' JNI files...
@@ -89,7 +89,7 @@ public class JNIBridge {
      */
     @SuppressWarnings("unused")
     public static void generateJNIInterface(@NotNull final Path outPath, @NotNull final String[] classes, @NotNull final String[] nativeIncludes) {
-        generateJNIInterface(outPath, classes, nativeIncludes, new String[]{});
+        generateJNIInterface(outPath, classes, nativeIncludes, new HashMap<>());
     }
 
     /**
@@ -121,7 +121,7 @@ public class JNIBridge {
      * Generate the file, which the JNIBridge uses internally, to handle mapping logic.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void generateJniBridgeHandle(@NotNull final Path outPath, Collection<String> allNativeIncludes, @NotNull final Collection<String> customJNICodePaths) {
+    private static void generateJniBridgeHandle(@NotNull final Path outPath, Collection<String> allNativeIncludes) {
         final Path internalPath = Paths.get(outPath.toString(), "internal");
         internalPath.toFile().mkdirs();
 
@@ -131,7 +131,7 @@ public class JNIBridge {
         // create the corresponding internal files...
         try (FileWriter jniHandleWriter = new FileWriter(ptrWrapperFilename)
         ) {
-            jniHandleWriter.write(new JniBridgeHandleComposer(allNativeIncludes, customJNICodePaths).compose());
+            jniHandleWriter.write(new JniBridgeHandleComposer(allNativeIncludes).compose());
         } catch (IOException e) {
             throw new JniBridgeException(String.format("Unable to create file: %s", ptrWrapperFilename), e);
         }
@@ -163,12 +163,6 @@ public class JNIBridge {
 
         List<String> convenienceHeaderIncludes = new ArrayList<>();
         for (ClassInfo classInfo : iPointerClasses) {
-
-            // only generate polymorphic helpers if wanted...
-            if (classInfo.getClazz().isAnnotationPresent(IgnoreJniBridgePolymorphism.class)) {
-                continue;
-            }
-
             final String filename = String.format("%s/%s", internalPath, Composer.getPolyHelperFilename(classInfo));
 
             try (FileWriter rawPolymorphicHelperWriter = new FileWriter(filename)) {
@@ -205,6 +199,37 @@ public class JNIBridge {
         } catch (IOException e) {
             throw new JniBridgeException("Unable to create convenience header for polymorphic helpers", e);
         }
+    }
 
+    /**
+     * Generate Custom-JNI files if any have been generated.
+     *
+     * @param customFiles A Map of file paths and the desired content.
+     */
+    private static void generateCustomJNIFiles(@NotNull final Map<Path, String> customFiles) {
+        for (final Map.Entry<Path, String> entry : customFiles.entrySet()) {
+            final Path filePath = entry.getKey();
+            final File outFile = filePath.toFile();
+
+            // 1. Create parent directories
+            final File parentDir = outFile.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                if (!parentDir.mkdirs() && !parentDir.exists()) {
+                    throw new JniBridgeException(
+                            "Unable to create directories: " + parentDir.getAbsolutePath()
+                    );
+                }
+            }
+
+            // 2. Write file at the correct path
+            try (FileWriter writer = new FileWriter(outFile)) {
+                final String content = ResourceUtils.load(entry.getValue());
+                writer.write(content);
+            } catch (IOException e) {
+                throw new JniBridgeException(
+                        "Unable to create file: " + outFile.getAbsolutePath(), e
+                );
+            }
+        }
     }
 }

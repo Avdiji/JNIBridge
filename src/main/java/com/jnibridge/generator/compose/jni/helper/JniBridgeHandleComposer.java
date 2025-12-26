@@ -21,7 +21,6 @@ public class JniBridgeHandleComposer implements Composer {
     public static final String INTERNAL_FILENAME = "JniBridgeHandle.cpp";
 
     private final Collection<String> includes;
-    private final Collection<String> customJniCodePaths;
 
     @Override
     public String compose() {
@@ -38,11 +37,6 @@ public class JniBridgeHandleComposer implements Composer {
                 .map(include -> String.format("#include \"%s\"", include))
                 .collect(Collectors.joining("\n"));
         replacements.put(Placeholder.INTERNAL_INCLUDES, allIncludesStr);
-
-        // add all custom JNI-code.
-        final StringBuilder result = new StringBuilder();
-        customJniCodePaths.stream().map(ResourceUtils::load).forEach(result::append);
-        replacements.put(Placeholder.CUSTOM_JNI, result.toString());
 
         return replacements;
     }

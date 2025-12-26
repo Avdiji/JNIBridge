@@ -19,12 +19,8 @@ public class MapJNI {
         };
 
 
-        String[] customJNICodePaths = {
-            "someJNICode.mapping"
-        };
-
         // Pass both correctly:
-        JNIBridge.generateJNIInterface(outputDir, packagePattern, includes, customJNICodePaths);
+        JNIBridge.generateJNIInterface(outputDir, packagePattern, includes);
 
     }
 }
