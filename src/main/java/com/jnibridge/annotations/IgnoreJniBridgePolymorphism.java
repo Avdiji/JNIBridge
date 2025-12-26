@@ -14,7 +14,6 @@ import java.lang.annotation.Target;
  * not be exposed to native code.
  * </p>
  */
-@Target(ElementType.METHOD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JniBridgeIgnore {
-}
+public @interface IgnoreJniBridgePolymorphism {}

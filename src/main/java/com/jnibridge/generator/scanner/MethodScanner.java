@@ -1,7 +1,7 @@
 package com.jnibridge.generator.scanner;
 
 import com.jnibridge.annotations.BridgeClass;
-import com.jnibridge.annotations.JniBridgeIgnore;
+import com.jnibridge.annotations.IgnoreJniBridge;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
@@ -53,7 +53,7 @@ public class MethodScanner {
     private static Set<Method> getDeclaredNativeMethods(@NotNull final Class<?> clazz) {
         Method[] declaredMethods = clazz.getDeclaredMethods();
         return Arrays.stream(declaredMethods)
-                .filter(method -> !method.isAnnotationPresent(JniBridgeIgnore.class))
+                .filter(method -> !method.isAnnotationPresent(IgnoreJniBridge.class))
                 .filter(method -> Modifier.isNative(method.getModifiers()))
                 .collect(Collectors.toSet());
     }
@@ -70,7 +70,7 @@ public class MethodScanner {
         Method[] allMethods = clazz.getMethods();
 
         return Arrays.stream(allMethods)
-                .filter(method -> !method.isAnnotationPresent(JniBridgeIgnore.class))
+                .filter(method -> !method.isAnnotationPresent(IgnoreJniBridge.class))
                 .filter(method -> !method.getDeclaringClass().equals(clazz))
                 .filter(method -> !Modifier.isStatic(method.getModifiers()))
                 .filter(method -> Modifier.isNative(method.getModifiers()))

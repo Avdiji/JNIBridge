@@ -1,9 +1,10 @@
 package com.jnibridge;
 
+import com.jnibridge.annotations.IgnoreJniBridgePolymorphism;
 import com.jnibridge.exception.JniBridgeException;
 import com.jnibridge.generator.compose.Composer;
-import com.jnibridge.generator.compose.jni.helper.JniBridgeExceptionComposer;
 import com.jnibridge.generator.compose.jni.ClassInfoJNIComposer;
+import com.jnibridge.generator.compose.jni.helper.JniBridgeExceptionComposer;
 import com.jnibridge.generator.compose.jni.helper.JniBridgeHandleComposer;
 import com.jnibridge.generator.compose.jni.helper.polymorphism.PolymorphicHelperComposer;
 import com.jnibridge.generator.model.ClassInfo;
@@ -137,7 +138,6 @@ public class JNIBridge {
     }
 
     /**
-     *
      * @param outPath The output path of the generated JNI-File.
      */
     private static void generateJniBridgeExceptionHandler(@NotNull final Path outPath) {
@@ -163,6 +163,12 @@ public class JNIBridge {
 
         List<String> convenienceHeaderIncludes = new ArrayList<>();
         for (ClassInfo classInfo : iPointerClasses) {
+
+            // only generate polymorphic helpers if wanted...
+            if (classInfo.getClazz().isAnnotationPresent(IgnoreJniBridgePolymorphism.class)) {
+                continue;
+            }
+
             final String filename = String.format("%s/%s", internalPath, Composer.getPolyHelperFilename(classInfo));
 
             try (FileWriter rawPolymorphicHelperWriter = new FileWriter(filename)) {
