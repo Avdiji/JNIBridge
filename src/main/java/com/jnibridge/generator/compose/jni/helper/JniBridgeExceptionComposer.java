@@ -14,11 +14,11 @@ import java.util.Map;
  * Composes JNI-specific helper-code to handle exceptions on a C++/jni level.
  */
 public class JniBridgeExceptionComposer implements Composer {
-    public static final String FILENAME = "JniBridgeExceptionHandler.hpp";
+    public static final String FILENAME = "JniBridgeExceptionHandler.cpp";
 
     @Override
     public String compose() {
-        final String exceptionHandler = ResourceUtils.load("com/jnibridge/internals/exception/JniBridgeExceptionHandler.hpp");
+        final String exceptionHandler = ResourceUtils.load("com/jnibridge/internals/exception/JniBridgeExceptionHandler.cpp");
         return TemplateUtils.substitute(exceptionHandler, getReplacements());
     }
 

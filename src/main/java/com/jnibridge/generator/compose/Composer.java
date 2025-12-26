@@ -49,7 +49,7 @@ public interface Composer {
      * @return A unique filename for the generated header file.
      */
     static String getPolyHelperFilename(@NotNull final ClassInfo classInfo) {
-        return String.format("%s_%s.helper.hpp",
+        return String.format("%s_%s.helper.cpp",
                 classInfo.getClazz().getPackage().getName().replace(".", "_"),
                 classInfo.getClazz().getSimpleName());
     }

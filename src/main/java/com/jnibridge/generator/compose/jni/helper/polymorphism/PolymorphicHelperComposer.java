@@ -20,7 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PolymorphicHelperComposer implements Composer {
 
-    public static final String FILENAME = "JniBridgePolymorphicHelper.hpp";
+    public static final String FILENAME = "JniBridgePolymorphicHelper.cpp";
     private final ClassInfo classInfo;
 
     @Override
