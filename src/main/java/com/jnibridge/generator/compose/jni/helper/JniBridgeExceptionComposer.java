@@ -1,14 +1,13 @@
 package com.jnibridge.generator.compose.jni.helper;
 
-import com.jnibridge.generator.compose.Composer;
 import com.jnibridge.JniBridgeRegistry;
+import com.jnibridge.generator.compose.Composer;
 import com.jnibridge.generator.compose.Placeholder;
 import com.jnibridge.utils.ResourceUtils;
 import com.jnibridge.utils.TemplateUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Composes JNI-specific helper-code to handle exceptions on a C++/jni level.
@@ -54,12 +53,11 @@ public class JniBridgeExceptionComposer implements Composer {
          * @return A replacement String, that helps the tool generate the ExceptionHandler.
          */
         private String getFuncBodyReplacement() {
+
             final StringBuilder result = new StringBuilder();
-
             boolean isFirstIteration = true;
-            final Map<String, Class<? extends Throwable>> exceptionRegistry = JniBridgeRegistry.exceptionRegistry;
-            for (final Map.Entry<String, Class<? extends Throwable>> exceptionMappingEntry : exceptionRegistry.entrySet()) {
 
+            for (final Map.Entry<String, Class<? extends Throwable>> exceptionMappingEntry : JniBridgeRegistry.getSortedExceptionEntries()) {
                 String keyword = isFirstIteration ? "if" : "else if";
                 isFirstIteration = false;
 

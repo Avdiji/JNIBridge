@@ -1,0 +1,3 @@
+            jsize size${id} = env->GetArrayLength(${jniVar});
+            jbyte* rawData${id} = env->GetByteArrayElements(${jniVar}, nullptr);
+            ${cType} ${cVar}(reinterpret_cast<std::byte*>(rawData${id}), size${id});

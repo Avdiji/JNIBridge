@@ -1,4 +1,4 @@
-package com.jnibridge.mapper.standard;
+package com.jnibridge.mapper.standard.string;
 
 import com.jnibridge.annotations.mapping.Mapping;
 import com.jnibridge.mapper.TypeMapper;
@@ -9,8 +9,8 @@ import com.jnibridge.mapper.TypeMapper;
 @Mapping(
         cType = "std::string",
         jniType = "jstring",
-        inPath = "com/jnibridge/mappings/standard/StringMapper.in.mapping",
-        outPath = "com/jnibridge/mappings/standard/StringMapper.out.mapping"
+        inPath = "com/jnibridge/mappings/standard/string/String.in.mapping",
+        outPath = "com/jnibridge/mappings/standard/string/String.out.mapping"
 )
 public class StringMapper implements TypeMapper {
 }

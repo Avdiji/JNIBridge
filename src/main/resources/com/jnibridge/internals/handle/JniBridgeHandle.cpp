@@ -235,6 +235,8 @@ namespace jnibridge::internal {
      * @return Native handle pointer as jlong.
      */
     inline jlong getHandle(JNIEnv* env, jobject obj) {
+        if(!obj) { return 0; }
+
         jclass cls = env->GetObjectClass(obj);
         jmethodID mid = env->GetMethodID(cls, "getNativeHandle", "()J");
 

@@ -27,6 +27,7 @@ public class Placeholder {
     public static final String SELF_IN_MAPPING = "jselfInMapping";
     public static final String PARAMS_IN_MAPPING = "paramInMapping";
     public static final String RESULT_OUT_MAPPING = "resultOutMapping";
+    public static final String NULLCHECK = "nullcheck";
 
     // Exception specific...
     public static final String EXCEPTION_FUNC = "exceptionFunc";

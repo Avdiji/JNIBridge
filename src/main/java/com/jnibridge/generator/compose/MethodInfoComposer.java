@@ -1,6 +1,7 @@
 package com.jnibridge.generator.compose;
 
 import com.jnibridge.annotations.modifiers.Custom;
+import com.jnibridge.annotations.modifiers.IgnoreNullcheck;
 import com.jnibridge.generator.compose.jni.TypeInfoJNIComposer;
 import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.generator.model.TypeInfo;
@@ -20,9 +21,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class MethodInfoComposer implements Composer {
 
-    // MethodInfo - related Placeholders...
-
-
     @NonNull
     private final MethodInfo methodInfo;
 
@@ -39,12 +37,28 @@ public abstract class MethodInfoComposer implements Composer {
         replacements.put(Placeholder.MANGLED_FUNC_NAME, JNIMangler.getMangledMethodDescriptor(methodInfo.getMethod()));
 
         replacements.put(Placeholder.JNI_PARAMS, getJNIFunctionParams());
+        replacements.put(Placeholder.NULLCHECK, getNullChecks());
 
         Optional<Custom> custom = methodInfo.getReturnType().getAnnotation(Custom.class);
         replacements.put(Placeholder.FUNC_CALL, Composer.getReplacement(getNativeFunctionCall(), custom.map(Custom::functionCall).orElse(null)));
         replacements.put(Placeholder.FUNC_CALL_PARAMS, getNativeFunctionCallParams());
 
         return replacements;
+    }
+
+    /**
+     * @return A replacement for the null check placeholder.
+     */
+    private String getNullChecks() {
+        final StringBuilder result = new StringBuilder();
+        methodInfo.getParams().stream()
+                .filter(p -> !p.hasAnnotation(IgnoreNullcheck.class))
+                .filter(p -> !p.getType().isPrimitive())
+                .forEach(p -> result.append("\t\t\tif (!")
+                        .append(Placeholder.JNI_VAR)
+                        .append(p.getId())
+                        .append(") { throw std::runtime_error(\"Nullptr detected\"); }\n"));
+        return result.toString();
     }
 
     /**

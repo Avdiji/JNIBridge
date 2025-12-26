@@ -34,7 +34,7 @@ public class JniBridgeHandleComposer implements Composer {
 
         // add all includes.
         final String allIncludesStr = includes.stream()
-                .map(include -> String.format("#include \"%s\"", include))
+                .map(include -> String.format("#include %s", include.contains("<") ? include : "\"" + include + "\""))
                 .collect(Collectors.joining("\n"));
         replacements.put(Placeholder.INTERNAL_INCLUDES, allIncludesStr);
 

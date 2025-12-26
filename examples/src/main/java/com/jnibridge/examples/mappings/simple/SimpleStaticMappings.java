@@ -3,7 +3,7 @@ package com.jnibridge.examples.mappings.simple;
 import com.jnibridge.annotations.BridgeClass;
 import com.jnibridge.annotations.mapping.MethodName;
 import com.jnibridge.annotations.mapping.UseMapping;
-import com.jnibridge.mapper.standard.StringViewMapper;
+import com.jnibridge.mapper.standard.string.StringViewMapper;
 
 @BridgeClass(namespace = "jnibridge::examples")
 public class SimpleStaticMappings {

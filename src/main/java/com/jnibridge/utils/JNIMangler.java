@@ -36,7 +36,7 @@ public class JNIMangler {
 
         final String prefix = getMangledClassDescriptor(method.getDeclaringClass());
         final String postfix = methodDescriptor.isEmpty() ?
-                mangledMethodName :
+                mangledMethodName + "__" :
                 mangledMethodName + "__" + methodDescriptor;
 
         return String.format("%s_%s", prefix, postfix);

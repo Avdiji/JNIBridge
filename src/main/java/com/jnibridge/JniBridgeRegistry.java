@@ -2,12 +2,11 @@ package com.jnibridge;
 
 import com.jnibridge.mapper.TypeMapper;
 import com.jnibridge.mapper.primitives.*;
-import com.jnibridge.mapper.standard.StringMapper;
+import com.jnibridge.mapper.standard.string.StringMapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A central registry for associating Java types (e.g., primitives or classes) with their
@@ -29,23 +28,23 @@ public class JniBridgeRegistry {
     private JniBridgeRegistry() { }
 
     // type registry with default mappings...
-    public static final Map<Class<?>, Class<? extends TypeMapper>> typeRegistry = new HashMap<>();
+    private static final Map<Class<?>, Class<? extends TypeMapper>> typeRegistry = new HashMap<>();
 
     // exception registry...
-    public static final Map<String, Class<? extends Throwable>> exceptionRegistry = new HashMap<>();
+    private static final Map<String, Class<? extends Throwable>> exceptionRegistry = new HashMap<>();
 
     // @formatter:off
     static {
 
-        putIntoTypeRegistry(int.class, IntMapper.class);
-        putIntoTypeRegistry(void.class, VoidMapper.class);
-        putIntoTypeRegistry(boolean.class, BoolMapper.class);
-        putIntoTypeRegistry(char.class, CharMapper.class);
-        putIntoTypeRegistry(double.class, DoubleMapper.class);
-        putIntoTypeRegistry(float.class, FloatMapper.class);
-        putIntoTypeRegistry(short.class, ShortMapper.class);
-        putIntoTypeRegistry(long.class, LongMapper.class);
-        putIntoTypeRegistry(String.class, StringMapper.class);
+        registerTypeMapper(int.class, IntMapper.class);
+        registerTypeMapper(void.class, VoidMapper.class);
+        registerTypeMapper(boolean.class, BoolMapper.class);
+        registerTypeMapper(char.class, CharMapper.class);
+        registerTypeMapper(double.class, DoubleMapper.class);
+        registerTypeMapper(float.class, FloatMapper.class);
+        registerTypeMapper(short.class, ShortMapper.class);
+        registerTypeMapper(long.class, LongMapper.class);
+        registerTypeMapper(String.class, StringMapper.class);
 
     }
     // @formatter:on
@@ -57,7 +56,7 @@ public class JniBridgeRegistry {
      * @param typeMapper the corresponding {@link TypeMapper} implementation class
      * @throws NullPointerException if either argument is null
      */
-    public static void putIntoTypeRegistry(@NotNull final Class<?> clazz, @NotNull final Class<? extends TypeMapper> typeMapper) {
+    public static void registerTypeMapper(@NotNull final Class<?> clazz, @NotNull final Class<? extends TypeMapper> typeMapper) {
         typeRegistry.put(clazz, typeMapper);
     }
 
@@ -78,12 +77,32 @@ public class JniBridgeRegistry {
      * When the specified C++ exception is encountered, it will be translated
      * into the provided Java {@link Throwable} type.
      *
-     * @param cppException the fully qualified name or identifier of the C++ exception to be mapped.
+     * @param cppException  the fully qualified name or identifier of the C++ exception to be mapped.
      * @param javaException the Java exception class that the C++ exception should be translated into.
      */
     @SuppressWarnings("unused")
     public static void registerException(@NotNull final String cppException, @NotNull final Class<? extends Throwable> javaException) {
         exceptionRegistry.put(cppException, javaException);
     }
+
+    /**
+     * Method sorts the exception-entries, by their inheritance chain and returns a corresponding Collection.
+     *
+     * @return The sorted entries of the exception-registry.
+     */
+    public static Collection<Map.Entry<String, Class<? extends Throwable>>> getSortedExceptionEntries() {
+        final Comparator<Class<? extends Throwable>> comparator =
+                (c1, c2) -> {
+                    if (c1.equals(c2)) return 0;
+                    if (c1.isAssignableFrom(c2)) return 1;
+                    if (c2.isAssignableFrom(c1)) return -1;
+                    return c1.getName().compareTo(c2.getName());
+                };
+
+        List<Map.Entry<String, Class<? extends Throwable>>> sortedEntries = new ArrayList<>(exceptionRegistry.entrySet());
+        sortedEntries.sort(Map.Entry.comparingByValue(comparator));
+        return sortedEntries;
+    }
+
 
 }

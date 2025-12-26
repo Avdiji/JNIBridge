@@ -1,6 +1,8 @@
     JNIEXPORT ${jniType} JNICALL ${mangledFuncName}(JNIEnv* env, jobject jself${jniParams})
     {
         try {
+${nullcheck}
+
             // mapping the calling instance...
 ${jselfInMapping}
             if(!cself) {

@@ -16,7 +16,7 @@ dependencies {
     implementation("io.github.classgraph:classgraph:4.8.181")
     implementation("org.ow2.asm:asm:9.5")
 
-    implementation("org.projectlombok:lombok:1.18.42")
+    compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
 }
 

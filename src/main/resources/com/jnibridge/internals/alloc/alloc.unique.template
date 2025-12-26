@@ -1,6 +1,7 @@
     JNIEXPORT void JNICALL ${mangledFuncName}(JNIEnv* env, jobject jself${jniParams})
     {
         try {
+${nullcheck}
          // check whether jobject has already been allocated
             if (jnibridge::internal::getHandle(env, jself) != 0) return;
 
