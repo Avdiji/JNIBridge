@@ -1,10 +1,10 @@
     JNIEXPORT ${jniType} JNICALL ${mangledFuncName}(JNIEnv* env, jobject jself${jniParams})
     {
 ${resultDeclaration}
-        // mapping parameters...
+            // mapping parameters...
 ${nullcheck}
 ${paramInMapping}
-        if(env->ExceptionCheck()) { goto cleanup; }
+            if(env->ExceptionCheck()) { goto cleanup; }
 
         try {
             // mapping the calling instance...

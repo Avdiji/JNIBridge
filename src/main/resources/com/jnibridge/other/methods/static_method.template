@@ -2,10 +2,10 @@
     {
 ${resultDeclaration}
 
-        // mapping parameters...
+            // mapping parameters...
 ${nullcheck}
 ${paramInMapping}
-        if(env->ExceptionCheck()) { goto cleanup; }
+            if(env->ExceptionCheck()) { goto cleanup; }
 
         try {
 

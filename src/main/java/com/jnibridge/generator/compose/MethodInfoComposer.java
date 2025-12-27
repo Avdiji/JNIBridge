@@ -59,7 +59,7 @@ public abstract class MethodInfoComposer implements Composer {
         TypeInfo returnType = methodInfo.getReturnType();
 
         if (returnType.getJniType().equals("void")) { return ""; }
-        return String.format("\t\t%s result = jnibridge::internal::jniDefaultReturn<%s>();", returnType.getJniType(), returnType.getJniType());
+        return String.format("\t\t\t%s result = jnibridge::internal::jniDefaultReturn<%s>();", returnType.getJniType(), returnType.getJniType());
 
 
     }
@@ -72,10 +72,10 @@ public abstract class MethodInfoComposer implements Composer {
         methodInfo.getParams().stream()
                 .filter(p -> !p.hasAnnotation(IgnoreNullcheck.class))
                 .filter(p -> !p.getType().isPrimitive())
-                .forEach(p -> result.append("\t\tif (!")
+                .forEach(p -> result.append("\t\t\tif (!")
                         .append(Placeholder.JNI_VAR)
                         .append(p.getId())
-                        .append(") { jnibridge::internal::throwJniBridgeExceptionJava(env, \"passing Nullpointer.\"); goto cleanup; }\n"));
+                        .append(") { jnibridge::internal::throwJniBridgeExceptionJava(env, \"passing Nullpointer.\"); }\n"));
 
         return result.toString();
     }

@@ -1,16 +1,16 @@
     JNIEXPORT void JNICALL ${mangledFuncName}(JNIEnv* env, jobject jself${jniParams})
     {
-        // check whether jobject has already been allocated
-        if (jnibridge::internal::getHandle(env, jself) != 0) return;
+            // check whether jobject has already been allocated
+            if (jnibridge::internal::getHandle(env, jself) != 0) return;
 
-        // super-types allocate() function should not be executed
-        bool canAlloc = env->IsSameObject(env->GetObjectClass(jself), env->FindClass("${fullJPath}"));
-        if(!canAlloc || env->ExceptionCheck()) { return; }
+            // super-types allocate() function should not be executed
+            bool canAlloc = env->IsSameObject(env->GetObjectClass(jself), env->FindClass("${fullJPath}"));
+            if(!canAlloc || env->ExceptionCheck()) { return; }
 
-        // input mappings...
+            // input mappings...
 ${paramInMapping}
 ${nullcheck}
-        if(env->ExceptionCheck()) { goto cleanup; }
+            if(env->ExceptionCheck()) { goto cleanup; }
 
         try {
             // output mappings...

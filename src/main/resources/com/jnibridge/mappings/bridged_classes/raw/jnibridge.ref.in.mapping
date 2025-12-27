@@ -1,3 +1,3 @@
-        jlong ${cVar}HandlePtr = jnibridge::internal::getHandle(env, ${jniVar});
-        auto *${cVar}Handle = reinterpret_cast<jnibridge::internal::BaseHandle*>(${cVar}HandlePtr);
-        ${cType} &${cVar} = *jnibridge::internal::jlong_to_${cTypeUnderscore}(env, ${cVar}Handle);
+            jlong ${cVar}HandlePtr = jnibridge::internal::getHandle(env, ${jniVar});
+            auto *${cVar}Handle = reinterpret_cast<jnibridge::internal::BaseHandle*>(${cVar}HandlePtr);
+            ${cType} &${cVar} = *jnibridge::internal::jlong_to_${cTypeUnderscore}(env, ${cVar}Handle);

@@ -1,1 +1,1 @@
-            env->ReleaseByteArrayElements(${jniVar}, rawData${id}, JNI_ABORT);
+            if(rawData${id}) { env->ReleaseByteArrayElements(${jniVar}, rawData${id}, JNI_ABORT); }
