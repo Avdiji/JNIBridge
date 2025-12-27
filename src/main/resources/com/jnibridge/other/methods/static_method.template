@@ -1,15 +1,23 @@
     JNIEXPORT ${jniType} JNICALL ${mangledFuncName}(JNIEnv* env, jclass clazz${jniParams})
     {
-        try {
-${nullcheck}
+${resultDeclaration}
 
-            // input mappings...
+        // mapping parameters...
+${nullcheck}
 ${paramInMapping}
+        if(env->ExceptionCheck()) { goto cleanup; }
+
+        try {
+
             // output mappings...
 ${resultOutMapping}
+            goto cleanup;
         } catch (const std::exception &e) {
             jthrowable jexception = jnibridge::internal::handleException(env, e);
             env->Throw(jexception);
-            return jnibridge::internal::jniDefaultReturn<${jniType}>();
+            goto cleanup;
         }
+        cleanup:
+${cleanup}
+${returnCall}
     }

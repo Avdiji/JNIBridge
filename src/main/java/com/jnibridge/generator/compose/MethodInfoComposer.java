@@ -39,11 +39,29 @@ public abstract class MethodInfoComposer implements Composer {
         replacements.put(Placeholder.JNI_PARAMS, getJNIFunctionParams());
         replacements.put(Placeholder.NULLCHECK, getNullChecks());
 
+        replacements.put(Placeholder.JNI_CLEANUP, methodInfo.getReturnType().getCleanupLogic());
+        replacements.put(Placeholder.C_TYPE, methodInfo.getReturnType().getCType());
+        replacements.put(Placeholder.RESULT_DECLARATION, getResultDeclaration());
+        replacements.put(Placeholder.RETURN_CALL, methodInfo.getReturnType().getJniType().equals("void") ? "\t\t\treturn;" : "\t\t\treturn result;");
+
         Optional<Custom> custom = methodInfo.getReturnType().getAnnotation(Custom.class);
         replacements.put(Placeholder.FUNC_CALL, Composer.getReplacement(getNativeFunctionCall(), custom.map(Custom::functionCall).orElse(null)));
         replacements.put(Placeholder.FUNC_CALL_PARAMS, getNativeFunctionCallParams());
 
+
         return replacements;
+    }
+
+    /**
+     * @return Replacement for the {@link Placeholder#RESULT_DECLARATION}
+     */
+    private String getResultDeclaration() {
+        TypeInfo returnType = methodInfo.getReturnType();
+
+        if (returnType.getJniType().equals("void")) { return ""; }
+        return String.format("\t\t%s result = jnibridge::internal::jniDefaultReturn<%s>();", returnType.getJniType(), returnType.getJniType());
+
+
     }
 
     /**
@@ -54,10 +72,11 @@ public abstract class MethodInfoComposer implements Composer {
         methodInfo.getParams().stream()
                 .filter(p -> !p.hasAnnotation(IgnoreNullcheck.class))
                 .filter(p -> !p.getType().isPrimitive())
-                .forEach(p -> result.append("\t\t\tif (!")
+                .forEach(p -> result.append("\t\tif (!")
                         .append(Placeholder.JNI_VAR)
                         .append(p.getId())
-                        .append(") { throw std::runtime_error(\"Nullptr detected\"); }\n"));
+                        .append(") { jnibridge::internal::throwJniBridgeExceptionJava(env, \"passing Nullpointer.\"); goto cleanup; }\n"));
+
         return result.toString();
     }
 

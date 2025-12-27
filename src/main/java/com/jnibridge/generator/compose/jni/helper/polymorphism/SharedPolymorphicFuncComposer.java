@@ -44,7 +44,7 @@ public class SharedPolymorphicFuncComposer extends PolymorphicHelperComposer.Pol
             firstIteration = false;
 
             result.append(String.format("(auto* actualType = dynamic_cast<jnibridge::internal::Handle<%s>*>(handle)) {", subclassCType));
-            result.append(String.format("\n\t\t\treturn actualType->getAsShared<%s>();", getCType()));
+            result.append(String.format("\n\t\t\treturn actualType->getAsShared<%s>(env);", getCType()));
             result.append("\n\t\t}");
         }
         return result.toString();

@@ -6,14 +6,11 @@
 
             delete selfHandle;
 
-            jclass cls = env->GetObjectClass(jself);
-            jmethodID setHandle = env->GetMethodID(cls, "setNativeHandle", "(J)V");
+            jmethodID setHandle = env->GetMethodID(env->GetObjectClass(jself), "setNativeHandle", "(J)V");
             env->CallVoidMethod(jself, setHandle, (jlong) -1);
-            env->DeleteLocalRef(cls);
 
         } catch (const std::exception &e) {
             jthrowable jexception = jnibridge::internal::handleException(env, e);
             env->Throw(jexception);
-            return jnibridge::internal::jniDefaultReturn<${jniType}>();
         }
     }

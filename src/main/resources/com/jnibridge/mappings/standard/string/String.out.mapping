@@ -1,1 +1,2 @@
-            return env->NewStringUTF(${functionCall}.c_str());
+            result = env->NewStringUTF(${functionCall}.c_str());
+            goto cleanup;

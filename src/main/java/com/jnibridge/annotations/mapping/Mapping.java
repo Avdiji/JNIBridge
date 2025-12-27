@@ -101,4 +101,20 @@ public @interface Mapping {
      */
     String outPath();
 
+    /**
+     * Resource path of the mapping-template for cleanup functionality.
+     *
+     * <br>
+     * <p><strong>Supported placeholders:</strong>
+     * <ul>
+     *   <li><code>${cType}</code> – the C++ Type to be mapped</li>
+     *   <li><code>${jniType}</code> – the JNI Type to be mapped</li>
+     *
+     *   <li><code>${jniVar}</code> – the name of the JNI variable/parameter</li>
+     *   <li><code>${cVar}</code> – the name of the C++ variable receiving the cast or transformation</li>
+     *
+     *   <li><code>${id}</code> – a method-wide unique identifier (e.g. to create unique custom variable-names).</li>
+     * </ul>
+     */
+    String cleanupPath() default "";
 }

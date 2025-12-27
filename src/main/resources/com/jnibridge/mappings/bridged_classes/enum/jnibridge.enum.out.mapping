@@ -1,4 +1,11 @@
             jint enumResultCode = static_cast<jint>(${functionCall});
+
+            // cleanup logic...
+${cleanup}
             jclass enumResultClass = env->FindClass("${fullJPath}");
             jmethodID enumResultFromInt = env->GetStaticMethodID(enumResultClass, "fromInt", "(I)L${fullJPath};");
+
+            if(env->ExceptionCheck()) { return jnibridge::internal::jniDefaultReturn<${jniType}>(); }
+            if(!enumResultFromInt) { throw jnibridge::internal::JniBridgeError(jnibridge::internal::JniBridgeError::Code::InvalidEnumImplementation); }
             return env->CallStaticObjectMethod(enumResultClass, enumResultFromInt, enumResultCode);
+            env->DeleteLocalRef(enumResultClass);

@@ -1,21 +1,28 @@
     JNIEXPORT ${jniType} JNICALL ${mangledFuncName}(JNIEnv* env, jobject jself${jniParams})
     {
-        try {
+${resultDeclaration}
+        // mapping parameters...
 ${nullcheck}
+${paramInMapping}
+        if(env->ExceptionCheck()) { goto cleanup; }
 
+        try {
             // mapping the calling instance...
 ${jselfInMapping}
-            if(!cself) {
-                throw jnibridge::internal::JniBridgeError(jnibridge::internal::JniBridgeError::Code::CSelfMustNotBeNull);
-            }
+            if(!cself) { throw jnibridge::internal::JniBridgeError(jnibridge::internal::JniBridgeError::Code::CSelfMustNotBeNull); }
+            if(env->ExceptionCheck()) { goto cleanup; }
 
-            // mapping parameters...
-${paramInMapping}
             // output mappings...
 ${resultOutMapping}
+            goto cleanup;
+
         } catch (const std::exception& e) {
             jthrowable jexception = jnibridge::internal::handleException(env, e);
             env->Throw(jexception);
-            return jnibridge::internal::jniDefaultReturn<${jniType}>();
+            goto cleanup;
         }
+
+        cleanup:
+${cleanup}
+${returnCall}
     }

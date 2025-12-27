@@ -12,6 +12,54 @@ ${internal_includes}
 namespace jnibridge::internal {
 
     /**
+     * Throws a JniBridgeException on the Java side from native code.
+     *
+     * <p>Sets a pending Java exception via JNI. The caller must return immediately
+     * after invoking this method.</p>
+     *
+     * @param env     JNI environment for the current thread
+     * @param message exception message
+     */
+    inline void throwJniBridgeExceptionJava(JNIEnv *env, const std::string& message) {
+        env->ThrowNew(env->FindClass("com/jnibridge/exception/JniBridgeException"), message.c_str());
+    }
+
+    /**
+     * Returns a safe default value for JNI methods after a Java exception
+     * has been thrown.
+     *
+     * The returned value satisfies the native method signature but is
+     * semantically meaningless. It must not be observed by Java code
+     * while an exception is pending.
+     *
+     * @tparam T
+     *         JNI return type.
+     */
+    template <typename T>
+    static inline T jniDefaultReturn();
+
+    template <>
+    inline void jniDefaultReturn<void>() { }
+    template <>
+    inline jboolean jniDefaultReturn<jboolean>() { return JNI_FALSE; }
+    template <>
+    inline jint jniDefaultReturn<jint>() { return 0; }
+    template <>
+    inline jlong jniDefaultReturn<jlong>() { return 0; }
+    template <>
+    inline jshort jniDefaultReturn<jshort>() { return 0; }
+    template <>
+    inline jbyte jniDefaultReturn<jbyte>() { return 0; }
+    template <>
+    inline jchar jniDefaultReturn<jchar>() { return 0; }
+    template <>
+    inline jfloat jniDefaultReturn<jfloat>() { return 0.0f; }
+    template <>
+    inline jdouble jniDefaultReturn<jdouble>() { return 0.0; }
+    template <typename T>
+    inline T jniDefaultReturn() { return nullptr; } // objects, arrays, etc.
+
+    /**
      * Base exception type for errors raised by the JNI bridge.
      *
      * Use this exception for bridge-level failures such as.
@@ -26,7 +74,8 @@ namespace jnibridge::internal {
             NotAUniquePtr, // When the wrapped type is supposed to be a uniquePtr but isn't.
             PassingUniquePtr, // When theres an attempt to pass a uniquePtr to a function.
             CorruptHandleStorage, // When the Handle-storage is corrupted.
-            CSelfMustNotBeNull // The wrapped value of the calling handle must never be null.
+            CSelfMustNotBeNull, // The wrapped value of the calling handle must never be null.
+            InvalidEnumImplementation // If the passed enum does not implement toInt and fromInt methods.
         };
 
         /**
@@ -53,6 +102,8 @@ namespace jnibridge::internal {
                 case Code::NotAUniquePtr: return "Illegal handle state: unique ownership expected.";
                 case Code::PassingUniquePtr: return "JNIBridge does not allow passing std::unique_ptr to other functions.";
                 case Code::CSelfMustNotBeNull: return "Cannot perform the operation because the native instance is null.";
+                case Code::InvalidEnumImplementation: return "Bridged enums must implement toInt and fromInt functions.";
+
                 case Code::Unknown:
                 default: return "An unknown JNIBridge-Error has occurred.";
             }
@@ -182,9 +233,10 @@ namespace jnibridge::internal {
          * @throws std::logic_error if the instance is not stored as a shared_ptr<T>.
          */
         template<class X>
-        std::shared_ptr<X> getAsShared() const {
+        std::shared_ptr<X> getAsShared(JNIEnv *env) const {
             if(_strategy != StorageStrategy::Shared) {
-                throw JniBridgeError(JniBridgeError::Code::NotASharedPtr);
+                throwJniBridgeExceptionJava(env, "Function expectes a std::shared_ptr");
+                return nullptr;
             }
 
             std::shared_ptr<T> original = std::get<std::shared_ptr<T>>(_store);
@@ -199,11 +251,9 @@ namespace jnibridge::internal {
          * @note Ownership is NOT transferred; this function is intended for inspection only.
          */
         template<class X>
-        std::unique_ptr<X> getAsUnique() const {
-            if (_strategy != StorageStrategy::Unique) {
-                throw JniBridgeError(JniBridgeError::Code::NotAUniquePtr);
-            }
-            throw JniBridgeError(JniBridgeError::Code::PassingUniquePtr);
+        std::unique_ptr<X> getAsUnique(JNIEnv *env) const {
+            throwJniBridgeExceptionJava(env, "JniBridge does not support passing std::unique_ptr");
+            return nullptr;
         }
 
     private:
@@ -224,6 +274,7 @@ namespace jnibridge::internal {
         jmethodID setHandle = env->GetMethodID(cls, "setNativeHandle", "(J)V");
         env->CallVoidMethod(object, setHandle, reinterpret_cast<jlong>(ptr));
 
+        if(env->ExceptionCheck()) { env->DeleteLocalRef(cls); }
         env->DeleteLocalRef(cls);
     }
 
@@ -241,7 +292,11 @@ namespace jnibridge::internal {
         jmethodID mid = env->GetMethodID(cls, "getNativeHandle", "()J");
 
         jlong handle = env->CallLongMethod(obj, mid);
-        if(handle == -1) { throw JniBridgeError(JniBridgeError::Code::DestroyedHandle); }
+
+        if(env->ExceptionCheck()) {
+            env->DeleteLocalRef(cls);
+            return jniDefaultReturn<jlong>();
+        }
 
         env->DeleteLocalRef(cls);
         return handle;
@@ -261,44 +316,13 @@ namespace jnibridge::internal {
 
         setNativeHandle(env, result, handle);
 
+        if(env->ExceptionCheck()) {
+            env->DeleteLocalRef(cls);
+            return jniDefaultReturn<jobject>();
+        }
+
         env->DeleteLocalRef(cls);
         return result;
     }
-
-
-    /**
-     * Returns a safe default value for JNI methods after a Java exception
-     * has been thrown.
-     *
-     * The returned value satisfies the native method signature but is
-     * semantically meaningless. It must not be observed by Java code
-     * while an exception is pending.
-     *
-     * @tparam T
-     *         JNI return type.
-     */
-    template <typename T>
-    static inline T jniDefaultReturn();
-
-    template <>
-    inline void jniDefaultReturn<void>() { }
-    template <>
-    inline jboolean jniDefaultReturn<jboolean>() { return JNI_FALSE; }
-    template <>
-    inline jint jniDefaultReturn<jint>() { return 0; }
-    template <>
-    inline jlong jniDefaultReturn<jlong>() { return 0; }
-    template <>
-    inline jshort jniDefaultReturn<jshort>() { return 0; }
-    template <>
-    inline jbyte jniDefaultReturn<jbyte>() { return 0; }
-    template <>
-    inline jchar jniDefaultReturn<jchar>() { return 0; }
-    template <>
-    inline jfloat jniDefaultReturn<jfloat>() { return 0.0f; }
-    template <>
-    inline jdouble jniDefaultReturn<jdouble>() { return 0.0; }
-    template <typename T>
-    inline T jniDefaultReturn() { return nullptr; } // objects, arrays, etc.
 
 }  // namespace jnibridge::internal

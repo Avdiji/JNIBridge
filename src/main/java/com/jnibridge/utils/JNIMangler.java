@@ -23,13 +23,14 @@ public class JNIMangler {
 
         methodDescriptor = methodDescriptor
                 // mangling as described in https://docs.oracle.com/en/java/javase/17/docs/specs/jni/design.html?
-                .replace("_", "_1")     // Escape underscores
-                .replace("/", "_")      // Package separator
-                .replace(";", "_2")     // End of object type
-                .replace("[", "_3")     // Arrays
+                .replace("_", "_1")      // Escape underscores
+                .replace("/", "_")       // Package separator
+                .replace(";", "_2")      // End of object type
+                .replace("[", "_3")      // Arrays
 
-                .replace("(", "")       // Remove parentheses
-                .replace(")", "");      // Remove parentheses
+                .replace("(", "")        // Remove parentheses
+                .replace(")", "")        // Remove parentheses
+                .replace("$", "_00024"); // mangle subclasses
 
         // return methodName__descriptor (if descriptor is not empty)
         final String mangledMethodName = method.getName().replace("_", "_1");

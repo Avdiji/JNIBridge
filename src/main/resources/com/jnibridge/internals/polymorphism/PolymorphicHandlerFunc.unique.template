@@ -1,5 +1,5 @@
     inline std::unique_ptr<${cType}>
-    jlong_to_unique_${cTypeUnderscore}(jnibridge::internal::BaseHandle *handle)
+    jlong_to_unique_${cTypeUnderscore}(JNIEnv *env, jnibridge::internal::BaseHandle *handle)
     {
 ${handleToInstance}
         return nullptr;

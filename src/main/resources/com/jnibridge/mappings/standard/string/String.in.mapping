@@ -1,3 +1,2 @@
             const char* c_str${id} = env->GetStringUTFChars(${jniVar}, nullptr);
             ${cType} ${cVar} = ${cType}(c_str${id});
-            env->ReleaseStringUTFChars(${jniVar}, c_str${id});

@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +34,7 @@ public abstract class TypeInfoComposer implements Composer {
 
         replacements.put(Placeholder.C_TYPE, Composer.getReplacement(cTypeReplacement, custom.map(Custom::cType).orElse(null)));
         replacements.put(Placeholder.C_TYPE_UNDERSCORE, cTypeReplacement.replace("::", "_"));
+        replacements.put(Placeholder.JNI_RETURN_TYPE, typeInfo.getJniMethodReturnType());
 
         replacements.put(Placeholder.JNI_TYPE, Composer.getReplacement(typeInfo.getJniType(), custom.map(Custom::jniType).orElse(null)));
 
@@ -46,6 +46,7 @@ public abstract class TypeInfoComposer implements Composer {
 
         replacements.put(Placeholder.JAVA_PATH, typeInfo.getType().getName().replace(".", "/"));
 
+        replacements.put(Placeholder.JNI_CLEANUP, typeInfo.getCleanupLogic());
         return replacements;
     }
 }

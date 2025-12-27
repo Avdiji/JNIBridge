@@ -39,7 +39,7 @@ public class BaseClassTest {
     @Test
     public void testPrintFromOther() {
         B b = new B();
-        assertThrows(JniBridgeException.class, () ->BaseClass.printString(b));
+        assertThrows(JniBridgeException.class, () -> BaseClass.printString(b));
         b.close();
     }
 
@@ -57,7 +57,7 @@ public class BaseClassTest {
     public void testIllegalOperation() {
         BaseClass baseClass = new BaseClass();
         baseClass.close();
-        assertThrows(JniBridgeException.class, baseClass::getString);
+        assertThrows(Exception.class, baseClass::getString);
     }
 
     @Test

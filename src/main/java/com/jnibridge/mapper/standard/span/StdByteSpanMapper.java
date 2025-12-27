@@ -11,7 +11,8 @@ import com.jnibridge.mapper.TypeMapper;
         cType = "std::span<std::byte>",
         jniType = "jbyteArray",
         inPath = "com/jnibridge/mappings/standard/span/StdSpan.byte.std.in.mapping",
-        outPath = "com/jnibridge/mappings/standard/span/StdSpan.byte.out.mapping"
+        outPath = "com/jnibridge/mappings/standard/span/StdSpan.byte.out.mapping",
+        cleanupPath = "com/jnibridge/mappings/standard/span/StdSpan.byte.cleanup.mapping"
 )
 public class StdByteSpanMapper implements TypeMapper {
 }

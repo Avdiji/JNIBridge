@@ -10,7 +10,8 @@ import com.jnibridge.mapper.TypeMapper;
         cType = "std::string",
         jniType = "jstring",
         inPath = "com/jnibridge/mappings/standard/string/String.in.mapping",
-        outPath = "com/jnibridge/mappings/standard/string/String.out.mapping"
+        outPath = "com/jnibridge/mappings/standard/string/String.out.mapping",
+        cleanupPath = "com/jnibridge/mappings/standard/string/String.cleanup.mapping"
 )
 public class StringMapper implements TypeMapper {
 }

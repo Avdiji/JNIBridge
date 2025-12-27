@@ -1,0 +1,1 @@
+            env->ReleaseByteArrayElements(${jniVar}, rawData${id}, JNI_ABORT);

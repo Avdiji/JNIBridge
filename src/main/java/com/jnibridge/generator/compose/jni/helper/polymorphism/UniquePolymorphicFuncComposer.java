@@ -44,7 +44,7 @@ public class UniquePolymorphicFuncComposer extends PolymorphicHelperComposer.Pol
             firstIteration = false;
 
             result.append(String.format("(auto* actualType = dynamic_cast<jnibridge::internal::Handle<%s>*>(handle)) {", subclassCType));
-            result.append(String.format("\n\t\t\treturn actualType->getAsUnique<%s>();", getCType()));
+            result.append(String.format("\n\t\t\treturn actualType->getAsUnique<%s>(env);", getCType()));
             result.append("\n\t\t}");
         }
         return result.toString();

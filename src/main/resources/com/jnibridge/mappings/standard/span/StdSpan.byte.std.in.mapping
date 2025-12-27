@@ -1,3 +1,12 @@
             jsize size${id} = env->GetArrayLength(${jniVar});
             jbyte* rawData${id} = env->GetByteArrayElements(${jniVar}, nullptr);
+            if(!rawData${id}) {
+                jnibridge::internal::throwJniBridgeExceptionJava(env, "The passed byte-array is null");
+                goto cleanup;
+            }
+
             ${cType} ${cVar}(reinterpret_cast<std::byte*>(rawData${id}), size${id});
+            if(env->ExceptionCheck()) {
+                env->ReleaseByteArrayElements(${jniVar}, rawData${id}, JNI_ABORT);
+                return jnibridge::internal::jniDefaultReturn<${jniReturnType}>();
+            }

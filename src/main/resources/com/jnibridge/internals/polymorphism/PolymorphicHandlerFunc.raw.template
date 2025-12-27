@@ -1,5 +1,5 @@
     inline ${cType}*
-    jlong_to_${cTypeUnderscore}(jnibridge::internal::BaseHandle *handle)
+    jlong_to_${cTypeUnderscore}(JNIEnv *env, jnibridge::internal::BaseHandle *handle)
     {
 ${handleToInstance}
         return nullptr;

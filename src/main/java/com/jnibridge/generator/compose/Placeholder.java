@@ -18,6 +18,8 @@ public class Placeholder {
     public static final String JNI_TYPE = "jniType";
     public static final String JNI_VAR = "jniVar";
     public static final String JAVA_PATH = "fullJPath";
+    public static final String JNI_RETURN_TYPE = "jniReturnType";
+    public static final String JNI_CLEANUP = "cleanup";
 
     // JNI function specific...
     public static final String MANGLED_FUNC_NAME = "mangledFuncName";
@@ -28,6 +30,8 @@ public class Placeholder {
     public static final String PARAMS_IN_MAPPING = "paramInMapping";
     public static final String RESULT_OUT_MAPPING = "resultOutMapping";
     public static final String NULLCHECK = "nullcheck";
+    public static final String RESULT_DECLARATION = "resultDeclaration";
+    public static final String RETURN_CALL = "returnCall";
 
     // Exception specific...
     public static final String EXCEPTION_FUNC = "exceptionFunc";
