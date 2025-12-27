@@ -3,4 +3,3 @@
             auto resultBaseHandle = static_cast<jnibridge::internal::BaseHandle*>(resultHandle);
 
             result = jnibridge::internal::jobjectFromBaseHandle(env, "${fullJPath}", resultBaseHandle);
-            if(env->ExceptionCheck()) { goto cleanup; }

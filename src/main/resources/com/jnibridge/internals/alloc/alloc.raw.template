@@ -1,26 +1,24 @@
     JNIEXPORT void JNICALL ${mangledFuncName}(JNIEnv* env, jobject jself${jniParams})
     {
-            // check whether jobject has already been allocated
+            // CONSTRUCTOR CHECKS
             if (jnibridge::internal::getHandle(env, jself) != 0) return;
 
             // super-types allocate() function should not be executed
             bool canAlloc = env->IsSameObject(env->GetObjectClass(jself), env->FindClass("${fullJPath}"));
             if(!canAlloc || env->ExceptionCheck()) { return; }
 
-            // input mappings...
-${paramInMapping}
 ${nullcheck}
-            if(env->ExceptionCheck()) { goto cleanup; }
+
+${paramInMapping}
 
         try {
-            // output mappings...
+            // ALLOCATION
             ${cType}* newNativeObject = new ${cType}(${functionCallParams});
             auto newHandle = new jnibridge::internal::Handle<${cType}>(newNativeObject, true);
             auto newBaseHandle = static_cast<jnibridge::internal::BaseHandle*>(newHandle);
 
             jnibridge::internal::setNativeHandle(env, jself, newBaseHandle);
-            if(env->ExceptionCheck()) { goto cleanup; }
-
+            goto cleanup;
         } catch (const std::exception &e) {
             jthrowable jexception = jnibridge::internal::handleException(env, e);
             env->Throw(jexception);

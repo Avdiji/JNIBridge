@@ -34,7 +34,6 @@ public abstract class TypeInfoComposer implements Composer {
 
         replacements.put(Placeholder.C_TYPE, Composer.getReplacement(cTypeReplacement, custom.map(Custom::cType).orElse(null)));
         replacements.put(Placeholder.C_TYPE_UNDERSCORE, cTypeReplacement.replace("::", "_"));
-        replacements.put(Placeholder.JNI_RETURN_TYPE, typeInfo.getJniMethodReturnType());
 
         replacements.put(Placeholder.JNI_TYPE, Composer.getReplacement(typeInfo.getJniType(), custom.map(Custom::jniType).orElse(null)));
 

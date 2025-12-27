@@ -18,7 +18,6 @@ public class Placeholder {
     public static final String JNI_TYPE = "jniType";
     public static final String JNI_VAR = "jniVar";
     public static final String JAVA_PATH = "fullJPath";
-    public static final String JNI_RETURN_TYPE = "jniReturnType";
     public static final String JNI_CLEANUP = "cleanup";
 
     // JNI function specific...
@@ -29,7 +28,7 @@ public class Placeholder {
     public static final String SELF_IN_MAPPING = "jselfInMapping";
     public static final String PARAMS_IN_MAPPING = "paramInMapping";
     public static final String RESULT_OUT_MAPPING = "resultOutMapping";
-    public static final String NULLCHECK = "nullcheck";
+    public static final String NULL_CHECK = "nullcheck";
     public static final String RESULT_DECLARATION = "resultDeclaration";
     public static final String RETURN_CALL = "returnCall";
 

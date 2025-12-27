@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class ClassInfoComposer implements Composer {
 
-
     @NonNull
     private final ClassInfo classInfo;
 

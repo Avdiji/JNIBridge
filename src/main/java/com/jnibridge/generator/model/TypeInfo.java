@@ -26,8 +26,6 @@ public class TypeInfo {
     @NonNull private final String cType;
     @NonNull private final String jniType;
 
-    @Nullable private final String jniMethodReturnType; // <- to be able to properly add exceptionChecks...
-
     @Setter
     @Nullable private String cleanupLogic; // <- to properly release jni elements...
 

@@ -41,12 +41,12 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
         // Handle static methods
         if (getMethodInfo().isStatic()) {
             String staticMethodTemplate = ResourceUtils.load("com/jnibridge/other/methods/static_method.template");
-            return TemplateUtils.substitute(staticMethodTemplate, getReplacements());
+            return TemplateUtils.substitute(staticMethodTemplate, getReplacements(), true);
         }
 
         // Handle all other methods
         String instanceMethodTemplate = ResourceUtils.load("com/jnibridge/other/methods/instance_method.template");
-        return TemplateUtils.substitute(instanceMethodTemplate, getReplacements());
+        return TemplateUtils.substitute(instanceMethodTemplate, getReplacements(), true);
     }
 
     /**
@@ -87,7 +87,7 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
         // compose the allocation function...
         String allocMethodTemplate = ResourceUtils.load(allocMethodTemplatePath.toString());
         allocMethodTemplate = TemplateUtils.substitute(allocMethodTemplate, allocReplacements);
-        return TemplateUtils.substitute(allocMethodTemplate, getReplacements());
+        return TemplateUtils.substitute(allocMethodTemplate, getReplacements(), true);
     }
 
     /**
@@ -109,6 +109,6 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
         // compose the deallocation function...
         String deallocMethodTemplate = ResourceUtils.load(deallocateAnnotation.deallocTemplate());
         deallocMethodTemplate = TemplateUtils.substitute(deallocMethodTemplate, deallocReplacements);
-        return TemplateUtils.substitute(deallocMethodTemplate, getReplacements());
+        return TemplateUtils.substitute(deallocMethodTemplate, getReplacements(), true);
     }
 }

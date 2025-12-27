@@ -1,1 +1,1 @@
-            return env->NewStringUTF(${functionCall}.data());
+            result = env->NewStringUTF(${functionCall}.data());

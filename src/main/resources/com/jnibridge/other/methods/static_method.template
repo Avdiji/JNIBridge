@@ -1,15 +1,12 @@
     JNIEXPORT ${jniType} JNICALL ${mangledFuncName}(JNIEnv* env, jclass clazz${jniParams})
     {
 ${resultDeclaration}
-
-            // mapping parameters...
 ${nullcheck}
+
 ${paramInMapping}
-            if(env->ExceptionCheck()) { goto cleanup; }
 
         try {
-
-            // output mappings...
+            // OUTPUT MAPPING
 ${resultOutMapping}
             goto cleanup;
         } catch (const std::exception &e) {

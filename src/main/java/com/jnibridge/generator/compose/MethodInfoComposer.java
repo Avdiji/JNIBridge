@@ -37,7 +37,7 @@ public abstract class MethodInfoComposer implements Composer {
         replacements.put(Placeholder.MANGLED_FUNC_NAME, JNIMangler.getMangledMethodDescriptor(methodInfo.getMethod()));
 
         replacements.put(Placeholder.JNI_PARAMS, getJNIFunctionParams());
-        replacements.put(Placeholder.NULLCHECK, getNullChecks());
+        replacements.put(Placeholder.NULL_CHECK, getNullChecks());
 
         replacements.put(Placeholder.JNI_CLEANUP, methodInfo.getReturnType().getCleanupLogic());
         replacements.put(Placeholder.C_TYPE, methodInfo.getReturnType().getCType());
@@ -77,7 +77,15 @@ public abstract class MethodInfoComposer implements Composer {
                         .append(p.getId())
                         .append(") { jnibridge::internal::throwJniBridgeExceptionJava(env, \"passing Nullpointer.\"); }\n"));
 
-        return result.toString();
+        // no null checks needed...
+        if(result.length() == 0) { return ""; }
+
+        // check for JVM exceptions and return properly...
+        result.append("\t\t\tif (env->ExceptionCheck()) { ")
+                .append(methodInfo.getReturnType().getJniType().equals("void") ? "return;" : "return result;")
+                .append(" }");
+
+        return String.format("\t\t\t// CHECK NULLPTR\n%s", result);
     }
 
     /**
@@ -138,9 +146,11 @@ public abstract class MethodInfoComposer implements Composer {
         List<TypeInfo> params = methodInfo.getParams();
         if (params.isEmpty()) { return ""; }
 
-        return params.stream()
+        final String result = params.stream()
                 .map(param -> new TypeInfoJNIComposer(param).compose())
                 .collect(Collectors.joining());
+
+        return "\t\t\t// INPUT MAPPINGS\n" + result + "\n\t\t\tif(env->ExceptionCheck()) { goto cleanup; }";
     }
 
 }

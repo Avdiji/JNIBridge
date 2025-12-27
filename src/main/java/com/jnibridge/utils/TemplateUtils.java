@@ -15,13 +15,25 @@ public class TemplateUtils {
     /**
      * Method for performing simple template substitution using named placeholders.
      *
-     * @param template The templated string.
+     * @param template     The templated string.
      * @param replacements The substitution key-value pairs.
-     *
+     * @param collapseConsecutiveBlanks Flag, that determines whether consecutive blanks shall be substituted with a singular newline.
      * @return The substituted template.
      */
-    public static String substitute(String template, Map<String,String> replacements) {
-        return new StringSubstitutor(replacements).replace(template);
+    public static String substitute(String template, Map<String, String> replacements, final boolean collapseConsecutiveBlanks) {
+        String result = new StringSubstitutor(replacements).replace(template);
+        return collapseConsecutiveBlanks ? result.replaceAll("(?m)^(?:[ \\t]*\\R){2,}", "") : result;
     }
 
+
+    /**
+     * Method for performing simple template substitution using named placeholders.
+     *
+     * @param template     The templated string.
+     * @param replacements The substitution key-value pairs.
+     * @return The substituted template.
+     */
+    public static String substitute(String template, Map<String, String> replacements) {
+        return substitute(template, replacements, false);
+    }
 }

@@ -2,8 +2,6 @@
             jclass enumResultClass = env->FindClass("${fullJPath}");
             jmethodID enumResultFromInt = env->GetStaticMethodID(enumResultClass, "fromInt", "(I)L${fullJPath};");
 
-            if(!enumResultFromInt) { throw jnibridge::internal::JniBridgeError(jnibridge::internal::JniBridgeError::Code::InvalidEnumImplementation); }
+            if(!enumResultFromInt) { jnibridge::internal::throwJniBridgeExceptionJava(env, "Invalid enum implementation"); }
             return env->CallStaticObjectMethod(enumResultClass, enumResultFromInt, enumResultCode);
             env->DeleteLocalRef(enumResultClass);
-
-            if(env->ExceptionCheck()) { goto cleanup; }

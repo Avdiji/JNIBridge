@@ -64,7 +64,6 @@ public class TypeInfoExtractor {
     @NotNull
     protected static TypeInfo extractReturnType(@NotNull final Method method) {
         final Class<?> javaReturnType = method.getReturnType();
-        final String jniReturnType = getJniType(javaReturnType);
 
         final StringBuilder composedCleanupLogic = new StringBuilder();
 
@@ -80,10 +79,9 @@ public class TypeInfoExtractor {
 
             // replace placeholders of the cleanup-logic...
             final String cleanupLogic = ResourceUtils.load(mapping.cleanupPath());
-            final TypeInfo paramTypeInfo = extract(paramType, jniReturnType, "" + i, paramType.getAnnotations(), extractClassWideMappings(method));
+            final TypeInfo paramTypeInfo = extract(paramType, "" + i, paramType.getAnnotations(), extractClassWideMappings(method));
 
             Map<String, String> replacements = new HashMap<>();
-            replacements.put(Placeholder.JNI_RETURN_TYPE, jniReturnType);
             replacements.put(Placeholder.ID, "" + i);
             replacements.put(Placeholder.C_TYPE, paramTypeInfo.getCType());
             replacements.put(Placeholder.C_VAR, Placeholder.C_VAR + i);
@@ -91,10 +89,10 @@ public class TypeInfoExtractor {
             replacements.put(Placeholder.JNI_VAR, Placeholder.JNI_VAR + i);
             ++i;
 
-            composedCleanupLogic.append(TemplateUtils.substitute(cleanupLogic, replacements));
+            composedCleanupLogic.append(TemplateUtils.substitute(cleanupLogic, replacements, true));
         }
 
-        TypeInfo typeInfo = extract(javaReturnType, jniReturnType, null, method.getDeclaredAnnotations(), extractClassWideMappings(method));
+        TypeInfo typeInfo = extract(javaReturnType, null, method.getDeclaredAnnotations(), extractClassWideMappings(method));
         typeInfo.setCleanupLogic(composedCleanupLogic.toString());
 
         return typeInfo;
@@ -110,7 +108,6 @@ public class TypeInfoExtractor {
     @NotNull
     protected static List<TypeInfo> extractParamTypes(@NotNull final Method method) {
         List<TypeInfo> result = new LinkedList<>();
-        final String returnType = getJniType(method.getReturnType());
 
         // fetch all parameter specific annotations...
         Class<?>[] parameterTypes = method.getParameterTypes();
@@ -120,7 +117,7 @@ public class TypeInfoExtractor {
         for (int i = 0; i < method.getParameterCount(); ++i) {
             Class<?> paramType = parameterTypes[i];
             Annotation[] paramAnnotations = parameterAnnotations[i];
-            result.add(extract(paramType, returnType, "" + i, paramAnnotations, extractClassWideMappings(method)));
+            result.add(extract(paramType, "" + i, paramAnnotations, extractClassWideMappings(method)));
         }
         return result;
     }
@@ -135,22 +132,22 @@ public class TypeInfoExtractor {
      * @throws IllegalArgumentException if no valid {@link Mapping} is found for the resolved {@link TypeMapper}
      */
     @NotNull
-    private static TypeInfo extract(@NotNull final Class<?> type, @NotNull final String jniMethodReturnType, @Nullable final String id, final Annotation[] annotations, @NotNull final BridgeClass.MappingEntry[] classWideMappings) {
+    private static TypeInfo extract(@NotNull final Class<?> type, @Nullable final String id, final Annotation[] annotations, @NotNull final BridgeClass.MappingEntry[] classWideMappings) {
         List<Annotation> annotationList = Arrays.stream(annotations).collect(Collectors.toList());
 
         // Extract enum types...
         final BridgeClass bridgeClassAnnotation = type.getAnnotation(BridgeClass.class);
         if (bridgeClassAnnotation != null && bridgeClassAnnotation.isEnum()) {
-            return extractEnumType(type, jniMethodReturnType, id, annotationList);
+            return extractEnumType(type, id, annotationList);
         }
 
         // Extract from an IPointer instance...
         if (IPointer.class.isAssignableFrom(type)) {
-            return extractIPointerType(type, jniMethodReturnType, id, annotationList);
+            return extractIPointerType(type, id, annotationList);
         }
 
         // Extract types that are mapped via TypeMappers...
-        return extractFromTypeMapper(type, jniMethodReturnType, id, annotationList, classWideMappings);
+        return extractFromTypeMapper(type, id, annotationList, classWideMappings);
     }
 
     /**
@@ -161,11 +158,10 @@ public class TypeInfoExtractor {
      * @param annotations The annotations of the corresponding type.
      * @return An instance of {@link TypeInfo}.
      */
-    private static TypeInfo extractEnumType(@NotNull final Class<?> type, @NotNull final String methodReturnType, @Nullable final String id, final List<Annotation> annotations) {
+    private static TypeInfo extractEnumType(@NotNull final Class<?> type, @Nullable final String id, final List<Annotation> annotations) {
 
         return TypeInfo.builder()
                 .type(type)
-                .jniMethodReturnType(methodReturnType)
                 .id(id)
                 .annotations(annotations)
                 .cType(ClassInfoExtractor.extractClassCType(type))
@@ -184,10 +180,9 @@ public class TypeInfoExtractor {
      * @param annotations All the annotations of the corresponding type.
      * @return An instance of {@link TypeInfo} from the passed parameter.
      */
-    private static TypeInfo extractIPointerType(@NotNull final Class<?> type, @NotNull final String jniMethodReturnType, @Nullable final String id, final List<Annotation> annotations) {
+    private static TypeInfo extractIPointerType(@NotNull final Class<?> type, @Nullable final String id, final List<Annotation> annotations) {
         final TypeInfo result = TypeInfo.builder()
                 .type(type)
-                .jniMethodReturnType(jniMethodReturnType)
                 .id(id)
                 .annotations(annotations)
                 .cType(ClassInfoExtractor.extractClassCType(type))
@@ -249,7 +244,7 @@ public class TypeInfoExtractor {
      * @param classWideMappings Mappings that have been specified on the method-invoking class.
      * @return An instance of {@link TypeInfo}, composed by the information deduces from {@link TypeMapper} and {@link Mapping}.
      */
-    private static TypeInfo extractFromTypeMapper(@NotNull final Class<?> type, @NotNull final String jniMethodReturnType, @Nullable final String id, @NotNull final List<Annotation> annotations, @NotNull final BridgeClass.MappingEntry[] classWideMappings) {
+    private static TypeInfo extractFromTypeMapper(@NotNull final Class<?> type, @Nullable final String id, @NotNull final List<Annotation> annotations, @NotNull final BridgeClass.MappingEntry[] classWideMappings) {
         // check whether the param/returnValue is using the 'UseMapping' annotation.
         Mapping paramSpecificMapping = annotations.stream()
                 .filter(annotation -> annotation instanceof UseMapping)
@@ -277,7 +272,6 @@ public class TypeInfoExtractor {
         // create a new TypeInfo
         return TypeInfo.builder()
                 .type(type)
-                .jniMethodReturnType(jniMethodReturnType)
                 .id(id)
                 .annotations(annotations)
                 .cType(paramSpecificMapping.cType())
@@ -319,24 +313,5 @@ public class TypeInfoExtractor {
     private static BridgeClass.MappingEntry[] extractClassWideMappings(@NotNull final Method method) {
         final Optional<BridgeClass> bridgeClassAnnotation = Optional.ofNullable(method.getDeclaringClass().getAnnotation(BridgeClass.class));
         return bridgeClassAnnotation.map(BridgeClass::typeMappers).orElse(new BridgeClass.MappingEntry[]{});
-    }
-
-    /**
-     * @param type The type to extract the JNIType from.
-     * @return The jniType for the passed type.
-     */
-    private static String getJniType(@NotNull final Class<?> type) {
-        if (IPointer.class.isAssignableFrom(type)) { return "jobject"; }
-        if (type.isEnum()) { return "jobject"; }
-
-        Class<? extends TypeMapper> typeMapper = JniBridgeRegistry.getMapperForType(type);
-        if (typeMapper == null) {
-            throw new JniBridgeException(String.format("Attempt to map unregistered type '%s'", type.getSimpleName()));
-        }
-
-        if (!typeMapper.isAnnotationPresent(Mapping.class)) {
-            throw new JniBridgeException(String.format("The passed type '%s' must be annotated with Mapping annotation", type.getSimpleName()));
-        }
-        return typeMapper.getAnnotation(Mapping.class).jniType();
     }
 }
