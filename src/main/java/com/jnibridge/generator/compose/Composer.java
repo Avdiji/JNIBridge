@@ -1,6 +1,5 @@
 package com.jnibridge.generator.compose;
 
-import com.jnibridge.generator.model.ClassInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,17 +39,5 @@ public interface Composer {
         if (customReplacement != null && !customReplacement.isEmpty()) {
             return customReplacement;
         } else return defaultReplacement;
-    }
-
-    /**
-     * Function computes the jni-helper filename for the passed type.
-     *
-     * @param classInfo The class to create helper functions for.
-     * @return A unique filename for the generated header file.
-     */
-    static String getPolyHelperFilename(@NotNull final ClassInfo classInfo) {
-        return String.format("%s_%s.helper.cpp",
-                classInfo.getClazz().getPackage().getName().replace(".", "_"),
-                classInfo.getClazz().getSimpleName());
     }
 }

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -61,6 +62,23 @@ public class ResourceUtils {
         } catch (IOException e) {
             throw new IllegalArgumentException(String.format("Unable to load resource for '%s'", path), e);
         }
-
     }
+
+    /**
+     * @param clazz The class to extract the filename from.
+     * @param fileEndings file-endings to add to the generated name.
+     * @return The filename for the passed class
+     */
+    public static String getFilename(@NotNull final Class<?> clazz, @NotNull final String... fileEndings) {
+        final String canonicalName = clazz.getCanonicalName();
+        final String pkg = clazz.getPackage().getName();
+
+        StringBuilder result = new StringBuilder(canonicalName.substring(pkg.length() + 1));
+        Arrays.stream(fileEndings)
+                .map(fileEnding -> "." + fileEnding)
+                .forEach(result::append);
+
+        return result.toString();
+    }
+
 }
