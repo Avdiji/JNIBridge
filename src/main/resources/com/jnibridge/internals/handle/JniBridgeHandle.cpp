@@ -6,6 +6,7 @@
 #include <string>
 #include <variant>
 #include <stdexcept>
+#include <vector>
 
 ${internal_includes}
 
@@ -74,7 +75,7 @@ namespace jnibridge::internal {
             NotAUniquePtr, // When the wrapped type is supposed to be a uniquePtr but isn't.
             PassingUniquePtr, // When theres an attempt to pass a uniquePtr to a function.
             CorruptHandleStorage, // When the Handle-storage is corrupted.
-            CSelfMustNotBeNull, // The wrapped value of the calling handle must never be null.
+            InvalidCallingInstance, // The native handle must not be invalid.
             InvalidEnumImplementation // If the passed enum does not implement toInt and fromInt methods.
         };
 
@@ -101,7 +102,7 @@ namespace jnibridge::internal {
                 case Code::NotASharedPtr: return "Illegal handle state: shared ownership expected.";
                 case Code::NotAUniquePtr: return "Illegal handle state: unique ownership expected.";
                 case Code::PassingUniquePtr: return "JNIBridge does not allow passing std::unique_ptr to other functions.";
-                case Code::CSelfMustNotBeNull: return "Cannot perform the operation because the native instance is null.";
+                case Code::InvalidCallingInstance: return "Cannot perform the operation. Native Handle might be null/destroyed/invalid.";
                 case Code::InvalidEnumImplementation: return "Bridged enums must implement toInt and fromInt functions.";
 
                 case Code::Unknown:
@@ -219,9 +220,14 @@ namespace jnibridge::internal {
          * @throws std::logic_error if the wrapped instance cannot be accessed.
          */
         template<class X>
-        X* getAs() const {
-            T* original = get();
-            return dynamic_cast<X*>(original);
+        X* getAs(JNIEnv *env) const {
+            try {
+                T* original = get();
+                return dynamic_cast<X*>(original);
+            } catch(const std::exception &e) {
+                throwJniBridgeExceptionJava(env, "Unable to access instance. nativeHandle might be null or invalid.");
+                return nullptr;
+            }
         }
 
         /**
@@ -234,13 +240,19 @@ namespace jnibridge::internal {
          */
         template<class X>
         std::shared_ptr<X> getAsShared(JNIEnv *env) const {
-            if(_strategy != StorageStrategy::Shared) {
-                throwJniBridgeExceptionJava(env, "Function expectes a std::shared_ptr");
+            try {
+                if(_strategy != StorageStrategy::Shared) {
+                    throwJniBridgeExceptionJava(env, "Function expectes a std::shared_ptr");
+                    return nullptr;
+                }
+
+                std::shared_ptr<T> original = std::get<std::shared_ptr<T>>(_store);
+                return std::dynamic_pointer_cast<X>(original);
+
+            } catch(const std::exception &e) {
+                throwJniBridgeExceptionJava(env, "Unable to access instance. nativeHandle might be null or invalid.");
                 return nullptr;
             }
-
-            std::shared_ptr<T> original = std::get<std::shared_ptr<T>>(_store);
-            return std::dynamic_pointer_cast<X>(original);
         }
 
         /**
@@ -252,8 +264,14 @@ namespace jnibridge::internal {
          */
         template<class X>
         std::unique_ptr<X> getAsUnique(JNIEnv *env) const {
-            throwJniBridgeExceptionJava(env, "JniBridge does not support passing std::unique_ptr");
-            return nullptr;
+            try {
+                throwJniBridgeExceptionJava(env, "JniBridge does not support passing std::unique_ptr");
+                return nullptr;
+
+            } catch(const std::exception &e) {
+                throwJniBridgeExceptionJava(env, "Unable to access instance. nativeHandle might be null or invalid.");
+                return nullptr;
+            }
         }
 
     private:
@@ -323,6 +341,82 @@ namespace jnibridge::internal {
 
         env->DeleteLocalRef(cls);
         return result;
+    }
+
+    /**
+     * @brief Captures a pending Java exception and stores it for later handling.
+     *
+     * Retrieves the currently pending Java exception (if any), clears the JVM
+     * exception state, and stores the exception as a JNI global reference in
+     * the provided vector.
+     *
+     * This function is intended to be called immediately after a JNI call that
+     * may throw, when native execution needs to continue.
+     *
+     * @param env JNI environment pointer for the current thread.
+     * @param pending Vector used to collect captured exceptions.
+     *
+     * @return true if an jthrowable has been captured, else false;
+     *
+     * @warning
+     * This function clears the JVM exception state. If the captured exception is
+     * not rethrown later, it will be silently swallowed.
+     *
+     * @note use this function in conjunction with throwPendingJException
+     */
+    inline bool capturePendingJException(JNIEnv *env, std::vector<jthrowable> &pending) {
+        // check if exception occurred return if not
+        jthrowable localEx = env->ExceptionOccurred();
+        if (!localEx) { return false; }
+
+        // clear jvm of pending exceptions
+        env->ExceptionClear();
+
+        // add pending exception to the vector
+        jthrowable globalEx = (jthrowable) env->NewGlobalRef(localEx);
+        env->DeleteLocalRef(localEx);
+        if (!globalEx) { return false; }
+
+        pending.push_back(globalEx);
+        return true;
+
+    }
+
+    /**
+     * @brief Throws the first captured Java exception and releases all stored references.
+     *
+     * Throws the first Java exception previously captured via
+     * @c capturePendingJException() and deletes all stored JNI global references.
+     *
+     * This function is intended to be called once at the end of a JNI method
+     * (e.g., in a cleanup or finally-style section).
+     *
+     * @param env JNI environment pointer for the current thread.
+     * @param pending Vector containing captured Java exceptions as global references.
+     *
+     * @note
+     * Only one Java exception may be pending when returning to Java. Any
+     * additional collected exceptions are discarded.
+     *
+     * @warning
+     * After calling @c Throw(), no further normal JNI calls should be made.
+     */
+    inline void throwPendingJException(JNIEnv *env, std::vector<jthrowable> &pending) {
+        if (pending.empty()) { return; }
+
+        // add all java exceptions as suppressed to the first exception in the list.
+        jthrowable primaryException = pending[0];
+        jclass throwableCls = env->FindClass("java/lang/Throwable");
+        jmethodID addSuppressed = env->GetMethodID(throwableCls, "addSuppressed", "(Ljava/lang/Throwable;)V");
+
+        for(size_t i = 1; i < pending.size(); ++i) {
+            env->CallVoidMethod(primaryException, addSuppressed, pending[i]);
+        }
+
+        // cleanup global refs
+        env->Throw(primaryException);
+        for(jthrowable globalEx : pending) { env->DeleteGlobalRef(globalEx); }
+        pending.clear();
     }
 
 }  // namespace jnibridge::internal

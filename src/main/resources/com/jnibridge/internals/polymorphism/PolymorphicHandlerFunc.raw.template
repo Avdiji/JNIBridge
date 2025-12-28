@@ -1,6 +1,7 @@
     inline ${cType}*
     jlong_to_${cTypeUnderscore}(JNIEnv *env, jnibridge::internal::BaseHandle *handle)
     {
+        if (!handle || ((jlong) handle) == -1) { return nullptr; }
 ${handleToInstance}
         return nullptr;
     }

@@ -75,16 +75,13 @@ public abstract class MethodInfoComposer implements Composer {
                 .forEach(p -> result.append("\t\t\tif (!")
                         .append(Placeholder.JNI_VAR)
                         .append(p.getId())
-                        .append(") { jnibridge::internal::throwJniBridgeExceptionJava(env, \"passing Nullpointer.\"); }\n"));
+                        .append(") { jnibridge::internal::throwJniBridgeExceptionJava(env, \"passing Nullpointer.\"); ")
+                        .append(methodInfo.getReturnType().getJniType().equals("void") ? "return" : "return result")
+                        .append("; }\n")
+                );
 
         // no null checks needed...
-        if(result.length() == 0) { return ""; }
-
-        // check for JVM exceptions and return properly...
-        result.append("\t\t\tif (env->ExceptionCheck()) { ")
-                .append(methodInfo.getReturnType().getJniType().equals("void") ? "return;" : "return result;")
-                .append(" }");
-
+        if (result.length() == 0) { return ""; }
         return String.format("\t\t\t// CHECK NULLPTR\n%s", result);
     }
 
@@ -146,11 +143,15 @@ public abstract class MethodInfoComposer implements Composer {
         List<TypeInfo> params = methodInfo.getParams();
         if (params.isEmpty()) { return ""; }
 
-        final String result = params.stream()
+        final StringBuilder result = new StringBuilder();
+        params.stream()
                 .map(param -> new TypeInfoJNIComposer(param).compose())
-                .collect(Collectors.joining());
+                .forEach(paramMapping -> result.append(paramMapping)
+                        .append("\t\t\tjnibridge::internal::capturePendingJException(env, pendingJExceptions);\n\n")
+                );
+        result.append("\n\n\t\t\tif(!pendingJExceptions.empty()) { goto cleanup; }");
 
-        return "\t\t\t// INPUT MAPPINGS\n" + result + "\n\t\t\tif(env->ExceptionCheck()) { goto cleanup; }";
+        return "\t\t\t// INPUT MAPPINGS\n" + result;
     }
 
 }

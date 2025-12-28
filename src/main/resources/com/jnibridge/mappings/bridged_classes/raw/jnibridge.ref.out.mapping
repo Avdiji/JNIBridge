@@ -1,5 +1,4 @@
             ${cType} &nativeResult = ${functionCall};
             auto resultHandle = new jnibridge::internal::Handle<${cType}>(&nativeResult, false);
             auto resultBaseHandle = static_cast<jnibridge::internal::BaseHandle*>(resultHandle);
-
             result = jnibridge::internal::jobjectFromBaseHandle(env, "${fullJPath}", resultBaseHandle);

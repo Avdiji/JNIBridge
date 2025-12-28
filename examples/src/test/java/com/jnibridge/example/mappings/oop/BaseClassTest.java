@@ -57,7 +57,7 @@ public class BaseClassTest {
     public void testIllegalOperation() {
         BaseClass baseClass = new BaseClass();
         baseClass.close();
-        assertThrows(Exception.class, baseClass::getString);
+        assertThrows(JniBridgeException.class, baseClass::getString);
     }
 
     @Test

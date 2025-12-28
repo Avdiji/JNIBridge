@@ -1,6 +1,8 @@
     JNIEXPORT ${jniType} JNICALL ${mangledFuncName}(JNIEnv* env, jclass clazz${jniParams})
     {
+            std::vector<jthrowable> pendingJExceptions;
 ${resultDeclaration}
+
 ${nullcheck}
 
 ${paramInMapping}
@@ -8,13 +10,19 @@ ${paramInMapping}
         try {
             // OUTPUT MAPPING
 ${resultOutMapping}
-            goto cleanup;
+
+		    jnibridge::internal::capturePendingJException(env, pendingJExceptions);
+			goto cleanup;
+
         } catch (const std::exception &e) {
             jthrowable jexception = jnibridge::internal::handleException(env, e);
             env->Throw(jexception);
-            goto cleanup;
+		    jnibridge::internal::capturePendingJException(env, pendingJExceptions);
+		    goto cleanup;
         }
         cleanup:
 ${cleanup}
+		    jnibridge::internal::capturePendingJException(env, pendingJExceptions);
+		    jnibridge::internal::throwPendingJException(env, pendingJExceptions);
 ${returnCall}
     }

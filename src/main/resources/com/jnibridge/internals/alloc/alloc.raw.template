@@ -1,13 +1,15 @@
     JNIEXPORT void JNICALL ${mangledFuncName}(JNIEnv* env, jobject jself${jniParams})
     {
+${nullcheck}
+
+            std::vector<jthrowable> pendingJExceptions;
+
             // CONSTRUCTOR CHECKS
             if (jnibridge::internal::getHandle(env, jself) != 0) return;
 
             // super-types allocate() function should not be executed
             bool canAlloc = env->IsSameObject(env->GetObjectClass(jself), env->FindClass("${fullJPath}"));
-            if(!canAlloc || env->ExceptionCheck()) { return; }
-
-${nullcheck}
+            if(!canAlloc || jnibridge::internal::capturePendingJException(env, pendingJExceptions)) { return; }
 
 ${paramInMapping}
 
@@ -16,15 +18,20 @@ ${paramInMapping}
             ${cType}* newNativeObject = new ${cType}(${functionCallParams});
             auto newHandle = new jnibridge::internal::Handle<${cType}>(newNativeObject, true);
             auto newBaseHandle = static_cast<jnibridge::internal::BaseHandle*>(newHandle);
-
             jnibridge::internal::setNativeHandle(env, jself, newBaseHandle);
-            goto cleanup;
+
+		    jnibridge::internal::capturePendingJException(env, pendingJExceptions);
+		    goto cleanup;
+
         } catch (const std::exception &e) {
             jthrowable jexception = jnibridge::internal::handleException(env, e);
             env->Throw(jexception);
-            goto cleanup;
+		    jnibridge::internal::capturePendingJException(env, pendingJExceptions);
+		    goto cleanup;
         }
         cleanup:
 ${cleanup}
+		    jnibridge::internal::capturePendingJException(env, pendingJExceptions);
+		    jnibridge::internal::throwPendingJException(env, pendingJExceptions);
             return;
     }

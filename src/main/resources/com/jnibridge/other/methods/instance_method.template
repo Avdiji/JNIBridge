@@ -1,6 +1,8 @@
     JNIEXPORT ${jniType} JNICALL ${mangledFuncName}(JNIEnv* env, jobject jself${jniParams})
     {
+            std::vector<jthrowable> pendingJExceptions;
 ${resultDeclaration}
+
 ${nullcheck}
 
 ${paramInMapping}
@@ -8,19 +10,27 @@ ${paramInMapping}
         try {
             // MAPPING CALLING INSTANCE
 ${jselfInMapping}
-            if(!cself) { throw jnibridge::internal::JniBridgeError(jnibridge::internal::JniBridgeError::Code::CSelfMustNotBeNull); }
-            if(env->ExceptionCheck()) { goto cleanup; }
+
+            // Make sure that the calling instance is not null
+            if (!cself) { throw jnibridge::internal::JniBridgeError(jnibridge::internal::JniBridgeError::Code::InvalidCallingInstance); }
+		    if (jnibridge::internal::capturePendingJException(env, pendingJExceptions)) { goto cleanup; }
 
             // OUTPUT MAPPING
 ${resultOutMapping}
-            goto cleanup;
+
+		    jnibridge::internal::capturePendingJException(env, pendingJExceptions);
+		    goto cleanup;
+
         } catch (const std::exception& e) {
             jthrowable jexception = jnibridge::internal::handleException(env, e);
             env->Throw(jexception);
-            goto cleanup;
+		    jnibridge::internal::capturePendingJException(env, pendingJExceptions);
+		    goto cleanup;
         }
 
         cleanup:
 ${cleanup}
+		    jnibridge::internal::capturePendingJException(env, pendingJExceptions);
+		    jnibridge::internal::throwPendingJException(env, pendingJExceptions);
 ${returnCall}
     }

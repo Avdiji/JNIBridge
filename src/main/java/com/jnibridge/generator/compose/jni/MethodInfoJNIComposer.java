@@ -24,6 +24,8 @@ import java.util.Optional;
  */
 public class MethodInfoJNIComposer extends MethodInfoComposer {
 
+    private static final String DIVIDER = "\t// --------------- %s --------------- //\n";
+
     /**
      * Creates a new JNI type composer for the given {@link MethodInfo}.
      *
@@ -41,12 +43,14 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
         // Handle static methods
         if (getMethodInfo().isStatic()) {
             String staticMethodTemplate = ResourceUtils.load("com/jnibridge/other/methods/static_method.template");
-            return TemplateUtils.substitute(staticMethodTemplate, getReplacements(), true);
+            final String staticFunction = TemplateUtils.substitute(staticMethodTemplate, getReplacements(), true);
+            return String.format(DIVIDER, "STATIC FUNCTION") + staticFunction;
         }
 
         // Handle all other methods
         String instanceMethodTemplate = ResourceUtils.load("com/jnibridge/other/methods/instance_method.template");
-        return TemplateUtils.substitute(instanceMethodTemplate, getReplacements(), true);
+        final String instanceFunction = TemplateUtils.substitute(instanceMethodTemplate, getReplacements(), true);
+        return String.format(DIVIDER, "INSTANCE FUNCTION") + instanceFunction;
     }
 
     /**
@@ -87,7 +91,8 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
         // compose the allocation function...
         String allocMethodTemplate = ResourceUtils.load(allocMethodTemplatePath.toString());
         allocMethodTemplate = TemplateUtils.substitute(allocMethodTemplate, allocReplacements);
-        return TemplateUtils.substitute(allocMethodTemplate, getReplacements(), true);
+        final String allocationFunction = TemplateUtils.substitute(allocMethodTemplate, getReplacements(), true);
+        return String.format(DIVIDER, "ALLOCATION FUNCTION") + allocationFunction;
     }
 
     /**
@@ -109,6 +114,7 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
         // compose the deallocation function...
         String deallocMethodTemplate = ResourceUtils.load(deallocateAnnotation.deallocTemplate());
         deallocMethodTemplate = TemplateUtils.substitute(deallocMethodTemplate, deallocReplacements);
-        return TemplateUtils.substitute(deallocMethodTemplate, getReplacements(), true);
+        final String deallocFunction = TemplateUtils.substitute(deallocMethodTemplate, getReplacements(), true);
+        return String.format(DIVIDER, "DEALLOC FUNCTION") + deallocFunction;
     }
 }

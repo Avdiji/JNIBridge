@@ -1,6 +1,7 @@
     inline std::shared_ptr<${cType}>
     jlong_to_shared_${cTypeUnderscore}(JNIEnv *env, jnibridge::internal::BaseHandle *handle)
     {
+        if (!handle || ((jlong) handle) == -1) { return nullptr; }
 ${handleToInstance}
         return nullptr;
     }

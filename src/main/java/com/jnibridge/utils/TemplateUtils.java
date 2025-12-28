@@ -22,7 +22,7 @@ public class TemplateUtils {
      */
     public static String substitute(String template, Map<String, String> replacements, final boolean collapseConsecutiveBlanks) {
         String result = new StringSubstitutor(replacements).replace(template);
-        return collapseConsecutiveBlanks ? result.replaceAll("(?m)^(?:[ \\t]*\\R){2,}", "") : result;
+        return collapseConsecutiveBlanks ? result.replaceAll("(?m)^(?:[ \\t]*\\R){2,}", "\n") : result;
     }
 
 

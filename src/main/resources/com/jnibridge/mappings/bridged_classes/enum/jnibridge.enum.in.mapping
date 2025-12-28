@@ -1,5 +1,6 @@
             jclass enumClass${id} = env->GetObjectClass(${jniVar});
             jmethodID enumToIntMethod${id} = env->GetMethodID(enumClass${id}, "toInt", "()I");
             if(!enumToIntMethod${id}) { jnibridge::internal::throwJniBridgeExceptionJava(env, "Invalid enum implementation"); }
+            jnibridge::internal::capturePendingJException(env, pendingJExceptions);
             ${cType} ${cVar} = static_cast<${cType}>(env->CallIntMethod(${jniVar}, enumToIntMethod${id}));
             env->DeleteLocalRef(enumClass${id});
