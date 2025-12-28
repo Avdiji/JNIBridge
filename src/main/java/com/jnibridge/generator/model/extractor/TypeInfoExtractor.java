@@ -63,39 +63,7 @@ public class TypeInfoExtractor {
      */
     @NotNull
     protected static TypeInfo extractReturnType(@NotNull final Method method) {
-        final Class<?> javaReturnType = method.getReturnType();
-
-        final StringBuilder composedCleanupLogic = new StringBuilder();
-
-        int i = 0;
-        for (final Class<?> paramType : method.getParameterTypes()) {
-
-            // check whether cleanup-logic exists...
-            final Class<? extends TypeMapper> mapper = JniBridgeRegistry.getMapperForType(paramType);
-            if (mapper == null) { continue; }
-
-            final Mapping mapping = validateMapper(mapper, paramType.getSimpleName());
-            if (mapping.cleanupPath().isEmpty()) { continue; }
-
-            // replace placeholders of the cleanup-logic...
-            final String cleanupLogic = ResourceUtils.load(mapping.cleanupPath());
-            final TypeInfo paramTypeInfo = extract(paramType, "" + i, paramType.getAnnotations(), extractClassWideMappings(method));
-
-            Map<String, String> replacements = new HashMap<>();
-            replacements.put(Placeholder.ID, "" + i);
-            replacements.put(Placeholder.C_TYPE, paramTypeInfo.getCType());
-            replacements.put(Placeholder.C_VAR, Placeholder.C_VAR + i);
-            replacements.put(Placeholder.JNI_TYPE, paramTypeInfo.getJniType());
-            replacements.put(Placeholder.JNI_VAR, Placeholder.JNI_VAR + i);
-            ++i;
-
-            composedCleanupLogic.append(TemplateUtils.substitute(cleanupLogic, replacements, true));
-        }
-
-        TypeInfo typeInfo = extract(javaReturnType, null, method.getDeclaredAnnotations(), extractClassWideMappings(method));
-        typeInfo.setCleanupLogic(composedCleanupLogic.toString());
-
-        return typeInfo;
+        return extract(method.getReturnType(), null, method.getDeclaredAnnotations(), extractClassWideMappings(method));
     }
 
     /**
@@ -269,6 +237,29 @@ public class TypeInfoExtractor {
             paramSpecificMapping = validateMapper(JniBridgeRegistry.getMapperForType(type), type.getSimpleName());
         }
 
+        // TODO this should be its own composer...
+        // extract the cleanup logic
+        final String cleanupPath = paramSpecificMapping.cleanupPath();
+        String cleanupLogic = "";
+        if (!cleanupPath.isEmpty()) {
+            Map<String, String> replacements = new HashMap<>();
+            replacements.put(Placeholder.ID, id);
+            replacements.put(Placeholder.C_TYPE, paramSpecificMapping.cType());
+            replacements.put(Placeholder.C_VAR, Placeholder.C_VAR + id);
+            replacements.put(Placeholder.JNI_TYPE, paramSpecificMapping.jniType());
+            replacements.put(Placeholder.JNI_VAR, Placeholder.JNI_VAR + id);
+
+            final String cleanupTemplate = ResourceUtils.load(cleanupPath);
+            cleanupLogic = TemplateUtils.substitute(cleanupTemplate, replacements, true);
+        }
+
+        // check for any template argument types...
+        final Class<?>[] jTemplateArgumentTypes = paramSpecificMapping.jTemplateArgumentTypes();
+        final String[] cTemplateTypes = paramSpecificMapping.cTemplateArgumentTypes();
+        if (jTemplateArgumentTypes.length != cTemplateTypes.length) {
+            throw new JniBridgeException("The length of the C++ specific and Java specific template argument types must be equal.");
+        }
+
         // create a new TypeInfo
         return TypeInfo.builder()
                 .type(type)
@@ -276,9 +267,12 @@ public class TypeInfoExtractor {
                 .annotations(annotations)
                 .cType(paramSpecificMapping.cType())
                 .jniType(paramSpecificMapping.jniType())
+                .cTemplateArgumentTypes(Arrays.stream(cTemplateTypes).collect(Collectors.toCollection(LinkedList::new)))
+                .javaTemplateArgumentTypes(Arrays.stream(jTemplateArgumentTypes).collect(Collectors.toCollection(LinkedList::new)))
                 .inMapping(ResourceUtils.load(paramSpecificMapping.inPath()))
                 .outMapping(ResourceUtils.load(paramSpecificMapping.outPath()))
                 .isInvoker(false)
+                .cleanupLogic(cleanupLogic)
                 .build();
     }
 
@@ -314,4 +308,5 @@ public class TypeInfoExtractor {
         final Optional<BridgeClass> bridgeClassAnnotation = Optional.ofNullable(method.getDeclaringClass().getAnnotation(BridgeClass.class));
         return bridgeClassAnnotation.map(BridgeClass::typeMappers).orElse(new BridgeClass.MappingEntry[]{});
     }
+
 }

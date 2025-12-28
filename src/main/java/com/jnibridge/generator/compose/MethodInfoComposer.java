@@ -39,7 +39,7 @@ public abstract class MethodInfoComposer implements Composer {
         replacements.put(Placeholder.JNI_PARAMS, getJNIFunctionParams());
         replacements.put(Placeholder.NULL_CHECK, getNullChecks());
 
-        replacements.put(Placeholder.JNI_CLEANUP, methodInfo.getReturnType().getCleanupLogic());
+        replacements.put(Placeholder.JNI_CLEANUP, getCleanupLogic());
         replacements.put(Placeholder.C_TYPE, methodInfo.getReturnType().getCType());
         replacements.put(Placeholder.RESULT_DECLARATION, getResultDeclaration());
         replacements.put(Placeholder.RETURN_CALL, methodInfo.getReturnType().getJniType().equals("void") ? "\t\t\treturn;" : "\t\t\treturn result;");
@@ -48,8 +48,18 @@ public abstract class MethodInfoComposer implements Composer {
         replacements.put(Placeholder.FUNC_CALL, Composer.getReplacement(getNativeFunctionCall(), custom.map(Custom::functionCall).orElse(null)));
         replacements.put(Placeholder.FUNC_CALL_PARAMS, getNativeFunctionCallParams());
 
-
         return replacements;
+    }
+
+
+    /**
+     * @return replacement for {@link Placeholder#JNI_CLEANUP}.
+     */
+    private String getCleanupLogic() {
+        return methodInfo.getParams().stream()
+                .map(TypeInfo::getCleanupLogic)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining("\n"));
     }
 
     /**

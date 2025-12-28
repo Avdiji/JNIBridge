@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,12 +19,15 @@ public class TypeInfo {
 
     // @formatter:off
     @NonNull private final Class<?> type;
+    @Nullable private final LinkedList<Class<?>> javaTemplateArgumentTypes;
 
 
     @Nullable private final String id;
     private final boolean isInvoker; // <- is this type invoking the native function?
 
     @NonNull private final String cType;
+    @Nullable private final LinkedList<String> cTemplateArgumentTypes;
+
     @NonNull private final String jniType;
 
     @Setter

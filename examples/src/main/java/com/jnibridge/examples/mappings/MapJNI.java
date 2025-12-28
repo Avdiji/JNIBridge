@@ -1,7 +1,6 @@
 package com.jnibridge.examples.mappings;
 
 import com.jnibridge.JNIBridge;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -21,6 +20,5 @@ public class MapJNI {
 
         // Pass both correctly:
         JNIBridge.generateJNIInterface(outputDir, packagePattern, includes);
-
     }
 }

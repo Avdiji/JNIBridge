@@ -12,12 +12,15 @@ public class Placeholder {
     // C++ type/parameter specific
     public static final String C_TYPE = "cType";
     public static final String C_TYPE_UNDERSCORE = "cTypeUnderscore";
+    public static final String C_TEMPLATE_TYPE = "cTemplateType";
+    public static final String C_TEMPLATE_TYPE_UNDERSCORE = "cTemplateTypeUnderscore";
     public static final String C_VAR = "cVar";
 
     // Java/JNI type/parameter specific...
     public static final String JNI_TYPE = "jniType";
     public static final String JNI_VAR = "jniVar";
     public static final String JAVA_PATH = "fullJPath";
+    public static final String JAVA_TEMPLATE_PATH = "fullJTemplatePath";
     public static final String JNI_CLEANUP = "cleanup";
 
     // JNI function specific...

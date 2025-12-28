@@ -49,6 +49,62 @@ public @interface Mapping {
     String cType();
 
     /**
+     * Declares the C++ template arguments of {@link #cType()} in left-to-right order.
+     *
+     * <p>This is used when {@link #cType()} denotes a C++ template instantiation such as. </p>
+     *
+     * <p>These values are consumed by the code generator and exposed in mapping templates via:
+     * <ul>
+     *   <li>{@code ${cTemplateType_0}}, {@code ${cTemplateType_1}}, ...</li>
+     *   <li>{@code ${cTemplateTypeUnderscore_0}}, {@code ${cTemplateTypeUnderscore_1}}, ...</li>
+     * </ul>
+     *
+     * <h3>When required</h3>
+     * <p>This attribute is required whenever {@link #cType()} represents a templated type
+     * and the mapping templates reference template placeholders (e.g. {@code ${cTemplateType_0}}).
+     * If omitted in such cases, code generation will fail or produce invalid code.</p>
+     *
+     * <h3>Example</h3>
+     * <pre>{@code
+     * @Mapping(
+     *   cType = "std::optional<com::jnibridge::Foo>",
+     *   cTemplateArgumentTypes = { "com::jnibridge::Foo" },
+     *   ...
+     * )
+     * }</pre>
+     */
+    String[] cTemplateArgumentTypes() default {};
+
+    /**
+     * Declares the Java type arguments that correspond to the C++ template arguments of {@link #cTemplateArgumentTypes()}.
+     *
+     * <p>The array index corresponds to the template parameter position and must match {@link #cTemplateArgumentTypes()} exactly
+     *
+     * <p>These values are consumed by the code generator and exposed in mapping templates via:
+     * <ul>
+     *   <li>{@code ${fullJTemplatePath_0}}, {@code ${fullJTemplatePath_1}}, ... for JNI slash paths.
+     * </ul>
+     *
+     * <h3>When required</h3>
+     * Lookup {@link Mapping#cTemplateArgumentTypes()}
+     *
+     * <h3>Example</h3>
+     * <pre>{@code
+     * <h3>Example</h3>
+     * <pre>{@code
+     * @Mapping(
+     *   cType = "std::optional<com::jnibridge::Foo>",
+     *   cTemplateArgumentTypes = { "com::jnibridge::Foo" },
+     *   jTemplateArgumentTypes = { "com.jnibridge.Foo.class" },
+     *   ...
+     * )
+     * }</pre>
+     *
+     * @return Java template argument classes, ordered by parameter position.
+     */
+    Class<?>[] jTemplateArgumentTypes() default {};
+
+    /**
      * Getter for the jni type of this mapper.
      *
      * @return The jni of the type to be mapped.

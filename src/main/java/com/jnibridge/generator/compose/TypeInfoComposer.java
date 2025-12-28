@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,6 +47,28 @@ public abstract class TypeInfoComposer implements Composer {
         replacements.put(Placeholder.JAVA_PATH, typeInfo.getType().getName().replace(".", "/"));
 
         replacements.put(Placeholder.JNI_CLEANUP, typeInfo.getCleanupLogic());
+
+        addTemplateReplacements(replacements);
         return replacements;
+    }
+
+    private void addTemplateReplacements(@NotNull final Map<String, String> replacements) {
+        // replace template argument types
+        LinkedList<String> cTemplateArgumentTypes = getTypeInfo().getCTemplateArgumentTypes();
+        LinkedList<Class<?>> javaTemplateArgumentTypes = getTypeInfo().getJavaTemplateArgumentTypes();
+
+        if (cTemplateArgumentTypes != null && javaTemplateArgumentTypes != null) {
+            for (int i = 0; i < cTemplateArgumentTypes.size(); ++i) {
+
+                replacements.put(String.format("%s_%d", Placeholder.C_TEMPLATE_TYPE, i), cTemplateArgumentTypes.get(i));
+                replacements.put(String.format("%s_%d", Placeholder.C_TEMPLATE_TYPE_UNDERSCORE, i), cTemplateArgumentTypes.get(i).replace("::", "_"));
+
+                final String jTemplateArgumentReplacement = Optional.ofNullable(javaTemplateArgumentTypes.get(i))
+                        .map(Class::getName)
+                        .map(name -> name.replace(".", "/"))
+                        .orElse("$INVALID MAPPING");
+                replacements.put(String.format("%s_%d", Placeholder.JAVA_TEMPLATE_PATH, i), jTemplateArgumentReplacement);
+            }
+        }
     }
 }
