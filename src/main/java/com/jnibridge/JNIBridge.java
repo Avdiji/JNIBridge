@@ -163,7 +163,11 @@ public class JNIBridge {
         List<String> convenienceHeaderIncludes = new ArrayList<>();
         for (ClassInfo classInfo : iPointerClasses) {
 
-            final String filename = ResourceUtils.getFilename(classInfo.getClazz(), "helper", "jni", "cpp");
+            final StringBuilder filename = new StringBuilder()
+                    .append(classInfo.getClazz().getPackage().getName())
+                    .append(".")
+                    .append(ResourceUtils.getFilename(classInfo.getClazz(), "helper", "jni", "cpp"));
+
             final String fullFilename = String.format("%s/%s", internalPath, filename);
 
             try (FileWriter rawPolymorphicHelperWriter = new FileWriter(fullFilename)) {
