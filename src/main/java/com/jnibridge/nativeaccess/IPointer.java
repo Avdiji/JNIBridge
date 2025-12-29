@@ -42,5 +42,5 @@ public interface IPointer {
      * Make sure that the implementing function is annotated with {@link com.jnibridge.annotations.lifecycle.Deallocate}
      * </p>
      */
-    void destruct();
+    void destructNativeHandle();
 }

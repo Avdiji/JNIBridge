@@ -18,16 +18,16 @@ public class Bat implements Mammal, Bird, Closeable {
 
     @Override public long getNativeHandle() { return this.nativeHandle; }
     @Override public void setNativeHandle(long nativeHandle) { this.nativeHandle = nativeHandle; }
-    @Override public void close() { destruct(); }
+    @Override public void close() { destructNativeHandle(); }
 
     @Override
     @Deallocate
-    public native void destruct();
+    public native void destructNativeHandle();
 
     @Override
     @SuppressWarnings("removal")
     protected void finalize() throws Throwable {
-        destruct();
+        destructNativeHandle();
         super.finalize();
     }
     // @formatter:on

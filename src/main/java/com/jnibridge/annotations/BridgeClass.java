@@ -54,7 +54,7 @@ public @interface BridgeClass {
      *     applies to the annotated class and overrides globally registered mappings.
      *   </li>
      *   <li>
-     *     {@link com.jnibridge.JniBridgeRegistry#typeRegistry} —
+     *     {@link com.jnibridge.JniBridgeRegistry#registerTypeMapper} —
      *     global fallback mappings used when no more specific configuration is present.
      *   </li>
      * </ol>

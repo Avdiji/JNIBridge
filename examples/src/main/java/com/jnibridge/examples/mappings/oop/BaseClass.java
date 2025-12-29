@@ -18,7 +18,7 @@ public class BaseClass extends Pointer {
 
     @Override
     @Deallocate
-    public native void destruct();
+    public native void destructNativeHandle();
 
     public native String getString();
     public native void throwNestedError();

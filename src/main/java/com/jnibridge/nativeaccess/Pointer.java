@@ -14,7 +14,7 @@ import java.io.Closeable;
  * This class is not required, but can be extended by any class that maps to a native object and wants
  * to avoid reimplementing boilerplate {@code IPointer} logic.
  *
- * <p><strong>Note:</strong> This class overrides {@link #finalize()} to call {@link #destruct()}.
+ * <p><strong>Note:</strong> This class overrides {@link #finalize()} to call {@link #destructNativeHandle()}.
  * While convenient, finalization is discouraged in modern Java (deprecated in Java 9, removed in Java 18+)
  * and should be replaced with explicit lifecycle management or {@link java.lang.ref.Cleaner} where possible.
  * <p>
@@ -30,8 +30,8 @@ public abstract class Pointer implements IPointer, Closeable {
 
     @Override
     @SuppressWarnings("removal")
-    protected void finalize() { destruct(); }
+    protected void finalize() { destructNativeHandle(); }
 
     @Override
-    public void close() { destruct(); }
+    public void close() { destructNativeHandle(); }
 }
