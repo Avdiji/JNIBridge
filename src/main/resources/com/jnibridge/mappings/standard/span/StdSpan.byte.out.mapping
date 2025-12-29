@@ -1,4 +1,0 @@
-            auto resultSpan = ${functionCall};
-            std::size_t resultSize = resultSpan.size();
-            result = env->NewByteArray(static_cast<jsize>(resultSize));
-            env->SetByteArrayRegion(result, 0, static_cast<jsize>(resultSize), (const jbyte*) resultSpan.data());
