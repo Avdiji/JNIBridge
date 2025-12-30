@@ -1,4 +1,6 @@
             std::shared_ptr<${cType}> nativeResult = ${functionCall};
+            if (!nativeResult) { result = nullptr; goto cleanup; }
+
             auto resultHandle = new jnibridge::internal::Handle<${cType}>(nativeResult);
             auto resultBaseHandle = static_cast<jnibridge::internal::BaseHandle*>(resultHandle);
             result = jnibridge::internal::jobjectFromBaseHandle(env, "${fullJPath}", resultBaseHandle);
