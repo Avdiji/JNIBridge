@@ -34,7 +34,7 @@ public abstract class TypeInfoComposer implements Composer {
         Optional<Custom> custom = typeInfo.getAnnotation(Custom.class);
 
         replacements.put(Placeholder.C_TYPE, Composer.getReplacement(cTypeReplacement, custom.map(Custom::cType).orElse(null)));
-        replacements.put(Placeholder.C_TYPE_UNDERSCORE, cTypeReplacement.replace("::", "_"));
+        replacements.put(Placeholder.C_TYPE_UNDERSCORE, cTypeReplacement.replace("::", "_").replace("<", "_").replace(">", ""));
 
         replacements.put(Placeholder.JNI_TYPE, Composer.getReplacement(typeInfo.getJniType(), custom.map(Custom::jniType).orElse(null)));
 

@@ -9,7 +9,10 @@ import com.jnibridge.nativeaccess.IPointer;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +52,7 @@ public class ClassInfoExtractor {
         final ClassInfo result = ClassInfo.builder()
                 .clazz(clazz)
                 .subclasses(subclasses)
+                .fullCType(String.format("%s::%s", annotation.namespace(), nativeClassName))
                 .methodsToMap(extractMethodsToMap(clazz, annotation.namespace(), nativeClassName))
                 .build();
 
@@ -63,8 +67,8 @@ public class ClassInfoExtractor {
      * Delegates to {@link MethodScanner#getAllJNIBridgedMethods(Class)} and transforms
      * each method into a {@link MethodInfo}.
      *
-     * @param clazz the class to scan.
-     * @param namespace The namespace of the corresponding function.
+     * @param clazz           the class to scan.
+     * @param namespace       The namespace of the corresponding function.
      * @param nativeClassName The name of the implementing function (to complete the namespace in case of a static function inside a class).
      * @return list of {@link MethodInfo} objects representing native methods
      */

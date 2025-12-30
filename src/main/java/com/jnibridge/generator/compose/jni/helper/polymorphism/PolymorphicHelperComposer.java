@@ -4,7 +4,6 @@ import com.jnibridge.generator.compose.Composer;
 import com.jnibridge.generator.compose.Placeholder;
 import com.jnibridge.generator.compose.jni.helper.JniBridgeHandleComposer;
 import com.jnibridge.generator.model.ClassInfo;
-import com.jnibridge.generator.model.extractor.ClassInfoExtractor;
 import com.jnibridge.utils.ResourceUtils;
 import com.jnibridge.utils.TemplateUtils;
 import lombok.Getter;
@@ -88,8 +87,8 @@ public class PolymorphicHelperComposer implements Composer {
         public PolymorphicFuncComposer(@NotNull final ClassInfo polymorphicClass, @NotNull final String helperFunctionPrefix) {
             this.polymorphicClass = polymorphicClass;
             this.helperFunctionPrefix = helperFunctionPrefix;
-            this.cType = ClassInfoExtractor.extractClassCType(polymorphicClass.getClazz());
-            this.cTypeUnderscore = cType.replace("::", "_");
+            this.cType = polymorphicClass.getFullCType();
+            this.cTypeUnderscore = cType.replace("::", "_").replace("<", "_").replace(">", "");
         }
 
         @Override

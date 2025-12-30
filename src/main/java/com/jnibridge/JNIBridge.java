@@ -163,10 +163,8 @@ public class JNIBridge {
         List<String> convenienceHeaderIncludes = new ArrayList<>();
         for (ClassInfo classInfo : iPointerClasses) {
 
-            final StringBuilder filename = new StringBuilder()
-                    .append(classInfo.getClazz().getPackage().getName())
-                    .append(".")
-                    .append(ResourceUtils.getFilename(classInfo.getClazz(), "helper", "jni", "cpp"));
+            String filename = String.format("%s.helper.jni.cpp", classInfo.getFullCType());
+            filename = filename.replace("::", "_").replace("<", "_").replace(">", "");
 
             final String fullFilename = String.format("%s/%s", internalPath, filename);
 
