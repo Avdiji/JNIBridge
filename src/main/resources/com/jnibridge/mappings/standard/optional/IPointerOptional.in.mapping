@@ -1,9 +1,0 @@
-            // fetch the IPointer instance from java optional
-            jclass optionalClass${id} = env->GetObjectClass(${jniVar});
-            jmethodID orElseMID${id} = env->GetMethodID(optionalClass${id}, "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
-            jobject ${jniVar}OptValue = env->CallObjectMethod(${jniVar}, orElseMID${id}, nullptr);
-            // map the java optional-value to a cType
-            jlong ${cVar}HandlePtr = jnibridge::internal::getHandle(env, ${jniVar}OptValue);
-            auto *${cVar}Handle = reinterpret_cast<jnibridge::internal::BaseHandle*>(${cVar}HandlePtr);
-            ${cTemplateType_0} ${cVar}OptValue = *jnibridge::internal::jlong_to_${cTemplateTypeUnderscore_0}(env, ${cVar}Handle);
-            ${cType} ${cVar}(${cVar}OptValue);

@@ -1,2 +1,0 @@
-            env->DeleteLocalRef(optionalClass${id});
-            env->DeleteLocalRef(${jniVar}OptValue);

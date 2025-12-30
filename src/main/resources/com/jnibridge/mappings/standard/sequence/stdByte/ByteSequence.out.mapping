@@ -1,0 +1,4 @@
+            auto nativeResultSequence = ${functionCall};
+            std::size_t resultSize = nativeResultSequence.size();
+            result = env->NewByteArray(static_cast<jsize>(resultSize));
+            env->SetByteArrayRegion(result, 0, static_cast<jsize>(resultSize), (const jbyte*) nativeResultSequence.data());

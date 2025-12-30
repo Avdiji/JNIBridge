@@ -1,0 +1,7 @@
+            auto nativeIntSetResult = ${functionCall};
+            result = env->NewIntArray(static_cast<jsize>(nativeIntSetResult.size()));
+            // copy set into temporary buffer
+            std::vector<jint> bufferResult;
+            bufferResult.reserve(nativeIntSetResult.size());
+            for(int element : nativeIntSetResult) { bufferResult.push_back(static_cast<jint>(element)); }
+            env->SetIntArrayRegion(result, 0, bufferResult.size(), bufferResult.data());
