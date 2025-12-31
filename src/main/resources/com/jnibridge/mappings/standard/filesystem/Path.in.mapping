@@ -1,0 +1,6 @@
+            jclass javaPathClass${id} = env->FindClass("java/nio/file/Path");
+            jmethodID toStringMethod${id} = env->GetMethodID(javaPathClass${id}, "toString", "()Ljava/lang/String;");
+
+            jstring pathString${id} = static_cast<jstring>(env->CallObjectMethod(${jniVar}, toStringMethod${id}));
+            const char* pathChars${id} = env->GetStringUTFChars(pathString${id}, NULL);
+            ${cType} ${cVar} = std::filesystem::path(pathChars${id});

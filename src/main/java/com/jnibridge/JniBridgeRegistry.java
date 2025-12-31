@@ -2,11 +2,13 @@ package com.jnibridge;
 
 import com.jnibridge.mapper.TypeMapper;
 import com.jnibridge.mapper.primitives.*;
+import com.jnibridge.mapper.standard.filesystem.PathMapper;
 import com.jnibridge.mapper.standard.string.StringMapper;
 import com.jnibridge.utils.CompareUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -49,6 +51,7 @@ public class JniBridgeRegistry {
         registerTypeMapper(short.class, ShortMapper.class);
         registerTypeMapper(long.class, LongMapper.class);
         registerTypeMapper(String.class, StringMapper.class);
+        registerTypeMapper(Path.class, PathMapper.class);
 
     }
     // @formatter:on

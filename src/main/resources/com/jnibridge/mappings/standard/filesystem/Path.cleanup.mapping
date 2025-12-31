@@ -1,0 +1,3 @@
+            if (pathChars${id} != nullptr && pathString${id} != nullptr) { env->ReleaseStringUTFChars(pathString${id}, pathChars${id}); }
+            if (pathString${id} != nullptr) { env->DeleteLocalRef(pathString${id}); }
+            if (javaPathClass${id} != nullptr) { env->DeleteLocalRef(javaPathClass${id}); }
