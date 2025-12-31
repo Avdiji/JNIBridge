@@ -3,4 +3,8 @@
 
             auto resultHandle = new jnibridge::internal::Handle<${cType}>(nativeResult, true);
             auto resultBaseHandle = static_cast<jnibridge::internal::BaseHandle*>(resultHandle);
-            result = jnibridge::internal::jobjectFromBaseHandle(env, "${fullJPath}", resultBaseHandle);
+            result = jnibridge::internal::jobjectFromBaseHandle(
+                        env,
+                        jnibridge::internal::${cTypeUnderscore}_to_jPath(nativeResult),
+                        resultBaseHandle
+            );

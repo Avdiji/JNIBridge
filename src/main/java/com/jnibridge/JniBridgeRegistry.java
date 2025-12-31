@@ -3,10 +3,14 @@ package com.jnibridge;
 import com.jnibridge.mapper.TypeMapper;
 import com.jnibridge.mapper.primitives.*;
 import com.jnibridge.mapper.standard.string.StringMapper;
+import com.jnibridge.utils.CompareUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * A central registry for associating Java types (e.g., primitives or classes) with their
@@ -90,19 +94,16 @@ public class JniBridgeRegistry {
      *
      * @return The sorted entries of the exception-registry.
      */
-    public static Collection<Map.Entry<String, Class<? extends Throwable>>> getSortedExceptionEntries() {
-        final Comparator<Class<? extends Throwable>> comparator =
-                (c1, c2) -> {
-                    if (c1.equals(c2)) return 0;
-                    if (c1.isAssignableFrom(c2)) return 1;
-                    if (c2.isAssignableFrom(c1)) return -1;
-                    return c1.getName().compareTo(c2.getName());
-                };
+    public static LinkedList<Map.Entry<String, Class<? extends Throwable>>> getSortedExceptionEntries() {
+        LinkedList<Map.Entry<String, Class<? extends Throwable>>> sortedEntries =
+                new LinkedList<>(exceptionRegistry.entrySet());
 
-        List<Map.Entry<String, Class<? extends Throwable>>> sortedEntries = new ArrayList<>(exceptionRegistry.entrySet());
-        sortedEntries.sort(Map.Entry.comparingByValue(comparator));
+        sortedEntries.sort(Map.Entry.comparingByValue(
+                Comparator.<Class<? extends Throwable>>comparingInt(CompareUtils::depth)
+                        .reversed()
+                        .thenComparing(Class::getName)
+        ));
         return sortedEntries;
     }
-
 
 }

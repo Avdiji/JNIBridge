@@ -1,3 +1,11 @@
+    inline std::string
+    ${cTypeUnderscore}_to_jPath(${cType} *instance)
+    {
+        if (!instance || ((jlong) instance) == -1) { return nullptr; }
+${instanceToJFullPath}
+        return nullptr;
+    }
+
     inline ${cType}*
     jlong_to_${cTypeUnderscore}(JNIEnv *env, jnibridge::internal::BaseHandle *handle)
     {

@@ -41,6 +41,7 @@ public class Placeholder {
 
     // Polymorphic helper specific...
     public static final String HANDLE_TO_INSTANCE = "handleToInstance";
+    public static final String INSTANCE_TO_JAVA_FULL_PATH = "instanceToJFullPath";
 
 
 

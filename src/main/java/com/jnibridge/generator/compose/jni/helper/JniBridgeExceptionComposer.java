@@ -70,7 +70,7 @@ public class JniBridgeExceptionComposer implements Composer {
 
                 // condition body
                 result.append("\t\t\treturn env->FindClass(\"")
-                        .append(exceptionMappingEntry.getValue().getCanonicalName().replace(".", "/"))
+                        .append(exceptionMappingEntry.getValue().getName().replace(".", "/"))
                         .append("\");\n\t\t}\n");
             }
             return result.toString();
