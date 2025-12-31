@@ -2,12 +2,14 @@
     {
         try {
             jlong selfHandlePtr = jnibridge::internal::getHandle(env, jself);
-            auto selfHandle = reinterpret_cast<jnibridge::internal::BaseHandle*>(selfHandlePtr);
 
-            delete selfHandle;
+            if(selfHandlePtr != 0 && selfHandlePtr != -1) {
+                auto selfHandle = reinterpret_cast<jnibridge::internal::BaseHandle*>(selfHandlePtr);
+                delete selfHandle;
 
-            jmethodID setHandle = env->GetMethodID(env->GetObjectClass(jself), "setNativeHandle", "(J)V");
-            env->CallVoidMethod(jself, setHandle, (jlong) -1);
+                jmethodID setHandle = env->GetMethodID(env->GetObjectClass(jself), "setNativeHandle", "(J)V");
+                env->CallVoidMethod(jself, setHandle, (jlong) -1);
+            }
 
         } catch (const std::exception &e) {
             jthrowable jexception = jnibridge::internal::handleException(env, e);

@@ -34,11 +34,11 @@ public class SharedPolymorphicFuncComposer extends PolymorphicHelperComposer.Pol
     public String getHandleToInstanceReplacement() {
         final StringBuilder result = new StringBuilder();
 
-        final SortedSet<ClassInfo> subclasses = getPolymorphicClass().getSubclasses();
+        final SortedSet<Class<?>> subclasses = getPolymorphicClass().getSubclasses();
         boolean firstIteration = true;
 
-        for(ClassInfo subclass : subclasses) {
-            final String subclassCType = ClassInfoExtractor.extractClassCType(subclass.getClazz());
+        for(Class<?> subclass : subclasses) {
+            final String subclassCType = ClassInfoExtractor.extractClassCType(subclass);
 
             result.append(firstIteration ? "\t\tif " : "\n\t\telse if ");
             firstIteration = false;

@@ -5,6 +5,6 @@
             auto resultBaseHandle = static_cast<jnibridge::internal::BaseHandle*>(resultHandle);
             result = jnibridge::internal::jobjectFromBaseHandle(
                         env,
-                        jnibridge::internal::${cTypeUnderscore}_to_jPath(nativeResult),
+                        jnibridge::internal::${cTypeUnderscore}_to_jPath(resultHandle->get()),
                         resultBaseHandle
             );

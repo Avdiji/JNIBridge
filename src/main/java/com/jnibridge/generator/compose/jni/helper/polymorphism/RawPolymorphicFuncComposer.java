@@ -43,11 +43,11 @@ public class RawPolymorphicFuncComposer extends PolymorphicHelperComposer.Polymo
     public String getHandleToInstanceReplacement() {
         final StringBuilder result = new StringBuilder();
 
-        final SortedSet<ClassInfo> subclasses = getPolymorphicClass().getSubclasses();
+        final SortedSet<Class<?>> subclasses = getPolymorphicClass().getSubclasses();
         boolean firstIteration = true;
 
-        for (ClassInfo subclass : subclasses) {
-            final String subclassCType = ClassInfoExtractor.extractClassCType(subclass.getClazz());
+        for (Class<?> subclass : subclasses) {
+            final String subclassCType = ClassInfoExtractor.extractClassCType(subclass);
 
             result.append(firstIteration ? "\t\tif " : "\n\t\telse if ");
             firstIteration = false;
@@ -65,17 +65,17 @@ public class RawPolymorphicFuncComposer extends PolymorphicHelperComposer.Polymo
     private String getInstanceToJFullPath() {
         final StringBuilder result = new StringBuilder();
 
-        final SortedSet<ClassInfo> subclasses = getPolymorphicClass().getSubclasses();
+        final SortedSet<Class<?>> subclasses = getPolymorphicClass().getSubclasses();
         boolean firstIteration = true;
 
-        for (ClassInfo subclass : subclasses) {
-            final String subclassCType = ClassInfoExtractor.extractClassCType(subclass.getClazz());
+        for (Class<?> subclass : subclasses) {
+            final String subclassCType = ClassInfoExtractor.extractClassCType(subclass);
 
             result.append(firstIteration ? "\t\tif " : "\n\t\telse if ");
             firstIteration = false;
 
             result.append(String.format("(auto* actualType = dynamic_cast<%s*>(instance)) {", subclassCType));
-            result.append(String.format("\n\t\t\treturn \"%s\";", subclass.getClazz().getName().replace(".", "/")));
+            result.append(String.format("\n\t\t\treturn \"%s\";", subclass.getName().replace(".", "/")));
             result.append("\n\t\t}");
         }
         return result.toString();

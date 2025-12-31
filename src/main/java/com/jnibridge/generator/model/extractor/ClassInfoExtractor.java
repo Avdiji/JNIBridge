@@ -6,13 +6,11 @@ import com.jnibridge.generator.model.ClassInfo;
 import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.generator.scanner.MethodScanner;
 import com.jnibridge.nativeaccess.IPointer;
+import com.jnibridge.utils.CompareUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -41,11 +39,18 @@ public class ClassInfoExtractor {
         }
 
         // sorted set of all the subclasses to be mapped (for polymorphic handlers)...
-        final SortedSet<ClassInfo> subclasses = otherClassesToMap.stream()
-                .filter(otherClazz -> !otherClazz.equals(clazz))
-                .filter(clazz::isAssignableFrom)
-                .map(other -> extract(other, otherClassesToMap))
-                .collect(Collectors.toCollection(TreeSet::new));
+        SortedSet<Class<?>> subclasses =
+                otherClassesToMap.stream()
+                        .filter(otherClazz -> otherClazz != clazz)
+                        .filter(other -> clazz.isAssignableFrom(other) || other.isAssignableFrom(clazz))
+                        .collect(Collectors.toCollection(() ->
+                                new TreeSet<>(
+                                        Comparator
+                                                .comparingInt(CompareUtils::depth)
+                                                .reversed()
+                                                .thenComparing(Class::getName)
+                                )
+                        ));
 
         // Compose ClassInfo...
         final String nativeClassName = annotation.name().isEmpty() ? clazz.getSimpleName() : annotation.name();
@@ -57,7 +62,7 @@ public class ClassInfoExtractor {
                 .build();
 
         // for polymorphic helpers...
-        if (IPointer.class.isAssignableFrom(clazz)) { result.getSubclasses().add(result); }
+        if (IPointer.class.isAssignableFrom(clazz)) { result.getSubclasses().add(clazz); }
         return result;
     }
 

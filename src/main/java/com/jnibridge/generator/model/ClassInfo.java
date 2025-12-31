@@ -19,7 +19,7 @@ public class ClassInfo implements Comparable<ClassInfo> {
     // @formatter:off
     @NonNull  private final Class<?> clazz;
     @NonNull private final List<MethodInfo> methodsToMap; // <- excluding inherited methods
-    @NonNull private final SortedSet<ClassInfo> subclasses; // <- including itself
+    @NonNull private final SortedSet<Class<?>> subclasses; // <- including itself
     @NonNull private final String fullCType;
     // @formatter:on
 
