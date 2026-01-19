@@ -2,7 +2,6 @@ package com.jnibridge.generator.compose;
 
 import com.jnibridge.annotations.modifiers.Custom;
 import com.jnibridge.annotations.modifiers.IgnoreNullcheck;
-import com.jnibridge.exception.JniBridgeException;
 import com.jnibridge.generator.compose.jni.TypeInfoJNIComposer;
 import com.jnibridge.generator.model.MethodInfo;
 import com.jnibridge.generator.model.TypeInfo;
@@ -29,8 +28,6 @@ public abstract class MethodInfoComposer implements Composer {
     public Map<String, String> getReplacements() {
         Map<String, String> replacements = new HashMap<>();
 
-        addTemplateTypeReplacements(replacements);
-
         Optional.ofNullable(methodInfo.getSelfType()).ifPresent(selfType -> replacements.put(Placeholder.SELF_IN_MAPPING, new TypeInfoJNIComposer(selfType).compose()));
 
         replacements.put(Placeholder.PARAMS_IN_MAPPING, getParamInputMappings());
@@ -53,35 +50,6 @@ public abstract class MethodInfoComposer implements Composer {
 
         return replacements;
     }
-
-    private void addTemplateTypeReplacements(Map<String, String> replacements) {
-        final Optional<Custom> customAnnotationOpt = methodInfo.getReturnType().getAnnotation(Custom.class);
-        if (customAnnotationOpt.isPresent() && !customAnnotationOpt.get().bodyTemplatePath().isEmpty()) {
-
-            Custom customAnnotation = customAnnotationOpt.get();
-            if (customAnnotation.jTemplateArgumentTypes().length == 0) { return; }
-
-            // check for any template argument types...
-            final Class<?>[] jTemplateArgumentTypes = customAnnotation.jTemplateArgumentTypes();
-            final String[] cTemplateTypes = customAnnotation.cTemplateArgumentTypes();
-            if (jTemplateArgumentTypes.length != cTemplateTypes.length) {
-                throw new JniBridgeException("The length of the C++ specific and Java specific template argument types must be equal.");
-            }
-
-            for (int i = 0; i < cTemplateTypes.length; ++i) {
-
-                replacements.put(String.format("%s_%d", Placeholder.C_TEMPLATE_TYPE, i), cTemplateTypes[i]);
-                replacements.put(String.format("%s_%d", Placeholder.C_TEMPLATE_TYPE_UNDERSCORE, i), cTemplateTypes[i].replace("::", "_"));
-
-                final String jTemplateArgumentReplacement = Optional.ofNullable(jTemplateArgumentTypes[i])
-                        .map(Class::getName)
-                        .map(name -> name.replace(".", "/"))
-                        .orElse("$INVALID MAPPING");
-                replacements.put(String.format("%s_%d", Placeholder.JAVA_TEMPLATE_PATH, i), jTemplateArgumentReplacement);
-            }
-        }
-    }
-
 
     /**
      * @return replacement for {@link Placeholder#JNI_CLEANUP}.

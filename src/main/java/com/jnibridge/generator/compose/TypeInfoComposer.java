@@ -8,10 +8,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Composes string representations of {@link TypeInfo} objects.
@@ -56,6 +54,17 @@ public abstract class TypeInfoComposer implements Composer {
         // replace template argument types
         LinkedList<String> cTemplateArgumentTypes = getTypeInfo().getCTemplateArgumentTypes();
         LinkedList<Class<?>> javaTemplateArgumentTypes = getTypeInfo().getJavaTemplateArgumentTypes();
+
+        // empty... check with custom annotation
+        final Custom custom = getTypeInfo().getAnnotation(Custom.class).orElse(null);
+        if (custom != null) {
+            if (cTemplateArgumentTypes == null || cTemplateArgumentTypes.isEmpty()) {
+                cTemplateArgumentTypes = Arrays.stream(custom.cTemplateArgumentTypes()).collect(Collectors.toCollection(LinkedList::new));
+            }
+            if (javaTemplateArgumentTypes == null || javaTemplateArgumentTypes.isEmpty()) {
+                javaTemplateArgumentTypes = Arrays.stream(custom.jTemplateArgumentTypes()).collect(Collectors.toCollection(LinkedList::new));
+            }
+        }
 
         if (cTemplateArgumentTypes != null && javaTemplateArgumentTypes != null) {
             for (int i = 0; i < cTemplateArgumentTypes.size(); ++i) {

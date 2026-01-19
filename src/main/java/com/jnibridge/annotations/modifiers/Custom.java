@@ -65,12 +65,9 @@ public @interface Custom {
      */
     String functionCall() default "";
 
-    /**
-     * Can be used to specified custom mapping for a method.
-     *
-     * @return A Path to the custom mapping of the function body
-     */
-    String bodyTemplatePath() default "";
+
+    String outMappingTemplatePath() default "";
+    String inMappingTemplatePath() default "";
 
     /**
      * @return {@link Mapping#cTemplateArgumentTypes()}

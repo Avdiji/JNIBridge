@@ -8,6 +8,7 @@ import com.jnibridge.annotations.lifecycle.Shared;
 import com.jnibridge.annotations.lifecycle.Unique;
 import com.jnibridge.annotations.mapping.Mapping;
 import com.jnibridge.annotations.mapping.UseMapping;
+import com.jnibridge.annotations.modifiers.Custom;
 import com.jnibridge.exception.JniBridgeException;
 import com.jnibridge.generator.compose.Placeholder;
 import com.jnibridge.generator.model.TypeInfo;
@@ -198,13 +199,30 @@ public class TypeInfoExtractor {
             outMappingTemplatePath.append(unique.outMapping());
         });
 
+        // Custom Mappings...
+        Optional<Custom> customOpt = result.getAnnotation(Custom.class);
+        customOpt.ifPresent(custom -> {
+            String customInMapping = custom.inMappingTemplatePath();
+            String customOutMapping = custom.outMappingTemplatePath();
+
+            if (!customInMapping.isEmpty()) {
+                inMappingTemplatePath.setLength(0);
+                inMappingTemplatePath.append(customInMapping);
+            }
+
+            if (!customOutMapping.isEmpty()) {
+                outMappingTemplatePath.setLength(0);
+                outMappingTemplatePath.append(customOutMapping);
+            }
+        });
+
         result.setInMapping(ResourceUtils.load(inMappingTemplatePath.toString()));
         result.setOutMapping(ResourceUtils.load(outMappingTemplatePath.toString()));
         return result;
     }
 
     /**
-     * Extract an instance of {@link TypeInfo} from a registered {@link TypeMapper}.s
+     * Extract an instance of {@link TypeInfo} from a registered {@link TypeMapper}.
      *
      * @param type              The type to be mapped.
      * @param id                The id of the resulting typeInfo.

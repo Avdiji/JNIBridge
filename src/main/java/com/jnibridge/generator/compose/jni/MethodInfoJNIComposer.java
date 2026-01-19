@@ -5,7 +5,6 @@ import com.jnibridge.annotations.lifecycle.Allocate;
 import com.jnibridge.annotations.lifecycle.Deallocate;
 import com.jnibridge.annotations.lifecycle.Shared;
 import com.jnibridge.annotations.lifecycle.Unique;
-import com.jnibridge.annotations.modifiers.Custom;
 import com.jnibridge.generator.compose.MethodInfoComposer;
 import com.jnibridge.generator.compose.Placeholder;
 import com.jnibridge.generator.model.MethodInfo;
@@ -36,15 +35,7 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
 
     @Override
     public @NotNull String compose() {
-
         final TypeInfo returnType = getMethodInfo().getReturnType();
-        Optional<Custom> annotation = returnType.getAnnotation(Custom.class);
-
-        // in case a function has customized logic...
-        if (annotation.isPresent() && !annotation.get().bodyTemplatePath().trim().isEmpty()) {
-            return composeCustomFunction(annotation.get().bodyTemplatePath());
-        }
-
 
         // Handle Allocate / Deallocate methods
         if (returnType.hasAnnotation(Allocate.class)) { return composeAllocFunction(); }
@@ -61,27 +52,6 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
         String instanceMethodTemplate = ResourceUtils.load("com/jnibridge/other/methods/instance_method.template");
         final String instanceFunction = TemplateUtils.substitute(instanceMethodTemplate, getReplacements(), true);
         return String.format(DIVIDER, "INSTANCE FUNCTION") + instanceFunction;
-    }
-
-    /**
-     * Compose the JNI code for customized method mappings.
-     *
-     * @param customBodyPath The path to the mapping template.
-     * @return The customized JNI code for the given method.
-     */
-    private String composeCustomFunction(@NotNull final String customBodyPath) {
-        final Map<String, String> otherReplacements = new HashMap<>();
-        String template = ResourceUtils.load(customBodyPath);
-
-        TypeInfo selfType = getMethodInfo().getSelfType();
-        if(selfType != null) {
-            otherReplacements.put(Placeholder.C_TYPE, selfType.getCType());
-            otherReplacements.put(Placeholder.JAVA_PATH, selfType.getType().getName().replace(".", "/"));
-
-            template = TemplateUtils.substitute(template, otherReplacements);
-        }
-
-        return TemplateUtils.substitute(template, getReplacements(), true);
     }
 
     /**
