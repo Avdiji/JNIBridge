@@ -1,5 +1,7 @@
 package com.jnibridge.annotations.modifiers;
 
+import com.jnibridge.annotations.mapping.Mapping;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,7 +20,7 @@ import java.lang.annotation.Target;
  * The annotation can be applied to either methods or parameters, allowing
  * customization at different levels of the JNI binding process.
  * </p>
- *
+ * <p>
  * All values are optional. Only the explicitly provided attributes will override
  * the default code generation behavior.
  * </p>
@@ -62,4 +64,23 @@ public @interface Custom {
      * @return a custom function call or expression
      */
     String functionCall() default "";
+
+    /**
+     * Can be used to specified custom mapping for a method.
+     *
+     * @return A Path to the custom mapping of the function body
+     */
+    String bodyTemplatePath() default "";
+
+    /**
+     * @return {@link Mapping#cTemplateArgumentTypes()}
+     * @see Mapping#cTemplateArgumentTypes()
+     */
+    String[] cTemplateArgumentTypes() default {};
+
+    /**
+     * @return {@link Mapping#jTemplateArgumentTypes()}
+     * @see Mapping#jTemplateArgumentTypes() ()
+     */
+    Class<?>[] jTemplateArgumentTypes() default {};
 }

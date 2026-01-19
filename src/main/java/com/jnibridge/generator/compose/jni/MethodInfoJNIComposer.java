@@ -5,6 +5,7 @@ import com.jnibridge.annotations.lifecycle.Allocate;
 import com.jnibridge.annotations.lifecycle.Deallocate;
 import com.jnibridge.annotations.lifecycle.Shared;
 import com.jnibridge.annotations.lifecycle.Unique;
+import com.jnibridge.annotations.modifiers.Custom;
 import com.jnibridge.generator.compose.MethodInfoComposer;
 import com.jnibridge.generator.compose.Placeholder;
 import com.jnibridge.generator.model.MethodInfo;
@@ -36,9 +37,18 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
     @Override
     public @NotNull String compose() {
 
+        final TypeInfo returnType = getMethodInfo().getReturnType();
+        Optional<Custom> annotation = returnType.getAnnotation(Custom.class);
+
+        // in case a function has customized logic...
+        if (annotation.isPresent() && !annotation.get().bodyTemplatePath().trim().isEmpty()) {
+            return composeCustomFunction(annotation.get().bodyTemplatePath());
+        }
+
+
         // Handle Allocate / Deallocate methods
-        if (getMethodInfo().getReturnType().hasAnnotation(Allocate.class)) { return composeAllocFunction(); }
-        if (getMethodInfo().getReturnType().hasAnnotation(Deallocate.class)) { return composeDeallocFunction(); }
+        if (returnType.hasAnnotation(Allocate.class)) { return composeAllocFunction(); }
+        if (returnType.hasAnnotation(Deallocate.class)) { return composeDeallocFunction(); }
 
         // Handle static methods
         if (getMethodInfo().isStatic()) {
@@ -54,7 +64,29 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
     }
 
     /**
+     * Compose the JNI code for customized method mappings.
+     *
+     * @param customBodyPath The path to the mapping template.
+     * @return The customized JNI code for the given method.
+     */
+    private String composeCustomFunction(@NotNull final String customBodyPath) {
+        final Map<String, String> otherReplacements = new HashMap<>();
+        String template = ResourceUtils.load(customBodyPath);
+
+        TypeInfo selfType = getMethodInfo().getSelfType();
+        if(selfType != null) {
+            otherReplacements.put(Placeholder.C_TYPE, selfType.getCType());
+            otherReplacements.put(Placeholder.JAVA_PATH, selfType.getType().getName().replace(".", "/"));
+
+            template = TemplateUtils.substitute(template, otherReplacements);
+        }
+
+        return TemplateUtils.substitute(template, getReplacements(), true);
+    }
+
+    /**
      * compose the JNI code for allocation functions.
+     *
      * @return The JNI code for allocation functions.
      */
     private String composeAllocFunction() {
@@ -97,6 +129,7 @@ public class MethodInfoJNIComposer extends MethodInfoComposer {
 
     /**
      * compose the JNI code for deallocation functions.
+     *
      * @return The JNI code for deallocation functions.
      */
     private String composeDeallocFunction() {
