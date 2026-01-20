@@ -1,5 +1,6 @@
 package com.jnibridge.annotations;
 
+import com.jnibridge.annotations.mapping.Mapping;
 import com.jnibridge.mapper.TypeMapper;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -81,6 +82,13 @@ public @interface BridgeClass {
      * to be included in the generated JNI file
      */
     String[] customJniCodePaths() default {};
+
+    /**
+     * Specify custom mappings for this IPointer instance.
+     * Mainly used to specify custom in/out mappings of the IPointer instance, setting cType and jniType will have no effect.
+     * @return Custom Mappings
+     */
+    Mapping.MappingTemplate templates() default @Mapping.MappingTemplate(inPath = "", outPath = "");
 
     /**
      * Declares a class-wide type-to-mapper association used during JNI bridge generation.

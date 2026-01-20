@@ -9,7 +9,8 @@ import com.jnibridge.mapper.TypeMapper;
 @Mapping(
         cType = "int",
         jniType = "jint",
-        inPath = "com/jnibridge/mappings/primitives/PrimitiveMapper.in.mapping",
-        outPath = "com/jnibridge/mappings/primitives/PrimitiveMapper.out.mapping"
+        templates = @Mapping.MappingTemplate(
+                inPath = "com/jnibridge/mappings/primitives/PrimitiveMapper.in.mapping",
+                outPath = "com/jnibridge/mappings/primitives/PrimitiveMapper.out.mapping")
 )
 public class IntMapper implements TypeMapper {}

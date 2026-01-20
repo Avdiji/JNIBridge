@@ -1,7 +1,7 @@
 package com.jnibridge.generator.compose;
 
 import com.jnibridge.annotations.modifiers.Const;
-import com.jnibridge.annotations.modifiers.Custom;
+import com.jnibridge.annotations.modifiers.Specialized;
 import com.jnibridge.generator.model.TypeInfo;
 import lombok.Getter;
 import lombok.NonNull;
@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Composes string representations of {@link TypeInfo} objects.
@@ -29,18 +28,18 @@ public abstract class TypeInfoComposer implements Composer {
         final boolean isConst = typeInfo.hasAnnotation(Const.class);
         final String cTypeReplacement = String.format("%s%s", isConst ? "const " : "", typeInfo.getCType());
 
-        Optional<Custom> custom = typeInfo.getAnnotation(Custom.class);
+        Optional<Specialized> custom = typeInfo.getAnnotation(Specialized.class);
 
-        replacements.put(Placeholder.C_TYPE, Composer.getReplacement(cTypeReplacement, custom.map(Custom::cType).orElse(null)));
+        replacements.put(Placeholder.C_TYPE, Composer.getReplacement(cTypeReplacement, custom.map(Specialized::cType).orElse(null)));
         replacements.put(Placeholder.C_TYPE_UNDERSCORE, cTypeReplacement.replace("::", "_").replace("<", "_").replace(">", ""));
 
-        replacements.put(Placeholder.JNI_TYPE, Composer.getReplacement(typeInfo.getJniType(), custom.map(Custom::jniType).orElse(null)));
+        replacements.put(Placeholder.JNI_TYPE, Composer.getReplacement(typeInfo.getJniType(), custom.map(Specialized::jniType).orElse(null)));
 
         String id = Optional.ofNullable(typeInfo.getId()).orElse("");
         replacements.put(Placeholder.ID, id);
 
-        replacements.put(Placeholder.C_VAR, Composer.getReplacement(Placeholder.C_VAR + id, custom.map(Custom::cVar).orElse(null)));
-        replacements.put(Placeholder.JNI_VAR, Composer.getReplacement(Placeholder.JNI_VAR + id, custom.map(Custom::jniVar).orElse(null)));
+        replacements.put(Placeholder.C_VAR, Composer.getReplacement(Placeholder.C_VAR + id, custom.map(Specialized::cVar).orElse(null)));
+        replacements.put(Placeholder.JNI_VAR, Composer.getReplacement(Placeholder.JNI_VAR + id, custom.map(Specialized::jniVar).orElse(null)));
 
         replacements.put(Placeholder.JAVA_PATH, typeInfo.getType().getName().replace(".", "/"));
 
@@ -54,17 +53,6 @@ public abstract class TypeInfoComposer implements Composer {
         // replace template argument types
         LinkedList<String> cTemplateArgumentTypes = getTypeInfo().getCTemplateArgumentTypes();
         LinkedList<Class<?>> javaTemplateArgumentTypes = getTypeInfo().getJavaTemplateArgumentTypes();
-
-        // empty... check with custom annotation
-        final Custom custom = getTypeInfo().getAnnotation(Custom.class).orElse(null);
-        if (custom != null) {
-            if (cTemplateArgumentTypes == null || cTemplateArgumentTypes.isEmpty()) {
-                cTemplateArgumentTypes = Arrays.stream(custom.cTemplateArgumentTypes()).collect(Collectors.toCollection(LinkedList::new));
-            }
-            if (javaTemplateArgumentTypes == null || javaTemplateArgumentTypes.isEmpty()) {
-                javaTemplateArgumentTypes = Arrays.stream(custom.jTemplateArgumentTypes()).collect(Collectors.toCollection(LinkedList::new));
-            }
-        }
 
         if (cTemplateArgumentTypes != null && javaTemplateArgumentTypes != null) {
             for (int i = 0; i < cTemplateArgumentTypes.size(); ++i) {

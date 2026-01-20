@@ -19,14 +19,18 @@ public class TypeInfo {
 
     // @formatter:off
     @NonNull private final Class<?> type;
-    @Nullable private final LinkedList<Class<?>> javaTemplateArgumentTypes;
+
+    @Setter
+    @Nullable private LinkedList<Class<?>> javaTemplateArgumentTypes;
 
 
     @Nullable private final String id;
     private final boolean isInvoker; // <- is this type invoking the native function?
 
     @NonNull private final String cType;
-    @Nullable private final LinkedList<String> cTemplateArgumentTypes;
+
+    @Setter
+    @Nullable private LinkedList<String> cTemplateArgumentTypes;
 
     @NonNull private final String jniType;
 

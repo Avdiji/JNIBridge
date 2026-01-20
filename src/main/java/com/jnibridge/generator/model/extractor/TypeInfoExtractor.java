@@ -8,7 +8,6 @@ import com.jnibridge.annotations.lifecycle.Shared;
 import com.jnibridge.annotations.lifecycle.Unique;
 import com.jnibridge.annotations.mapping.Mapping;
 import com.jnibridge.annotations.mapping.UseMapping;
-import com.jnibridge.annotations.modifiers.Custom;
 import com.jnibridge.exception.JniBridgeException;
 import com.jnibridge.generator.compose.Placeholder;
 import com.jnibridge.generator.model.TypeInfo;
@@ -199,22 +198,23 @@ public class TypeInfoExtractor {
             outMappingTemplatePath.append(unique.outMapping());
         });
 
-        // Custom Mappings...
-        Optional<Custom> customOpt = result.getAnnotation(Custom.class);
-        customOpt.ifPresent(custom -> {
-            String customInMapping = custom.inMappingTemplatePath();
-            String customOutMapping = custom.outMappingTemplatePath();
-
-            if (!customInMapping.isEmpty()) {
+        // Custom mapping
+        Optional<BridgeClass> bridgeClassOpt = result.getAnnotation(BridgeClass.class);
+        bridgeClassOpt.ifPresent(bridgeClass -> {
+            Mapping.MappingTemplate templates = bridgeClass.templates();
+            if (!templates.inPath().isEmpty()) {
                 inMappingTemplatePath.setLength(0);
-                inMappingTemplatePath.append(customInMapping);
+                inMappingTemplatePath.append(templates.inPath());
+            }
+            if (!templates.outPath().isEmpty()) {
+                outMappingTemplatePath.setLength(0);
+                outMappingTemplatePath.append(templates.outPath());
             }
 
-            if (!customOutMapping.isEmpty()) {
-                outMappingTemplatePath.setLength(0);
-                outMappingTemplatePath.append(customOutMapping);
-            }
+            result.setCTemplateArgumentTypes(Arrays.stream(templates.cTemplateArgumentTypes()).collect(Collectors.toCollection(LinkedList::new)));
+            result.setJavaTemplateArgumentTypes(Arrays.stream(templates.jTemplateArgumentTypes()).collect(Collectors.toCollection(LinkedList::new)));
         });
+
 
         result.setInMapping(ResourceUtils.load(inMappingTemplatePath.toString()));
         result.setOutMapping(ResourceUtils.load(outMappingTemplatePath.toString()));
@@ -257,7 +257,7 @@ public class TypeInfoExtractor {
 
         // TODO this should be its own composer...
         // extract the cleanup logic
-        final String cleanupPath = paramSpecificMapping.cleanupPath();
+        final String cleanupPath = paramSpecificMapping.templates().cleanupPath();
         String cleanupLogic = "";
         if (!cleanupPath.isEmpty()) {
             Map<String, String> replacements = new HashMap<>();
@@ -272,8 +272,8 @@ public class TypeInfoExtractor {
         }
 
         // check for any template argument types...
-        final Class<?>[] jTemplateArgumentTypes = paramSpecificMapping.jTemplateArgumentTypes();
-        final String[] cTemplateTypes = paramSpecificMapping.cTemplateArgumentTypes();
+        final Class<?>[] jTemplateArgumentTypes = paramSpecificMapping.templates().jTemplateArgumentTypes();
+        final String[] cTemplateTypes = paramSpecificMapping.templates().cTemplateArgumentTypes();
         if (jTemplateArgumentTypes.length != cTemplateTypes.length) {
             throw new JniBridgeException("The length of the C++ specific and Java specific template argument types must be equal.");
         }
@@ -287,8 +287,8 @@ public class TypeInfoExtractor {
                 .jniType(paramSpecificMapping.jniType())
                 .cTemplateArgumentTypes(Arrays.stream(cTemplateTypes).collect(Collectors.toCollection(LinkedList::new)))
                 .javaTemplateArgumentTypes(Arrays.stream(jTemplateArgumentTypes).collect(Collectors.toCollection(LinkedList::new)))
-                .inMapping(ResourceUtils.load(paramSpecificMapping.inPath()))
-                .outMapping(ResourceUtils.load(paramSpecificMapping.outPath()))
+                .inMapping(ResourceUtils.load(paramSpecificMapping.templates().inPath()))
+                .outMapping(ResourceUtils.load(paramSpecificMapping.templates().outPath()))
                 .isInvoker(false)
                 .cleanupLogic(cleanupLogic)
                 .build();

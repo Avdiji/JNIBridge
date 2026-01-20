@@ -1,6 +1,6 @@
 package com.jnibridge.generator.compose;
 
-import com.jnibridge.annotations.modifiers.Custom;
+import com.jnibridge.annotations.modifiers.Specialized;
 import com.jnibridge.annotations.modifiers.IgnoreNullcheck;
 import com.jnibridge.generator.compose.jni.TypeInfoJNIComposer;
 import com.jnibridge.generator.model.MethodInfo;
@@ -44,8 +44,8 @@ public abstract class MethodInfoComposer implements Composer {
         replacements.put(Placeholder.RESULT_DECLARATION, getResultDeclaration());
         replacements.put(Placeholder.RETURN_CALL, methodInfo.getReturnType().getJniType().equals("void") ? "\t\t\treturn;" : "\t\t\treturn result;");
 
-        Optional<Custom> custom = methodInfo.getReturnType().getAnnotation(Custom.class);
-        replacements.put(Placeholder.FUNC_CALL, Composer.getReplacement(getNativeFunctionCall(), custom.map(Custom::functionCall).orElse(null)));
+        Optional<Specialized> custom = methodInfo.getReturnType().getAnnotation(Specialized.class);
+        replacements.put(Placeholder.FUNC_CALL, Composer.getReplacement(getNativeFunctionCall(), custom.map(Specialized::functionCall).orElse(null)));
         replacements.put(Placeholder.FUNC_CALL_PARAMS, getNativeFunctionCallParams());
 
         return replacements;

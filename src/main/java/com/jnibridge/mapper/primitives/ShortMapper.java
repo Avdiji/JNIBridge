@@ -9,8 +9,9 @@ import com.jnibridge.mapper.TypeMapper;
 @Mapping(
         cType = "short",
         jniType = "jshort",
-        inPath = "com/jnibridge/mappings/primitives/PrimitiveMapper.in.mapping",
-        outPath = "com/jnibridge/mappings/primitives/PrimitiveMapper.out.mapping"
+        templates = @Mapping.MappingTemplate(
+                inPath = "com/jnibridge/mappings/primitives/PrimitiveMapper.in.mapping",
+                outPath = "com/jnibridge/mappings/primitives/PrimitiveMapper.out.mapping")
 )
 public class ShortMapper implements TypeMapper {
 }

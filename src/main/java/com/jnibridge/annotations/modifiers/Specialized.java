@@ -1,7 +1,5 @@
 package com.jnibridge.annotations.modifiers;
 
-import com.jnibridge.annotations.mapping.Mapping;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,7 +25,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Custom {
+public @interface Specialized {
 
     /**
      * Specifies the native C/C++ type to be used in the generated code.
@@ -64,20 +62,4 @@ public @interface Custom {
      * @return a custom function call or expression
      */
     String functionCall() default "";
-
-
-    String outMappingTemplatePath() default "";
-    String inMappingTemplatePath() default "";
-
-    /**
-     * @return {@link Mapping#cTemplateArgumentTypes()}
-     * @see Mapping#cTemplateArgumentTypes()
-     */
-    String[] cTemplateArgumentTypes() default {};
-
-    /**
-     * @return {@link Mapping#jTemplateArgumentTypes()}
-     * @see Mapping#jTemplateArgumentTypes() ()
-     */
-    Class<?>[] jTemplateArgumentTypes() default {};
 }

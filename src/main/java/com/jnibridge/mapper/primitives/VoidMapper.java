@@ -9,8 +9,10 @@ import com.jnibridge.mapper.TypeMapper;
 @Mapping(
         cType = "void",
         jniType = "void",
-        inPath = "com/jnibridge/mappings/primitives/VoidMapper.in.mapping",
-        outPath = "com/jnibridge/mappings/primitives/VoidMapper.out.mapping"
+        templates = @Mapping.MappingTemplate(
+                inPath = "com/jnibridge/mappings/primitives/VoidMapper.in.mapping",
+                outPath = "com/jnibridge/mappings/primitives/VoidMapper.out.mapping"
+        )
 )
 public class VoidMapper implements TypeMapper {
 }
