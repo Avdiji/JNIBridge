@@ -199,7 +199,7 @@ public class TypeInfoExtractor {
         });
 
         // Custom mapping
-        Optional<BridgeClass> bridgeClassOpt = result.getAnnotation(BridgeClass.class);
+        Optional<BridgeClass> bridgeClassOpt = Optional.ofNullable(type.getAnnotation(BridgeClass.class));
         bridgeClassOpt.ifPresent(bridgeClass -> {
             Mapping.MappingTemplate templates = bridgeClass.templates();
             if (!templates.inPath().isEmpty()) {
