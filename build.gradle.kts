@@ -43,8 +43,10 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            from(components["java"])          // adds POM + standard metadata
-            artifact(tasks["shadowJar"])      // publishes the shadow jar too
+            artifact(tasks.shadowJar.get()) {
+                classifier = null
+            }
+            artifact(tasks.named("javadocJar"))
         }
     }
 }
