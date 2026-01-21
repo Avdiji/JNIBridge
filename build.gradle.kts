@@ -1,7 +1,7 @@
 plugins {
     `java-library`
+    `maven-publish`
     id("com.github.johnrengelman.shadow") version "8.1.1"
-
 }
 
 repositories {
@@ -38,4 +38,12 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
     archiveBaseName.set("JNIBridge")
     archiveVersion.set("")
     archiveClassifier.set("")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            artifact(tasks["shadowJar"])
+        }
+    }
 }
