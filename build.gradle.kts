@@ -56,7 +56,6 @@ publishing {
             artifact(tasks.shadowJar.get()) { classifier = null }
 
             // publish sources/javadoc jars
-            artifact(tasks.named("sourcesJar"))
             artifact(tasks.named("javadocJar"))
         }
     }
