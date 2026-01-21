@@ -4,6 +4,9 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
+group = (findProperty("group") as String?) ?: "com.github.Avdiji"
+version = (findProperty("version") as String?) ?: "0.0.0-SNAPSHOT"
+
 repositories {
     mavenCentral()
 }
@@ -40,13 +43,22 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
     archiveClassifier.set("")
 }
 
+tasks.jar { enabled = false; }
+
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            artifact(tasks.shadowJar.get()) {
-                classifier = null
-            }
+            groupId = project.group.toString()
+            artifactId = "JNIBridge"
+            version = project.version.toString()
+
+            // publish shadow jar as the main artifact
+            artifact(tasks.shadowJar.get()) { classifier = null }
+
+            // publish sources/javadoc jars
+            artifact(tasks.named("sourcesJar"))
             artifact(tasks.named("javadocJar"))
         }
     }
 }
+
