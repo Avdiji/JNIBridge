@@ -26,7 +26,7 @@ public @interface Deallocate {
      * context-specific values derived from the Java method.
      * </p>
      *
-     * <h3>Available placeholders</h3>
+     * <h4>Available placeholders</h4>
      * <ul>
      *   <li><code>${mangledFuncName}</code> – The JNI-mangled name of the corresponding Java method.</li>
      * </ul>

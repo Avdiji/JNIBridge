@@ -25,7 +25,7 @@ public @interface Ref {
      * values derived from the Java method and its parameters.
      * </p>
      *
-     * <h3>Available placeholders</h3>
+     * <h4>Available placeholders</h4>
      * <ul>
      *   <li><code>${cType}</code> – The C++ type to be mapped</li>
      *   <li><code>${cVar}</code> – An identifying name for the resulting C++ type.</li>
@@ -46,7 +46,7 @@ public @interface Ref {
      * values derived from the Java method and its parameters.
      * </p>
      *
-     * <h3>Available placeholders</h3>
+     * <h4>Available placeholders</h4>
      * <ul>
      *   <li><code>${cType}</code> – The C++ type to be mapped</li>
      *   <li><code>${functionCall}</code> – The function-call, which creates an instance of the corresponding cType.</li>

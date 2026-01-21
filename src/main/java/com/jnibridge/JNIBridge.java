@@ -26,13 +26,18 @@ import java.util.stream.Collectors;
  * <p>
  * These headers can be used for creating native
  * implementations in C/C++ that interact with Java classes.
- * <p>
+ * </p>
  *
  * @author Fitor Avdiji
  * @version 1.0.0
  */
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class JNIBridge {
+
+    /**
+     * Constructor.
+     */
+    private JNIBridge() { }
 
     /**
      * Generates JNI interface header files (.jni.h) for the specified Java classes.
@@ -81,9 +86,10 @@ public class JNIBridge {
     /**
      * Generates JNI interface header files (.jni.h) for the specified Java classes.
      *
-     * @param outPath the output directory where the generated JNI header files will be stored.
-     *                If the directory does not exist, it will be created.
-     * @param classes fully qualified names of the classes/packages to generate JNI headers for.
+     * @param outPath        the output directory where the generated JNI header files will be stored.
+     *                       If the directory does not exist, it will be created.
+     * @param classes        fully qualified names of the classes/packages to generate JNI headers for.
+     * @param nativeIncludes An array of C++ includes.
      * @throws RuntimeException if a header file cannot be created or written.
      */
     @SuppressWarnings("unused")

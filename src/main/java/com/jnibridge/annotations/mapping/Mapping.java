@@ -81,12 +81,12 @@ public @interface Mapping {
          *   <li>{@code ${cTemplateTypeUnderscore_0}}, {@code ${cTemplateTypeUnderscore_1}}, ...</li>
          * </ul>
          *
-         * <h3>When required</h3>
+         * <h4>When required</h4>
          * <p>This attribute is required whenever {@link #cType()} represents a templated type
          * and the mapping templates reference template placeholders (e.g. {@code ${cTemplateType_0}}).
          * If omitted in such cases, code generation will fail or produce invalid code.</p>
          *
-         * <h3>Example</h3>
+         * <h4>Example</h4>
          * <pre>{@code
          * @Mapping(
          *   cType = "std::optional<com::jnibridge::Foo>",
@@ -107,12 +107,10 @@ public @interface Mapping {
          *   <li>{@code ${fullJTemplatePath_0}}, {@code ${fullJTemplatePath_1}}, ... for JNI slash paths.
          * </ul>
          *
-         * <h3>When required</h3>
+         * <h4>When required</h4>
          * Lookup {@link MappingTemplate#cTemplateArgumentTypes()}
          *
-         * <h3>Example</h3>
-         * <pre>{@code
-         * <h3>Example</h3>
+         * <h4>Example</h4>
          * <pre>{@code
          * @Mapping(
          *   cType = "std::optional<com::jnibridge::Foo>",

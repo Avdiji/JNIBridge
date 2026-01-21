@@ -26,7 +26,7 @@ public @interface Allocate {
      * values derived from the Java method and its parameters.
      * </p>
      *
-     * <h3>Available placeholders</h3>
+     * <h4>Available placeholders</h4>
      * <ul>
      *   <li><code>${mangledFuncName}</code> – The JNI-mangled name of the corresponding Java method.</li>
      *   <li><code>${jniParams}</code> – Additional JNI parameters appended to the function signature.</li>

@@ -28,7 +28,7 @@ public @interface Shared {
      * values derived from the Java method and its parameters.
      * </p>
      *
-     * <h3>Available placeholders</h3>
+     * <h4>Available placeholders</h4>
      * <ul>
      *   <li><code>${mangledFuncName}</code> – The JNI-mangled name of the corresponding Java method.</li>
      *   <li><code>${jniParams}</code> – Additional JNI parameters appended to the function signature.</li>
@@ -51,7 +51,7 @@ public @interface Shared {
      * values derived from the Java method and its parameters.
      * </p>
      *
-     * <h3>Available placeholders</h3>
+     * <h4>Available placeholders</h4>
      * <ul>
      *   <li><code>${cType}</code> – The C++ type to be mapped</li>
      *   <li><code>${cVar}</code> – An identifying name for the resulting C++ type.</li>
@@ -72,7 +72,7 @@ public @interface Shared {
      * values derived from the Java method and its parameters.
      * </p>
      *
-     * <h3>Available placeholders</h3>
+     * <h4>Available placeholders</h4>
      * <ul>
      *   <li><code>${cType}</code> – The C++ type to be mapped</li>
      *   <li><code>${functionCall}</code> – The function-call, which creates an instance of the corresponding cType.</li>
