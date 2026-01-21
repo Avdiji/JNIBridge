@@ -1,8 +1,5 @@
 package com.jnibridge.nativeaccess;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Closeable;
 
 /**
@@ -23,10 +20,13 @@ import java.io.Closeable;
  */
 public abstract class Pointer implements IPointer, Closeable {
 
-    // use lombok to generate setter/getter from IPointer
-    @Getter(onMethod_ = {@Override})
-    @Setter(onMethod_ = {@Override})
     private long nativeHandle;
+
+    @Override
+    public long getNativeHandle() { return nativeHandle; }
+
+    @Override
+    public void setNativeHandle(long nativeHandle) { this.nativeHandle = nativeHandle; }
 
     @Override
     @SuppressWarnings("removal")
