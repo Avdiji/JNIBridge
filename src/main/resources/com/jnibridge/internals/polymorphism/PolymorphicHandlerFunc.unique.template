@@ -3,5 +3,4 @@
     {
         if (!handle || ((jlong) handle) == -1) { return nullptr; }
 ${handleToInstance}
-        return nullptr;
     }

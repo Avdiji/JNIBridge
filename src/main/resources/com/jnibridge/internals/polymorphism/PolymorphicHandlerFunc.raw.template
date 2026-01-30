@@ -3,7 +3,6 @@
     {
         if (!instance || ((jlong) instance) == -1) { return nullptr; }
 ${instanceToJFullPath}
-        return nullptr;
     }
 
     inline ${cType}*
@@ -11,5 +10,4 @@ ${instanceToJFullPath}
     {
         if (!handle || ((jlong) handle) == -1) { return nullptr; }
 ${handleToInstance}
-        return nullptr;
     }

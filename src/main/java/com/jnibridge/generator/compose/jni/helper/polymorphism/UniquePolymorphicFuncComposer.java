@@ -17,6 +17,7 @@ public class UniquePolymorphicFuncComposer extends PolymorphicHelperComposer.Pol
 
     /**
      * Constructor.
+     *
      * @param polymorphicClass The class to generate the helper function for.
      */
     public UniquePolymorphicFuncComposer(@NotNull final ClassInfo polymorphicClass) {
@@ -36,17 +37,24 @@ public class UniquePolymorphicFuncComposer extends PolymorphicHelperComposer.Pol
 
         final SortedSet<Class<?>> subclasses = getPolymorphicClass().getSubclasses();
         boolean firstIteration = true;
+        boolean shouldDynamicCast = subclasses.size() > 1;
 
-        for(Class<?> subclass : subclasses) {
+        for (Class<?> subclass : subclasses) {
             final String subclassCType = ClassInfoExtractor.extractClassCType(subclass);
 
-            result.append(firstIteration ? "\t\tif " : "\n\t\telse if ");
-            firstIteration = false;
+            if(shouldDynamicCast) {
+                result.append(firstIteration ? "\t\tif " : "\n\t\telse if ");
+                firstIteration = false;
 
-            result.append(String.format("(auto* actualType = dynamic_cast<jnibridge::internal::Handle<%s>*>(handle)) {", subclassCType));
-            result.append(String.format("\n\t\t\treturn actualType->getAsUnique<%s>(env);", getCType()));
-            result.append("\n\t\t}");
+                result.append(String.format("(auto* actualType = dynamic_cast<jnibridge::internal::Handle<%s>*>(handle)) {\n\t\t\t", subclassCType));
+                result.append(String.format("return actualType->getAsUnique<%s>(env);", getCType()));
+                result.append("\n\t\t}");
+            } else {
+                result.append(String.format("\t\tauto* actualType = static_cast<jnibridge::internal::Handle<%s>*>(handle);\n\t\t", subclassCType));
+                result.append(String.format("return actualType->getAsUnique<%s>(env);", getCType()));
+            }
         }
+        if (shouldDynamicCast) { result.append("\n\t\treturn nullptr;"); }
         return result.toString();
     }
 }

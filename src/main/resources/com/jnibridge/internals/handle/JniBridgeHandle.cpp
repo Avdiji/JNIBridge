@@ -150,7 +150,8 @@ namespace jnibridge::internal {
     public:
 
         // store either rawPtr, sharedPtr, uniquePtr
-        using Store = std::variant<T*, std::shared_ptr<T>, std::unique_ptr<T>>;
+        using ErasedUnique = std::unique_ptr<void, void(*)(void*)>;
+        using Store = std::variant<T*, std::shared_ptr<T>, ErasedUnique>;
 
         /**
          * Destructor.
@@ -186,7 +187,9 @@ namespace jnibridge::internal {
          *
          * @param uniqueInstance Unique ownership of the instance.
          */
-        explicit Handle(std::unique_ptr<T> uniqueInstance) : _store(std::move(uniqueInstance)), _strategy(StorageStrategy::Unique){}
+        explicit Handle(std::unique_ptr<T> u)
+          : _store(ErasedUnique(u.release(), [](void* p){ delete static_cast<T*>(p); })),
+            _strategy(StorageStrategy::Unique) {}
 
         /**
          * Retrieves the wrapped instance as a raw pointer.
@@ -206,9 +209,22 @@ namespace jnibridge::internal {
                     return std::get<std::shared_ptr<T>>(_store).get();
 
                 case StorageStrategy::Unique:
-                    return std::get<std::unique_ptr<T>>(_store).get();
+                    return static_cast<T*>(std::get<ErasedUnique>(_store).get());
             }
             throw JniBridgeError(JniBridgeError::Code::CorruptHandleStorage);
+        }
+
+        std::shared_ptr<T> getShared(JNIEnv *env) const {
+            try {
+                if(_strategy != StorageStrategy::Shared) {
+                    throwJniBridgeExceptionJava(env, "Function expectes a std::shared_ptr");
+                    return nullptr;
+                }
+                return std::get<std::shared_ptr<T>>(_store);
+            } catch(const std::exception &e) {
+                throwJniBridgeExceptionJava(env, "Unable to access instance. nativeHandle might be null or invalid.");
+                return nullptr;
+            }
         }
 
         /**
@@ -219,8 +235,9 @@ namespace jnibridge::internal {
          *
          * @throws std::logic_error if the wrapped instance cannot be accessed.
          */
-        template<class X>
-        X* getAs(JNIEnv *env) const {
+        template<class X, typename U = T>
+        typename std::enable_if<std::is_polymorphic<U>::value, X*>::type
+        getAs(JNIEnv *env) const {
             try {
                 T* original = get();
                 return dynamic_cast<X*>(original);
@@ -238,8 +255,9 @@ namespace jnibridge::internal {
          * @throws std::logic_error if the wrapped instance cannot be accessed.
          * @throws std::logic_error if the instance is not stored as a shared_ptr<T>.
          */
-        template<class X>
-        std::shared_ptr<X> getAsShared(JNIEnv *env) const {
+        template<class X, typename U = T>
+        typename std::enable_if<std::is_polymorphic<U>::value, std::shared_ptr<X>>::type
+        getAsShared(JNIEnv *env) const {
             try {
                 if(_strategy != StorageStrategy::Shared) {
                     throwJniBridgeExceptionJava(env, "Function expectes a std::shared_ptr");

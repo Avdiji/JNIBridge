@@ -53,14 +53,15 @@ public class PolymorphicHelperComposer implements Composer {
     private String getHelperFunctionReplacement() {
         RawPolymorphicFuncComposer rawPolymorphicFuncComposer = new RawPolymorphicFuncComposer(classInfo);
         SharedPolymorphicFuncComposer sharedPolymorphicFuncComposer = new SharedPolymorphicFuncComposer(classInfo);
-        UniquePolymorphicFuncComposer uniquePolymorphicFuncComposer = new UniquePolymorphicFuncComposer(classInfo);
+//        UniquePolymorphicFuncComposer uniquePolymorphicFuncComposer = new UniquePolymorphicFuncComposer(classInfo);
 
         //noinspection StringBufferReplaceableByString
         StringBuilder result = new StringBuilder();
 
         result.append(rawPolymorphicFuncComposer.compose()).append("\n\n");
         result.append(sharedPolymorphicFuncComposer.compose()).append("\n\n");
-        result.append(uniquePolymorphicFuncComposer.compose()).append("\n\n");
+//        result.append(uniquePolymorphicFuncComposer.compose()).append("\n\n");
+        // TODO find a proper solution for handling uniquePtrs...
 
         return result.toString();
     }
