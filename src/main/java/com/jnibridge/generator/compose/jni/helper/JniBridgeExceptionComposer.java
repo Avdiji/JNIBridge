@@ -13,7 +13,7 @@ import java.util.*;
  * Composes JNI-specific helper-code to handle exceptions on a C++/jni level.
  */
 public class JniBridgeExceptionComposer implements Composer {
-    public static final String FILENAME = "JniBridgeExceptionHandler.cpp";
+    public static final String FILENAME = "JniBridgeExceptionHandler.hpp";
 
     @Override
     public String compose() {

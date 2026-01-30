@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JniBridgeHandleComposer implements Composer {
 
-    public static final String INTERNAL_FILENAME = "JniBridgeHandle.cpp";
+    public static final String INTERNAL_FILENAME = "JniBridgeHandle.hpp";
 
     private final Collection<String> includes;
 

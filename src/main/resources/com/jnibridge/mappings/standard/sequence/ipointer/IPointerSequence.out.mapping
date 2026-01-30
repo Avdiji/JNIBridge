@@ -9,7 +9,7 @@
                 auto *nativeResultElement = new ${cTemplateType_0}(resultSetElement);
                 auto resultElementHandle = new jnibridge::internal::Handle<${cTemplateType_0}>(nativeResultElement, true);
                 auto resultElementBaseHandle = static_cast<jnibridge::internal::BaseHandle*>(resultElementHandle);
-                jobject resultElementJObject = jnibridge::internal::jobjectFromBaseHandle(env, "${fullJPath}", resultElementBaseHandle);
+                jobject resultElementJObject = jnibridge::internal::jobjectFromBaseHandle(env, "${fullJTemplatePath_0}", resultElementBaseHandle);
                 env->SetObjectArrayElement(result, nativeResultIndex++, resultElementJObject);
             }
             env->DeleteLocalRef(iPointerClass);
