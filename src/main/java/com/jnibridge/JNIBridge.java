@@ -1,5 +1,6 @@
 package com.jnibridge;
 
+import com.jnibridge.annotations.DiscardPolymorphism;
 import com.jnibridge.exception.JniBridgeException;
 import com.jnibridge.generator.compose.jni.ClassInfoJNIComposer;
 import com.jnibridge.generator.compose.jni.helper.JniBridgeExceptionComposer;
