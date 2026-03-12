@@ -42,13 +42,22 @@ public class TypeInfoExtractor {
      * @return The TypeInfo, which maps the calling type to C++.
      */
     protected static TypeInfo extractSelfType(@NotNull final Class<?> clazz, @NotNull final String cType) {
+        String inMapping = ResourceUtils.load("com/jnibridge/mappings/bridged_classes/raw/jnibridge.ptr.in.mapping");
+
+        if (clazz.isAnnotationPresent(BridgeClass.class)) {
+            BridgeClass bridgeClassAnnotation = clazz.getAnnotation(BridgeClass.class);
+            if (!bridgeClassAnnotation.templates().inPath().isEmpty()) {
+                inMapping = ResourceUtils.load(bridgeClassAnnotation.templates().inPath());
+            }
+        }
+
         return TypeInfo.builder()
                 .type(clazz)
                 .id(null)
                 .annotations(new ArrayList<>())
                 .cType(cType)
                 .jniType("jobject")
-                .inMapping(ResourceUtils.load("com/jnibridge/mappings/bridged_classes/raw/jnibridge.ptr.in.mapping"))
+                .inMapping(inMapping)
                 .outMapping("") // not needed...
                 .isInvoker(true)
                 .build();
