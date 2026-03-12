@@ -169,6 +169,8 @@ public class JNIBridge {
         List<String> convenienceHeaderIncludes = new ArrayList<>();
         for (ClassInfo classInfo : iPointerClasses) {
 
+            if (classInfo.getClazz().isAnnotationPresent(DiscardPolymorphism.class)) { continue; }
+
             String filename = String.format("%s.helper.jni.hpp", classInfo.getFullCType());
             filename = filename.replace("::", "_").replace("<", "_").replace(">", "");
 
